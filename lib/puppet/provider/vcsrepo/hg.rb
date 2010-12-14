@@ -48,21 +48,16 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     at_path do
       current = hg('parents')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
       desired = @resource.value(:revision)
-      if current == desired
-        current
-      else
+      if desired
+        # Return the tag name if it maps to the current nodeid
         mapped = hg('tags')[/^#{Regexp.quote(desired)}\s+\d+:(\S+)/m, 1]
-        if mapped
-          # A tag, return that tag if it maps to the current nodeid
-          if current == mapped
-            desired
-          else
-            current
-          end
+        if current == mapped
+          desired
         else
-          # Use the current nodeid
           current
         end
+      else
+        current
       end
     end
   end
