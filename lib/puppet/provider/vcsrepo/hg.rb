@@ -13,6 +13,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     else
       clone_repository(@resource.value(:revision))
     end
+    update_owner
   end
 
   def working_copy_exists?
@@ -72,6 +73,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
       end
       hg('update', '--clean', '-r', desired)
     end
+    update_owner
   end
 
   private
@@ -88,6 +90,12 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     args.push(@resource.value(:source),
               @resource.value(:path))
     hg(*args)
+  end
+
+  def update_owner
+    if @resource.value(:owner) or @resource.value(:group)
+      set_ownership
+    end
   end
 
 end
