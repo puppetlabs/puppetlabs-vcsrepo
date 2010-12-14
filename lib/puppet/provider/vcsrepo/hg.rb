@@ -15,14 +15,18 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     end
   end
 
-  def exists?
+  def working_copy_exists?
     File.directory?(File.join(@resource.value(:path), '.hg'))
+  end
+
+  def exists?
+    working_copy_exists?
   end
 
   def destroy
     FileUtils.rm_rf(@resource.value(:path))
   end
-  
+
   def revision
     at_path do
       current = hg('parents')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
