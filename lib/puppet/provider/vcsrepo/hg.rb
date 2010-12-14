@@ -27,6 +27,23 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     FileUtils.rm_rf(@resource.value(:path))
   end
 
+  def latest?
+    at_path do
+      return self.revision == self.latest
+    end
+  end
+
+  def latest
+    at_path do
+      begin
+        hg('incoming', '--branch', '.', '--newest-first', '--limit', '1')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
+      rescue Puppet::ExecutionFailure
+        # If there are no new changesets, return the current nodeid
+        self.revision
+      end
+    end
+  end
+
   def revision
     at_path do
       current = hg('parents')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
