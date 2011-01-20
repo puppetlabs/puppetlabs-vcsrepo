@@ -191,6 +191,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     at_path do
       git('submodule', 'init')
       git('submodule', 'update')
+      git('submodule', 'foreach', 'git', 'submodule', 'init')
+      git('submodule', 'foreach', 'git', 'submodule', 'update')
     end
   end
 
