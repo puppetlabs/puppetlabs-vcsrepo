@@ -17,6 +17,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
                           @resource.value(:path),
                           @resource.value(:revision))
     end
+    update_owner
   end
 
   def working_copy_exists?
@@ -57,6 +58,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
     at_path do
       svn('update', '-r', desired)
     end
+    update_owner
   end
 
   private
@@ -79,4 +81,9 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
     svnadmin(*args)
   end
 
+  def update_owner
+    if @resource.value(:owner) or @resource.value(:group)
+      set_ownership
+    end
+  end
 end
