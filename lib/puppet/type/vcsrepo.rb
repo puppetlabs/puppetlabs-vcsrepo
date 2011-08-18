@@ -5,7 +5,8 @@ Puppet::Type.newtype(:vcsrepo) do
 
   feature :gzip_compression,
           "The provider supports explicit GZip compression levels"
-
+  feature :basic_auth,
+          "The provider supports HTTP Basic Authentication"
   feature :bare_repositories,
           "The provider differentiates between bare repositories
           and those with working copies",
@@ -134,6 +135,14 @@ Puppet::Type.newtype(:vcsrepo) do
         raise ArgumentError, "Unsupported compression level: #{amount} (expected 0-6)"
       end
     end
+  end
+
+  newparam :basic_auth_username, :required_features => [:basic_auth] do
+    desc "HTTP Basic Auth username"
+  end
+
+  newparam :basic_auth_password, :required_features => [:basic_auth] do
+    desc "HTTP Basic Auth password"
   end
 
   newparam :identity, :required_features => [:ssh_identity] do

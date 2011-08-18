@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
            :svnadmin => 'svnadmin'
 
   defaultfor :svn => :exists
-  has_features :filesystem_types, :reference_tracking
+  has_features :filesystem_types, :reference_tracking, :basic_auth
 
   def create
     if !@resource.value(:source)
@@ -41,30 +41,43 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       end
     end
   end
+  
+  def buildargs
+    args = ['--non-interactive']
+    if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
+      args.push('--username', @resource.value(:basic_auth_username))
+      args.push('--password', @resource.value(:basic_auth_password))
+      args.push('--no-auth-cache')
+    end
+    return args
+  end
 
   def latest
+    args = buildargs.push('info', '-r', 'HEAD')
     at_path do
-      svn('info', '-r', 'HEAD')[/^Revision:\s+(\d+)/m, 1]
+      svn(*args)[/^Revision:\s+(\d+)/m, 1]
     end
   end
   
   def revision
+    args = buildargs.push('info')
     at_path do
-      svn('info')[/^Revision:\s+(\d+)/m, 1]
+      svn(*args)[/^Revision:\s+(\d+)/m, 1]
     end
   end
 
   def revision=(desired)
+    args = buildargs.push('update', '-r', desired)
     at_path do
-      svn('update', '-r', desired)
+      svn(*args)
     end
     update_owner
   end
 
   private
 
-  def checkout_repository(source, path, revision = nil)
-    args = ['checkout']
+  def checkout_repository(source, path, revision)
+    args = buildargs.push('checkout')
     if revision
       args.push('-r', revision)
     end
