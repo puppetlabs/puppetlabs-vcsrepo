@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) do
   desc "Supports Bazaar repositories"
 
-  commands   :bzr => 'bzr'
+  optional_commands   :bzr => 'bzr'
   defaultfor :bzr => :exists
   has_features :reference_tracking
 

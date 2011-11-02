@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) do
   desc "Supports Subversion repositories"
 
-  commands :svn      => 'svn',
+  optional_commands :svn      => 'svn',
            :svnadmin => 'svnadmin'
 
   defaultfor :svn => :exists
