@@ -96,6 +96,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def update_references
     at_path do
       git_with_identity('fetch', '--tags', 'origin')
+      update_owner_and_excludes
     end
   end
 
@@ -262,6 +263,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       end
       current = @resource.value(:revision) if current == canonical
     end
+    update_owner_and_excludes
     return current
   end
 
