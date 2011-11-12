@@ -24,6 +24,10 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
     File.directory?(directory)
   end
 
+  def working_copy_exists?
+    File.directory?(File.join(@resource.value(:path), 'CVS'))
+  end
+  
   def destroy
     FileUtils.rm_rf(@resource.value(:path))
   end
