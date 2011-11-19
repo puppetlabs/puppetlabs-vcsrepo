@@ -5,7 +5,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
 
   optional_commands   :cvs => 'cvs'
   defaultfor :cvs => :exists
-  has_features :gzip_compression, :reference_tracking
+  has_features :gzip_compression, :reference_tracking, :modules
   
   def create
     if !@resource.value(:source)
@@ -72,7 +72,9 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   # When the source:
   # * Starts with ':' (eg, :pserver:...)
   def module_name
-    if (source = @resource.value(:source))
+    if (m = @resource.value(:module))
+      m
+    elsif (source = @resource.value(:source))
       source[0, 1] == ':' ? File.basename(source) : '.'
     end
   end
