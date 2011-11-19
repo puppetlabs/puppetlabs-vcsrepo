@@ -15,8 +15,12 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) 
     end
   end
 
-  def exists?
+  def working_copy_exists?
     File.directory?(File.join(@resource.value(:path), '.bzr'))
+  end
+
+  def exists?
+    working_copy_exists?
   end
 
   def destroy
