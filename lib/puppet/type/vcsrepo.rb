@@ -76,7 +76,7 @@ Puppet::Type.newtype(:vcsrepo) do
       prov = @resource.provider
       if prov
         if prov.working_copy_exists?
-          prov.latest? ? :latest : :present
+          (@should.include?(:latest) && prov.latest?) ? :latest : :present
         elsif prov.class.feature?(:bare_repositories) and prov.bare_exists?
           :bare
         else
