@@ -17,7 +17,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
         if @resource.value(:ensure) == :bare
           notice "Ignoring revision for bare repository"
         else
-          checkout_or_reset
+          checkout
         end
       end
       if @resource.value(:ensure) != :bare
@@ -67,7 +67,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def revision=(desired)
-    checkout_or_reset(desired)
+    checkout(desired)
     if local_branch_revision?(desired)
       # reset instead of pull to avoid merge conflicts. assuming remote is
       # authoritative.
@@ -188,13 +188,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     false
   end
 
-  def checkout_or_reset(revision = @resource.value(:revision))
-    if local_branch_revision?
-      reset(revision)
-    elsif tag_revision?
-      at_path { git_with_identity('checkout', revision) }
-    elsif remote_branch_revision?
+  def checkout(revision = @resource.value(:revision))
+    if !local_branch_revision? && remote_branch_revision?
       at_path { git_with_identity('checkout', '-b', revision, '--track', "origin/#{revision}") }
+    else
+      at_path { git_with_identity('checkout', '--force', revision) }
     end
   end
 
