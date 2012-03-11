@@ -1,4 +1,4 @@
-vcsrepo { "/tmp/vcstest-bzr-branch":
+vcsrepo { '/tmp/vcstest-bzr-branch':
   ensure   => present,
   provider => bzr,
   source   => 'lp:do',

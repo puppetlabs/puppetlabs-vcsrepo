@@ -1,4 +1,4 @@
-vcsrepo { "/tmp/vcstest-svn-server":
-  ensure => present,
+vcsrepo { '/tmp/vcstest-svn-server':
+  ensure   => present,
   provider => svn
 }

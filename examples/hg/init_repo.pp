@@ -1,4 +1,4 @@
-vcsrepo { "/tmp/vcstest-hg-init":
-  ensure => present,
+vcsrepo { '/tmp/vcstest-hg-init':
+  ensure   => present,
   provider => hg
 }
