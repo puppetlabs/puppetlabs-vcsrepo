@@ -46,6 +46,13 @@ For a specific revision or branch (can be a commit SHA, tag or branch name):
         source => 'git://example.com/repo.git',
         revision => '1.1.2rc1'
     }
+    
+    vcsrepo { "/path/to/repo":
+        ensure => present,
+        provider => git,
+        source => 'git://example.com/repo.git',
+        revision => 'development'
+    }
 
     vcsrepo { "/path/to/repo":
         ensure => present,
