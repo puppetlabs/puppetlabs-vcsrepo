@@ -40,6 +40,8 @@ Puppet::Type.newtype(:vcsrepo) do
           else
             return false
           end
+        when :bare
+          return is == :bare
       end
     end
 
