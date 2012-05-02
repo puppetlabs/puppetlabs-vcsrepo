@@ -5,23 +5,41 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
 
   optional_commands   :hg => 'hg'
   defaultfor :hg => :exists
-  has_features :reference_tracking
+  has_features :reference_tracking, :bare_repositories
 
   def create
     if !@resource.value(:source)
-      create_repository(@resource.value(:path))
+      init_repository(@resource.value(:path))
     else
       clone_repository(@resource.value(:revision))
     end
     update_owner
   end
 
+  def bare_exists?
+    if exists?
+      current_summary = summary
+      null_repo = current_summary.include?('(no revision checked out)')
+      empty_repo = current_summary.include?('(empty repository)')
+      return empty_repo || null_repo
+    else 
+      return false
+    end
+  end
+
   def working_copy_exists?
-    File.directory?(File.join(@resource.value(:path), '.hg'))
+    if exists?
+      current_summary = summary
+      null_repo = current_summary.include?('(no revision checked out)')
+      empty_repo = current_summary.include?('(empty repository)')
+      return empty_repo || !null_repo
+    else
+      return false
+    end
   end
 
   def exists?
-    working_copy_exists?
+    return File.directory?(File.join(@resource.value(:path), '.hg'))
   end
 
   def destroy
@@ -78,8 +96,35 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
 
   private
 
+  def init_repository(path)
+    if @resource.value(:ensure) == :bare && working_copy_exists?
+      convert_working_copy_to_bare
+    elsif @resource.value(:ensure) == :present && bare_exists?
+      convert_bare_to_working_copy
+    else
+      create_repository(path)
+    end
+  end
+
+  def convert_bare_to_working_copy
+    at_path do
+      hg('update')
+    end
+  end
+
+  def convert_working_copy_to_bare
+    at_path do
+      hg('update', 'null')
+    end
+  end
+
   def create_repository(path)
     hg('init', path)
+    # Following recipe for bare repositories laid out here:
+    # http://mercurial.selenic.com/wiki/GitConcepts#Bare_repositories
+    if @resource.value(:ensure) == :bare
+      convert_working_copy_to_bare
+    end
   end
 
   def clone_repository(revision)
@@ -95,6 +140,12 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
   def update_owner
     if @resource.value(:owner) or @resource.value(:group)
       set_ownership
+    end
+  end
+
+  def summary 
+    at_path do
+      return hg('summary')
     end
   end
 
