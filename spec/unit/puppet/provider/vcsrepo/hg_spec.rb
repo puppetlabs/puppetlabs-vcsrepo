@@ -74,7 +74,7 @@ describe_provider :vcsrepo, :hg, :resource => {:path => '/tmp/vcsrepo'} do
       
       context "when it is the same as the current SHA", :resource => {:revision => '34e6012c783a'} do
         it "should return it" do
-          provider.expects(:hg).with('tags').never
+          provider.expects(:hg).with('tags').returns(fixture(:hg_tags))
           provider.revision.should == resource.value(:revision)
         end
       end
