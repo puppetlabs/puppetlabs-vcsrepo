@@ -6,7 +6,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   ##TODO modify the commands below so that the su - is included
   optional_commands :git => 'git'
   defaultfor :git => :exists
-  has_features :bare_repositories, :reference_tracking, :ssh_identity
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes
 
   def create
     if !@resource.value(:source)
@@ -40,11 +40,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def latest
     branch = on_branch?
     if branch == 'master'
-      return get_revision('origin/HEAD')
+      return get_revision("#{@resource.value(:remote)}/HEAD")
     elsif branch == '(no branch)'
       return get_revision('HEAD')
     else
-      return get_revision('origin/%s' % branch)
+      return get_revision("#{@resource.value(:remote)}/%s" % branch)
     end
   end
 
@@ -73,7 +73,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       # authoritative.
       # might be worthwhile to have an allow_local_changes param to decide
       # whether to reset or pull when we're ensuring latest.
-      at_path { git_with_identity('reset', '--hard', "origin/#{desired}") }
+      at_path { git_with_identity('reset', '--hard', "#{@resource.value(:remote)}/#{desired}") }
     end
     if @resource.value(:ensure) != :bare
       update_submodules
@@ -95,7 +95,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def update_references
     at_path do
-      git_with_identity('fetch', '--tags', 'origin')
+      git_with_identity('fetch', '--tags', @resource.value(:remote))
       update_owner_and_excludes
     end
   end
@@ -190,7 +190,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def checkout(revision = @resource.value(:revision))
     if !local_branch_revision? && remote_branch_revision?
-      at_path { git_with_identity('checkout', '-b', revision, '--track', "origin/#{revision}") }
+      at_path { git_with_identity('checkout', '-b', revision, '--track', "#{@resource.value(:remote)}/#{revision}") }
     else
       at_path { git_with_identity('checkout', '--force', revision) }
     end
@@ -212,9 +212,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def remote_branch_revision?(revision = @resource.value(:revision))
-    # git < 1.6 returns 'origin/#{revision}'
-    # git 1.6+ returns 'remotes/origin/#{revision}'
-    branch = at_path { branches.grep /(remotes\/)?origin\/#{revision}/ }
+    # git < 1.6 returns '#{@resource.value(:remote)}/#{revision}'
+    # git 1.6+ returns 'remotes/#{@resource.value(:remote)}/#{revision}'
+    branch = at_path { branches.grep /(remotes\/)?#{@resource.value(:remote)}\/#{revision}/ }
     if branch.length > 0
       return branch
     end
@@ -249,15 +249,15 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       create
     end
     at_path do
-      git_with_identity('fetch', 'origin')
-      git_with_identity('fetch', '--tags', 'origin')
+      git_with_identity('fetch', @resource.value(:remote))
+      git_with_identity('fetch', '--tags', @resource.value(:remote))
     end
     current = at_path { git_with_identity('rev-parse', rev).strip }
     if @resource.value(:revision)
       if local_branch_revision?
         canonical = at_path { git_with_identity('rev-parse', @resource.value(:revision)).strip }
       elsif remote_branch_revision?
-        canonical = at_path { git_with_identity('rev-parse', 'origin/' + @resource.value(:revision)).strip }
+        canonical = at_path { git_with_identity('rev-parse', "#{@resource.value(:remote)}/" + @resource.value(:revision)).strip }
       end
       current = @resource.value(:revision) if current == canonical
     end

@@ -25,6 +25,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :modules,
           "The repository contains modules that can be chosen of"
 
+  feature :multiple_remotes,
+          "The repository tracks multiple remote repositories"
+
   ensurable do
     attr_accessor :latest
 
@@ -93,7 +96,7 @@ Puppet::Type.newtype(:vcsrepo) do
 
   end
 
-  newparam(:path) do
+  newparam :path do
     desc "Absolute path to repository"
     isnamevar
     validate do |value|
@@ -104,32 +107,32 @@ Puppet::Type.newtype(:vcsrepo) do
     end
   end
 
-  newparam(:source) do
+  newparam :source do
     desc "The source URI for the repository"
   end
 
-  newparam(:fstype, :required_features => [:filesystem_types]) do
+  newparam :fstype, :required_features => [:filesystem_types] do
     desc "Filesystem type"
   end
 
-  newproperty(:revision) do
+  newproperty :revision do
     desc "The revision of the repository"
     newvalue(/^\S+$/)
   end
 
-  newparam(:owner) do
+  newparam :owner do
     desc "The user/uid that owns the repository files"
   end
 
-  newparam(:group) do
+  newparam :group do
     desc "The group/gid that owns the repository files"
   end
 
-  newparam(:excludes) do
+  newparam :excludes do
     desc "Files to be excluded from the repository"
   end
 
-  newparam(:force) do
+  newparam :force do
     desc "Force repository creation, destroying any files on the path in the process."
     newvalues(:true, :false)
     defaultto false
@@ -159,4 +162,10 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :module, :required_features => [:modules] do
     desc "The repository module to manage"
   end
+
+  newparam :remote, :required_features => [:multiple_remotes] do
+    desc "The remote repository to track"
+    defaultto "origin"
+  end
+
 end
