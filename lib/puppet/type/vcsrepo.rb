@@ -40,6 +40,8 @@ Puppet::Type.newtype(:vcsrepo) do
           else
             return false
           end
+		when :bare
+		  return is == :bare
       end
     end
 
@@ -48,7 +50,9 @@ Puppet::Type.newtype(:vcsrepo) do
     end
 
     newvalue :bare, :required_features => [:bare_repositories] do
-      provider.create
+	  if !provider.exists?
+        provider.create
+      end
     end
 
     newvalue :absent do

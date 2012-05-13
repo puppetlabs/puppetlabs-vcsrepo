@@ -65,7 +65,10 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
 
   def revision=(desired)
     at_path do
-      hg('pull')
+      begin
+        hg('pull')
+      rescue
+      end
       begin
         hg('merge')
       rescue Puppet::ExecutionFailure
