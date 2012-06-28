@@ -61,7 +61,7 @@ Puppet::Type.newtype(:vcsrepo) do
           provider.update_references
         end
         if provider.respond_to?(:latest?)
-            reference = provider.latest || provider.revision
+          reference = provider.latest || provider.revision
         else
           reference = resource.value(:revision) || provider.revision
         end
@@ -121,6 +121,15 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "The group/gid that owns the repository files"
   end
 
+  newparam(:mode) do
+    desc "The octal mode of the repository files"
+    validate do |value|
+      if String(value).oct == 0
+        raise ArgumentError, "Permissions mode needs to be an octal number"
+      end
+    end
+  end
+
   newparam(:excludes) do
     desc "Files to be excluded from the repository"
   end
@@ -151,8 +160,24 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :identity, :required_features => [:ssh_identity] do
     desc "SSH identity file"
   end
-  
+
   newparam :module, :required_features => [:modules] do
     desc "The repository module to manage"
+  end
+
+  newparam(:export) do
+    desc "Export SVN files rather than checkout"
+    newvalues(:true, :false)
+    defaultto false
+  end
+
+  newparam(:sparse) do
+    desc "Sparse checkout"
+    newvalues(:true, :false) 
+    defaultto false
+  end
+
+  newparam(:filename) do
+    desc "Single file to checkout"
   end
 end

@@ -10,7 +10,9 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
   def set_ownership
     owner = @resource.value(:owner) || nil
     group = @resource.value(:group) || nil
+    mode  = @resource.value(:mode).to_i(8) || nil
     FileUtils.chown_R(owner, group, @resource.value(:path))
+    FileUtils.chmod_R(mode, @resource.value(:path))
   end
 
   def path_exists?
