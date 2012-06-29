@@ -4,9 +4,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   desc "Supports Git repositories"
 
   ##TODO modify the commands below so that the su - is included
-  optional_commands :git => 'git'
+  optional_commands :git => 'git',
+                    :su => 'su'
   defaultfor :git => :exists
-  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user
 
   def create
     if !@resource.value(:source)
@@ -95,7 +96,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def update_references
     at_path do
-      git_with_identity('fetch', '--tags', @resource.value(:remote))
+      checkout
+      git_with_identity('pull', @resource.value(:remote))
       update_owner_and_excludes
     end
   end
@@ -278,7 +280,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     if @resource.value(:identity)
       Tempfile.open('git-helper') do |f|
         f.puts '#!/bin/sh'
-        f.puts "exec ssh -i #{@resource.value(:identity)} $*"
+        f.puts "exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -i #{@resource.value(:identity)} $*"
         f.close
 
         FileUtils.chmod(0755, f.path)
@@ -291,6 +293,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
         return ret
       end
+    elsif @resource.value(:user)
+      su(@resource.value(:user), '-c', "git #{args.join(' ')}" )
     else
       git(*args)
     end
