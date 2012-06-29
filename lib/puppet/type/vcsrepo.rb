@@ -21,6 +21,9 @@ Puppet::Type.newtype(:vcsrepo) do
 
   feature :ssh_identity,
           "The provider supports a configurable SSH identity file"
+          
+  feature :user,
+          "The provider can run as a different user"
 
   feature :modules,
           "The repository contains modules that can be chosen of"
@@ -49,6 +52,7 @@ Puppet::Type.newtype(:vcsrepo) do
     end
 
     newvalue :present do
+      notice "Creating repository from present"
       provider.create
     end
 
@@ -75,6 +79,7 @@ Puppet::Type.newtype(:vcsrepo) do
         notice "Updating to latest '#{reference}' revision"
         provider.revision = reference
       else
+        notice "Creating repository from latest"
         provider.create
       end
     end
@@ -126,6 +131,10 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :group do
     desc "The group/gid that owns the repository files"
+  end
+
+  newparam :user do
+    desc "The user to run for repository operations"
   end
 
   newparam :excludes do
