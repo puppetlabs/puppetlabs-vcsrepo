@@ -96,8 +96,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def update_references
     at_path do
-      checkout
-      git_with_identity('pull', @resource.value(:remote))
+      git_with_identity('fetch', @resource.value(:remote))
+      git_with_identity('fetch', '--tags', @resource.value(:remote))
       update_owner_and_excludes
     end
   end
