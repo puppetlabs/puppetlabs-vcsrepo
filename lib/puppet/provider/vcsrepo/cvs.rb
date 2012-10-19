@@ -6,7 +6,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   optional_commands   :cvs => 'cvs'
   defaultfor :cvs => :exists
   has_features :gzip_compression, :reference_tracking, :modules
-  
+
   def create
     if !@resource.value(:source)
       create_repository(@resource.value(:path))
@@ -28,12 +28,12 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   def working_copy_exists?
     File.directory?(File.join(@resource.value(:path), 'CVS'))
   end
-  
+
   def destroy
     FileUtils.rm_rf(@resource.value(:path))
   end
 
-  def latest? 
+  def latest?
     debug "Checking for updates because 'ensure => latest'"
     at_path do
       # We cannot use -P to prune empty dirs, otherwise
@@ -44,10 +44,10 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       return is_current
     end
   end
-  
+
   def latest
     # CVS does not have a conecpt like commit-IDs or change
-    # sets, so we can only have the current branch name (or the 
+    # sets, so we can only have the current branch name (or the
     # requested one, if that differs) as the "latest" revision.
     should = @resource.value(:revision)
     current = self.revision
@@ -117,5 +117,4 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       set_ownership
     end
   end
-                  
 end

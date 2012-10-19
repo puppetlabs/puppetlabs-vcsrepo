@@ -11,24 +11,24 @@ describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
           provider.expects(:cvs).with('-d', resource.value(:source), 'checkout', '-d', File.basename(resource.value(:path)), File.basename(resource.value(:source)))
           provider.expects(:cvs).with('update', '-r', resource.value(:revision), '.')
           provider.create
-        end        
+        end
       end
-      
+
       resource_without :revision do
         it "should just execute 'cvs checkout' without a revision" do
           provider.expects(:cvs).with('-d', resource.value(:source), 'checkout', '-d', File.basename(resource.value(:path)), File.basename(resource.value(:source)))
           provider.create
-        end        
+        end
       end
-      
+
       context "with a compression", :resource => {:compression => '3'} do
         it "should just execute 'cvs checkout' without a revision" do
           provider.expects(:cvs).with('-d', resource.value(:source), '-z', '3', 'checkout', '-d', File.basename(resource.value(:path)), File.basename(resource.value(:source)))
           provider.create
-        end        
+        end
       end
     end
-    
+
     context "when a source is not given" do
       it "should execute 'cvs init'" do
         provider.expects(:cvs).with('-d', resource.value(:path), 'init')
@@ -51,7 +51,7 @@ describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
         provider.exists?
       end
     end
-    
+
     resource_without :source do
       it "should check for the CVSROOT directory" do
         File.expects(:directory?).with(File.join(resource.value(:path), 'CVSROOT'))
@@ -64,7 +64,7 @@ describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
     before do
       @tag_file = File.join(resource.value(:path), 'CVS', 'Tag')
     end
-    
+
     context "when CVS/Tag exists" do
       before do
         @tag = 'HEAD'
@@ -75,22 +75,22 @@ describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
         provider.revision.should == @tag
       end
     end
-    
+
     context "when CVS/Tag does not exist" do
       before do
         File.expects(:exist?).with(@tag_file).returns(false)
       end
       it "assumes MAIN" do
-        provider.revision.should == 'MAIN'        
+        provider.revision.should == 'MAIN'
       end
     end
   end
-  
+
   describe "when setting the revision property" do
     before do
       @tag = 'SOMETAG'
     end
-    
+
     it "should use 'cvs update -r'" do
       expects_chdir
       provider.expects('cvs').with('update', '-r', @tag, '.')

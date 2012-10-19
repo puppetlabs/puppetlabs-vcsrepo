@@ -11,7 +11,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
                                       resource.value(:source),
                                       resource.value(:path))
           provider.create
-        end        
+        end
       end
       resource_without :revision do
         it "should just execute 'svn checkout' without a revision" do
@@ -19,7 +19,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
                                       resource.value(:source),
                                       resource.value(:path))
           provider.create
-        end        
+        end
       end
     end
     resource_without :source do
@@ -63,7 +63,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
       provider.revision.should == '4'
     end
   end
-  
+
   describe "setting the revision property" do
     before do
       @revision = '30'

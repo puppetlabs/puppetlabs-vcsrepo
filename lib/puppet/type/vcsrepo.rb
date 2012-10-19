@@ -21,7 +21,7 @@ Puppet::Type.newtype(:vcsrepo) do
 
   feature :ssh_identity,
           "The provider supports a configurable SSH identity file"
-          
+
   feature :user,
           "The provider can run as a different user"
 
@@ -168,7 +168,7 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :identity, :required_features => [:ssh_identity] do
     desc "SSH identity file"
   end
-  
+
   newparam :module, :required_features => [:modules] do
     desc "The repository module to manage"
   end

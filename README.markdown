@@ -11,9 +11,9 @@ This type can be used to describe:
 * A working copy checked out from a (remote or local) source, at an
   arbitrary revision
 * A "blank" working copy not associated with a source (when it makes
-  sense for the VCS being used) 
+  sense for the VCS being used)
 * A "blank" central repository (when the distinction makes sense for the VCS
-  being used) 
+  being used)
 
 Supported Version Control Systems
 ---------------------------------

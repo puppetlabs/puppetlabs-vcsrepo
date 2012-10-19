@@ -14,7 +14,7 @@ class ProviderExampleGroup < Spec::Example::ExampleGroup
 
   # Build the provider
   subject { described_class.new(@resource) }
-  
+
   # Allow access to it via +provider+
   alias :provider :subject
 
@@ -47,14 +47,14 @@ class ProviderExampleGroup < Spec::Example::ExampleGroup
       context("and with a #{text}", {:resource => placeholders}, &block)
     end
   end
-  
+
   def self.build_value_context(params = {}, &block) #:nodoc:
     unless params.empty?
       text = params.map { |k, v| "#{k} => #{v.inspect}" }.join(' and with ')
       context("and with #{text}", {:resource => params}, &block)
     end
   end
-  
+
 
   # Generate a context for a provider operating on a resource without
   # a given parameter/property.
