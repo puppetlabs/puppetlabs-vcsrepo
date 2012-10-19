@@ -44,4 +44,4 @@ More Examples
 
 For examples you can run, see `examples/bzr/`
 
-[1]: http://docs.reductivelabs.com/references/stable/metaparameter.html#require
+[1]: http://docs.puppetlabs.com/references/stable/metaparameter.html#require
