@@ -53,7 +53,7 @@ For a specific revision or branch (can be a commit SHA, tag or branch name):
         source => 'git://example.com/repo.git',
         revision => 'development'
     }
-    
+
 Check out as a user:
 
     vcsrepo { "/path/to/repo":

@@ -4,7 +4,6 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   desc "Supports CVS repositories/workspaces"
 
   optional_commands   :cvs => 'cvs'
-  defaultfor :cvs => :exists
   has_features :gzip_compression, :reference_tracking, :modules
 
   def create

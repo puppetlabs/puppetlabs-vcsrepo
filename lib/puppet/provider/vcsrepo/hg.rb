@@ -4,7 +4,6 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
   desc "Supports Mercurial repositories"
 
   optional_commands   :hg => 'hg'
-  defaultfor :hg => :exists
   has_features :reference_tracking
 
   def create

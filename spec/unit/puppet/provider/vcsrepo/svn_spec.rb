@@ -1,4 +1,4 @@
-require 'pathname'; Pathname.new(__FILE__).realpath.ascend { |x| begin; require (x + 'spec_helper.rb'); break; rescue LoadError; end }
+require 'spec_helper'
 
 describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
 
@@ -6,7 +6,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
     resource_with :source do
       resource_with :revision do
         it "should execute 'svn checkout' with a revision" do
-          provider.expects(:svn).with('checkout', '-r',
+          provider.expects(:svn).with('--non-interactive', 'checkout', '-r',
                                       resource.value(:revision),
                                       resource.value(:source),
                                       resource.value(:path))
@@ -15,7 +15,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
       end
       resource_without :revision do
         it "should just execute 'svn checkout' without a revision" do
-          provider.expects(:svn).with('checkout',
+          provider.expects(:svn).with('--non-interactive', 'checkout',
                                       resource.value(:source),
                                       resource.value(:path))
           provider.create
@@ -56,11 +56,11 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
 
   describe "checking the revision property" do
     before do
-      provider.expects('svn').with('info').returns(fixture(:svn_info))
+      provider.expects(:svn).with('--non-interactive', 'info').returns(fixture(:svn_info))
     end
     it "should use 'svn info'" do
       expects_chdir
-      provider.revision.should == '4'
+      provider.revision.should == '3' # From 'Last Changed Rev', not 'Revision'
     end
   end
 
@@ -70,7 +70,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
     end
     it "should use 'svn update'" do
       expects_chdir
-      provider.expects('svn').with('update', '-r', @revision)
+      provider.expects(:svn).with('--non-interactive', 'update', '-r', @revision)
       provider.revision = @revision
     end
   end
