@@ -135,6 +135,7 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :user do
     desc "The user to run for repository operations"
+    defaultto 'root'
   end
 
   newparam :excludes do
