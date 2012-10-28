@@ -2,6 +2,7 @@ require 'pathname'
 dir = Pathname.new(__FILE__).parent
 $LOAD_PATH.unshift(dir, dir + 'lib', dir + '../lib')
 
+require 'test/unit'
 require 'mocha'
 require 'puppet'
 gem 'rspec', '>= 1.2.9'
