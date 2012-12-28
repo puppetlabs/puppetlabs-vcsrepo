@@ -140,7 +140,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       convert_bare_to_working_copy
     else
       # normal init
-      FileUtils.mkdir(@resource.value(:path))
+      if @resource.value(:user)
+        su(@resource.value(:user), '-c', "mkdir #{@resource.value(:path)}")
+      else
+        FileUtils.mkdir(@resource.value(:path))
+      end
       args = ['init']
       if @resource.value(:ensure) == :bare
         args << '--bare'
