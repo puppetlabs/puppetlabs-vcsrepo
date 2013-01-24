@@ -42,7 +42,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     if branch == 'master'
       return get_revision("#{@resource.value(:remote)}/HEAD")
     elsif branch == '(no branch)'
-      return get_revision('HEAD')
+      if @resource.value(:revision) and tag_revision?
+        return get_revision(@resource.value(:revision))
+      else
+        return get_revision('HEAD')
     else
       return get_revision("#{@resource.value(:remote)}/%s" % branch)
     end
@@ -255,7 +258,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     end
     current = at_path { git_with_identity('rev-parse', rev).strip }
     if @resource.value(:revision)
-      if local_branch_revision?
+      if local_branch_revision? or tag_reviosion?
         canonical = at_path { git_with_identity('rev-parse', @resource.value(:revision)).strip }
       elsif remote_branch_revision?
         canonical = at_path { git_with_identity('rev-parse', "#{@resource.value(:remote)}/" + @resource.value(:revision)).strip }
