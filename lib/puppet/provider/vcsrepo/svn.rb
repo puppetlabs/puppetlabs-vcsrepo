@@ -6,7 +6,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   optional_commands :svn      => 'svn',
            :svnadmin => 'svnadmin'
 
-  has_features :filesystem_types, :reference_tracking, :basic_auth
+  has_features :filesystem_types, :reference_tracking, :basic_auth, :configdir 
 
   def create
     if !@resource.value(:source)
@@ -48,7 +48,10 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--password', @resource.value(:basic_auth_password))
       args.push('--no-auth-cache')
     end
+    if @resource.value(:configdir_res)
+      args.push('--config-dir', @resource.value(:configdir_res))
     return args
+    end
   end
 
   def latest
