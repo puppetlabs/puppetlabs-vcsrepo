@@ -181,7 +181,7 @@ Puppet::Type.newtype(:vcsrepo) do
   end
   
   newparam :configdir_res, :required_features => [:configdir]  do
-    desc "The configuration directory to use test"
+    desc "The configuration directory to use"
   end
 
 end
