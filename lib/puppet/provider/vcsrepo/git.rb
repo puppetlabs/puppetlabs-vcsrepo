@@ -103,8 +103,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   private
 
+  def valid_repo?
+    Dir.chdir(@resource.value(:path)){ system('git rev-parse > /dev/null 2>&1')}
+  end
+
   def bare_git_config_exists?
-    File.exist?(File.join(@resource.value(:path), 'config'))
+    File.exist?(File.join(@resource.value(:path), 'config')) && valid_repo?
   end
 
   def clone_repository(source, path)
@@ -123,7 +127,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def check_force
     if path_exists?
-      if @resource.value(:force)
+      if @resource.value(:force) && !valid_repo?
         notice "Removing %s to replace with vcsrepo." % @resource.value(:path)
         destroy
       else
