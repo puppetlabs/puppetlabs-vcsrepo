@@ -141,6 +141,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     else
       # normal init
       FileUtils.mkdir(@resource.value(:path))
+      FileUtils.chown(@resource.value(:user), nil, @resource.value(:path)) if @resource.value(:user)
       args = ['init']
       if @resource.value(:ensure) == :bare
         args << '--bare'
