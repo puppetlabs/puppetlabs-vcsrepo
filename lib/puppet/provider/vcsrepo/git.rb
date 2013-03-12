@@ -93,8 +93,18 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     working_copy_exists? || bare_exists?
   end
 
+  def update_remote_origin_url
+    current = git_with_identity('config', 'remote.origin.url')
+    unless @resource.value(:source).nil?
+      if current.nil? or current.strip != @resource.value(:source)
+        git_with_identity('config', 'remote.origin.url', @resource.value(:source))
+      end
+    end
+  end
+
   def update_references
     at_path do
+      update_remote_origin_url
       git_with_identity('fetch', @resource.value(:remote))
       git_with_identity('fetch', '--tags', @resource.value(:remote))
       update_owner_and_excludes
@@ -251,6 +261,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       create
     end
     at_path do
+      update_remote_origin_url
       git_with_identity('fetch', @resource.value(:remote))
       git_with_identity('fetch', '--tags', @resource.value(:remote))
     end

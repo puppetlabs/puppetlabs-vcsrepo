@@ -127,6 +127,7 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
 
       context "when its SHA is not different than the current SHA" do
         it "should return the ref" do
+          provider.expects(:git).with('config', 'remote.origin.url').returns('')
           provider.expects(:git).with('fetch', 'origin') # FIXME
           provider.expects(:git).with('fetch', '--tags', 'origin')
           provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
@@ -137,11 +138,26 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
 
       context "when its SHA is different than the current SHA" do
         it "should return the current SHA" do
+          provider.expects(:git).with('config', 'remote.origin.url').returns('')
           provider.expects(:git).with('fetch', 'origin') # FIXME
           provider.expects(:git).with('fetch', '--tags', 'origin')
           provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('othersha')
           provider.expects(:git).with('tag', '-l').returns("Hello")
           provider.revision.should == 'currentsha'
+        end
+      end
+
+      context "when the source is modified" do
+        resource_with :source => 'git://git@foo.com/bar.git' do
+          it "should update the origin url" do
+            provider.expects(:git).with('config', 'remote.origin.url').returns('old')
+            provider.expects(:git).with('config', 'remote.origin.url', 'git://git@foo.com/bar.git')
+            provider.expects(:git).with('fetch', 'origin') # FIXME
+            provider.expects(:git).with('fetch', '--tags', 'origin')
+            provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
+            provider.expects(:git).with('tag', '-l').returns("Hello")
+            provider.revision.should == resource.value(:revision)
+          end
         end
       end
     end
@@ -189,6 +205,7 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
   context "updating references" do
     it "should use 'git fetch --tags'" do
       expects_chdir
+      provider.expects(:git).with('config', 'remote.origin.url').returns('')
       provider.expects(:git).with('fetch', 'origin')
       provider.expects(:git).with('fetch', '--tags', 'origin')
       provider.update_references
