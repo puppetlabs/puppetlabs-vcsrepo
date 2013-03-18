@@ -125,7 +125,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     end
     if !File.exist?(File.join(@resource.value(:path), '.git'))
       args.push(source, path)
-      git_with_identity(*args)
+      Dir.chdir("/") do
+        git_with_identity(*args)
+      end
     else
       notice "Repo has already been cloned"
     end
