@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
+require 'pp'
 
 Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) do
   desc "Supports Mercurial repositories"
@@ -106,7 +107,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
       args += ["--ssh", "ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -i #{@resource.value(:identity)}"]
     end
     if @resource.value(:user)
-      args.map { |a| "'#{a}'" if a =~ /\w/ }  # Adds quotes to arguments with whitespaces.
+      args.map! { |a| if a =~ /\s/ then "'#{a}'" else a end }  # Adds quotes to arguments with whitespaces.
       su(@resource.value(:user), '-c', "hg #{args.join(' ')}")
     else
       hg(*args)
