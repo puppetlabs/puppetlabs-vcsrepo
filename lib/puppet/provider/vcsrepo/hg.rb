@@ -103,7 +103,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
 
   def hg_wrapper(*args)
     if @resource.value(:identity)
-      args += ["--ssh", "ssh -o 'StrictHostKeyChecking no' -i #{@resource.value(:identity)}"]
+      args += ["--ssh", "ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -i #{@resource.value(:identity)}"]
     end
     if @resource.value(:user)
       args.map { |a| "'#{a}'" if a =~ /\w/ }  # Adds quotes to arguments with whitespaces.
