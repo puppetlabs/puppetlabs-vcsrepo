@@ -33,7 +33,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
 
   def latest?
     at_path do
-      if self.revision < self.latest then
+      if (self.revision < self.latest) or !(@resource.value(:source) == self.sourceurl) then
         return false
       else
         return true
@@ -57,6 +57,13 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       svn(*args)[/^Last Changed Rev:\s+(\d+)/m, 1]
     end
   end
+  
+  def sourceurl
+    args = buildargs.push('info')
+    at_path do
+      svn(*args)[/^URL:\s+(\S+)/m, 1]
+    end
+  end
 
   def revision
     args = buildargs.push('info')
@@ -66,7 +73,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def revision=(desired)
-    args = buildargs.push('update', '-r', desired)
+    args = buildargs.push('switch', '-r', desired, @resource.value(:source))
     at_path do
       svn(*args)
     end
