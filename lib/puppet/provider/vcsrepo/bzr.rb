@@ -45,7 +45,25 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def revision=(desired)
-    bzr('update', '-r', desired, @resource.value(:path))
+    at_path do
+      begin
+        bzr('update', '-r', desired)
+      rescue Puppet::ExecutionFailure
+        bzr('update', '-r', desired, ':parent')
+      end
+    end
+  end
+
+  def latest 
+    at_path do
+      bzr('version-info', ':parent')[/^revision-id:\s+(\S+)/, 1]
+    end 
+  end
+
+  def latest?
+    at_path do
+      return self.revision == self.latest
+    end
   end
 
   private
