@@ -48,6 +48,11 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--password', @resource.value(:basic_auth_password))
       args.push('--no-auth-cache')
     end
+
+    if @resource.value(:force)
+      args.push('--force')
+    end
+
     return args
   end
 

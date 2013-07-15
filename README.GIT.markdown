@@ -76,9 +76,15 @@ Keep the repository at the latest revision (note: this will always overwrite loc
 For sources that use SSH (eg, `username@server:...`)
 ----------------------------------------------------
 
-Manage your SSH keys with Puppet and use `require` in your `vcsrepo`
-to ensure they are present.  For more information, see the `require`
-metaparameter documentation[1].
+If your SSH key is associated with a user, simply fill the `user` parameter to use his keys.
+
+Example:
+
+    user => 'toto'  # will use toto's $HOME/.ssh setup
+
+
+Otherwise, manage your SSH keys with Puppet and use `require` in your `vcsrepo` to ensure they are present.
+For more information, see the `require` metaparameter documentation[1].
 
 More Examples
 -------------

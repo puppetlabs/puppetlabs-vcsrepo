@@ -8,6 +8,7 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
         context "with a revision that is a remote branch", :resource => {:revision => 'only/remote'} do
           it "should execute 'git clone' and 'git checkout -b'" do
             provider.expects(:git).with('clone', resource.value(:source), resource.value(:path))
+            expects_chdir('/')
             expects_chdir
             provider.expects(:update_submodules)
             provider.expects(:git).with('branch', '-a').returns(resource.value(:revision))
@@ -18,6 +19,7 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
         context "with a revision that is not a remote branch", :resource => {:revision => 'a-commit-or-tag'} do
           it "should execute 'git clone' and 'git reset --hard'" do
             provider.expects(:git).with('clone', resource.value(:source), resource.value(:path))
+            expects_chdir('/')
             expects_chdir
             provider.expects(:update_submodules)
             provider.expects(:git).with('branch', '-a').returns(resource.value(:revision))

@@ -5,7 +5,7 @@ branches:
 notifications:
   email: false
 language: ruby
-script: 'rake spec'
+script: 'bundle exec rake spec'
 after_success:
 - git clone -q git://github.com/puppetlabs/ghpublisher.git .forge-releng
 - .forge-releng/publish
