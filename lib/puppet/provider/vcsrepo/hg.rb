@@ -3,8 +3,10 @@ require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) do
   desc "Supports Mercurial repositories"
 
-  optional_commands   :hg => 'hg'
-  has_features :reference_tracking
+  optional_commands   :hg => 'hg',
+                      :su => 'su'
+                      
+  has_features :reference_tracking, :user
 
   def create
     if !@resource.value(:source)
@@ -36,7 +38,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
   def latest
     at_path do
       begin
-        hg('incoming', '--branch', '.', '--newest-first', '--limit', '1')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
+        hg_as_user('incoming', '--branch', '.', '--newest-first', '--limit', '1')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
       rescue Puppet::ExecutionFailure
         # If there are no new changesets, return the current nodeid
         self.revision
@@ -46,11 +48,11 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
 
   def revision
     at_path do
-      current = hg('parents')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
+      current = hg_as_user('parents')[/^changeset:\s+(?:-?\d+):(\S+)/m, 1]
       desired = @resource.value(:revision)
       if desired
         # Return the tag name if it maps to the current nodeid
-        mapped = hg('tags')[/^#{Regexp.quote(desired)}\s+\d+:(\S+)/m, 1]
+        mapped = hg_as_user('tags')[/^#{Regexp.quote(desired)}\s+\d+:(\S+)/m, 1]
         if current == mapped
           desired
         else
@@ -65,15 +67,15 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
   def revision=(desired)
     at_path do
       begin
-        hg('pull')
+        hg_as_user('pull')
       rescue
       end
       begin
-        hg('merge')
+        hg_as_user('merge')
       rescue Puppet::ExecutionFailure
         # If there's nothing to merge, just skip
       end
-      hg('update', '--clean', '-r', desired)
+      hg_as_user('update', '--clean', '-r', desired)
     end
     update_owner
   end
@@ -81,7 +83,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
   private
 
   def create_repository(path)
-    hg('init', path)
+    hg_as_user('init', path)
   end
 
   def clone_repository(revision)
@@ -100,4 +102,12 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     end
   end
 
+	def hg_as_user(*args)
+		if @resource.value(:user)
+			su(@resource.value(:user), '-c', "hg #{args.join(' ')}")
+		else
+			hg(*args)
+		end
+	end
+		
 end
