@@ -4,7 +4,8 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   desc "Supports Subversion repositories"
 
   optional_commands :svn      => 'svn',
-           :svnadmin => 'svnadmin'
+           :svnadmin => 'svnadmin',
+           :svnlook  => 'svnlook'
 
   has_features :filesystem_types, :reference_tracking, :basic_auth
 
@@ -20,7 +21,17 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def working_copy_exists?
-    File.directory?(File.join(@resource.value(:path), '.svn'))
+    if File.directory?(@resource.value(:path))
+      if File.directory?(File.join(@resource.value(:path), '.svn'))
+        return true
+      end
+      if svnlook('uuid',@resource.value(:path))
+        return true
+      end
+    end
+    return false
+  end
+
   end
 
   def exists?
