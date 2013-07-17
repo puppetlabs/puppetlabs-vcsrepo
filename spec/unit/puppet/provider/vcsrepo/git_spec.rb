@@ -218,11 +218,8 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
         provider.expects(:git).with('branch', '-a').returns(fixture(:git_branch_a))
         provider.expects(:git).with('checkout', '--force', resource.value(:revision))
         provider.expects(:git).with('branch', '-a').returns(fixture(:git_branch_a))
-        provider.expects(:git).with('submodule', 'init')
-        provider.expects(:git).with('submodule', 'update')
         provider.expects(:git).with('branch', '-a').returns(fixture(:git_branch_a))
-        provider.expects(:git).with('submodule', 'foreach', 'git', 'submodule', 'init')
-        provider.expects(:git).with('submodule', 'foreach', 'git', 'submodule', 'update')
+        provider.expects(:git).with('submodule', 'update', '--init', '--recursive')
         provider.revision = resource.value(:revision)
       end
     end
