@@ -4,7 +4,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   desc "Supports Subversion repositories"
 
   optional_commands :svn      => 'svn',
-           :svnadmin => 'svnadmin'
+                    :svnadmin => 'svnadmin'
 
   has_features :filesystem_types, :reference_tracking, :basic_auth, :configdir 
 
@@ -48,10 +48,16 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--password', @resource.value(:basic_auth_password))
       args.push('--no-auth-cache')
     end
+
+    if @resource.value(:force)
+      args.push('--force')
+    end
+
     if @resource.value(:configdir_res)
       args.push('--config-dir', @resource.value(:configdir_res))
-    return args
     end
+    
+    return args
   end
 
   def latest

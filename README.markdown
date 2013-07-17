@@ -1,6 +1,8 @@
 vcsrepo
 =======
 
+[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-vcsrepo.png?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-vcsrepo)
+
 Purpose
 -------
 

@@ -27,7 +27,7 @@ For a specific changeset, use `revision`:
     vcsrepo { "/path/to/repo":
         ensure   => present,
         provider => hg,
-        source   => "http://hg.example.com/myrepo"
+        source   => "http://hg.example.com/myrepo",
         revision => '21ea4598c962'
     }
 
@@ -36,8 +36,26 @@ You can also set `revision` to a tag:
     vcsrepo { "/path/to/repo":
         ensure   => present,
         provider => hg,
-        source   => "http://hg.example.com/myrepo"
+        source   => "http://hg.example.com/myrepo",
         revision => '1.1.2'
+    }
+
+Check out as a user:
+
+    vcsrepo { "/path/to/repo":
+        ensure   => present,
+        provider => hg,
+        source   => "http://hg.example.com/myrepo",
+        user     => 'user'
+    }
+
+Specify an SSH identity key:
+
+    vcsrepo { "/path/to/repo":
+        ensure   => present,
+        provider => hg,
+        source   => "ssh://hg@hg.example.com/myrepo",
+        identity => "/home/user/.ssh/id_dsa,
     }
 
 For sources that use SSH (eg, `ssh://...`)
