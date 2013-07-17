@@ -132,7 +132,7 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
           provider.expects(:git).with('config', 'remote.origin.url').returns('')
           provider.expects(:git).with('fetch', 'origin') # FIXME
           provider.expects(:git).with('fetch', '--tags', 'origin')
-          provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
+          provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('currentsha')
           provider.expects(:git).with('tag', '-l').returns("Hello")
           provider.revision.should == resource.value(:revision)
         end
@@ -143,9 +143,33 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
           provider.expects(:git).with('config', 'remote.origin.url').returns('')
           provider.expects(:git).with('fetch', 'origin') # FIXME
           provider.expects(:git).with('fetch', '--tags', 'origin')
-          provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('othersha')
+          provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('othersha')
           provider.expects(:git).with('tag', '-l').returns("Hello")
           provider.revision.should == 'currentsha'
+        end
+      end
+
+      context "when its a ref to a remote head" do
+        it "should return the revision" do
+          provider.expects(:git).with('config', 'remote.origin.url').returns('')
+          provider.expects(:git).with('fetch', 'origin') # FIXME
+          provider.expects(:git).with('fetch', '--tags', 'origin')
+          provider.expects(:git).with('tag', '-l').returns("Hello")
+          provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('')
+          provider.expects(:git).with('ls-remote', '--heads', '--tags', 'origin', resource.value(:revision)).returns("newsha refs/heads/#{resource.value(:revision)}")
+          provider.revision.should == 'currentsha'
+        end
+      end
+
+      context "when its a ref to non existant remote head" do
+        it "should fail" do
+          provider.expects(:git).with('config', 'remote.origin.url').returns('')
+          provider.expects(:git).with('fetch', 'origin') # FIXME
+          provider.expects(:git).with('fetch', '--tags', 'origin')
+          provider.expects(:git).with('tag', '-l').returns("Hello")
+          provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('')
+          provider.expects(:git).with('ls-remote', '--heads', '--tags', 'origin', resource.value(:revision)).returns('')
+          expect { provider.revision }.should raise_error(Puppet::Error, /not a local or remote ref$/)
         end
       end
 
@@ -156,7 +180,7 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
             provider.expects(:git).with('config', 'remote.origin.url', 'git://git@foo.com/bar.git')
             provider.expects(:git).with('fetch', 'origin') # FIXME
             provider.expects(:git).with('fetch', '--tags', 'origin')
-            provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
+            provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('currentsha')
             provider.expects(:git).with('tag', '-l').returns("Hello")
             provider.revision.should == resource.value(:revision)
           end
