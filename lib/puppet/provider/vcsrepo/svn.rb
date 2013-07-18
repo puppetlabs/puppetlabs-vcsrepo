@@ -6,7 +6,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   optional_commands :svn      => 'svn',
                     :svnadmin => 'svnadmin'
 
-  has_features :filesystem_types, :reference_tracking, :basic_auth
+  has_features :filesystem_types, :reference_tracking, :basic_auth, :configuration
 
   def create
     if !@resource.value(:source)
@@ -53,6 +53,10 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--force')
     end
 
+    if @resource.value(:configuration)
+      args.push('--config-dir', @resource.value(:configuration))
+    end
+    
     return args
   end
 

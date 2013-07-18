@@ -32,6 +32,21 @@ You can provide a specific `revision`:
         revision => '1234'
     }
 
+
+Using a specified Subversion configuration directory 
+-----------------------------
+
+Provide a `configuration` parameter which should be a directory path on the local system where your svn configuration
+files are.  Typically, it is /path/to/.subversion:
+
+    vcsrepo { "/path/to/repo":
+        ensure        => present,
+        provider      => svn,
+        source        => "svn://svnrepo/hello/branches/foo",
+        configuration => "/path/to/.subversion"
+    }
+
+
 For sources that use SSH (eg, `svn+ssh://...`)
 ----------------------------------------------
 

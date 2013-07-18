@@ -30,6 +30,9 @@ Puppet::Type.newtype(:vcsrepo) do
 
   feature :multiple_remotes,
           "The repository tracks multiple remote repositories"
+  
+  feature :configuration,
+	  "The configuration directory to use"
 
   ensurable do
     attr_accessor :latest
@@ -175,6 +178,10 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :remote, :required_features => [:multiple_remotes] do
     desc "The remote repository to track"
     defaultto "origin"
+  end
+  
+  newparam :configuration, :required_features => [:configuration]  do
+    desc "The configuration directory to use"
   end
 
 end
