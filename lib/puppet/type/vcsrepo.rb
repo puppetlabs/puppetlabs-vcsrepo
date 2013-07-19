@@ -191,4 +191,50 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "The value to be used for the CVS_RSH environment variable."
   end
 
+  #
+  # code is borrowed from Resource::File
+  #
+  # Autorequire file for given repository and identity if it's provided
+  #
+  autorequire(:file) do
+
+    req = []
+
+    path = Pathname.new(self[:path])
+
+    unless path.root?
+      # Start at our parent, to avoid autorequiring ourself
+      parents = path.parent.enum_for(:ascend)
+
+      if found = parents.find { |p| catalog.resource(:file, p.to_s) }
+        req << found.to_s
+      end
+    end
+
+    if self[:identity] and res = catalog.resource(:file, self[:identity])
+      req << res.to_s
+    end
+
+    req
+  end
+
+  #
+  # Autorequire owner and group and user of the repository
+  #
+  {:user => [:owner, :user], :group => [:group]}.each do |type, prop|
+    autorequire(type) do
+      reqs = prop.map do |property|
+        if val = self[property] and catalog.resource(type, self[property])
+          if val.kind_of?(Integer) or val =~ /^\d+$/
+            nil
+          else
+            val
+          end
+        end
+      end
+
+      reqs.uniq
+    end
+  end
+
 end
