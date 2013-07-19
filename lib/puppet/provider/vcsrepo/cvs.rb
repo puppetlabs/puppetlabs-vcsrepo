@@ -4,7 +4,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   desc "Supports CVS repositories/workspaces"
 
   optional_commands   :cvs => 'cvs'
-  has_features :gzip_compression, :reference_tracking, :modules
+  has_features :gzip_compression, :reference_tracking, :modules, :cvs_rsh
 
   def create
     if !@resource.value(:source)
@@ -38,7 +38,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       # We cannot use -P to prune empty dirs, otherwise
       # CVS would report those as "missing", regardless
       # if they have contents or updates.
-      is_current = (cvs('-nq', 'update', '-d').strip == "")
+      is_current = (runcvs('-nq', 'update', '-d').strip == "")
       if (!is_current) then debug "There are updates available on the checkout's current branch/tag." end
       return is_current
     end
@@ -69,7 +69,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
 
   def revision=(desired)
     at_path do
-      cvs('update', '-dr', desired, '.')
+      runcvs('update', '-dr', desired, '.')
       update_owner
       @rev = desired
     end
@@ -93,7 +93,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
         args.push('-r', @resource.value(:revision))
       end
       args.push('-d', basename, module_name)
-      cvs(*args)
+      runcvs(*args)
     end
   end
 
@@ -108,7 +108,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def create_repository(path)
-    cvs('-d', path, 'init')
+    runcvs('-d', path, 'init')
   end
 
   def update_owner
@@ -116,4 +116,18 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       set_ownership
     end
   end
+
+  def runcvs(*args)
+    if @resource.value(:cvs_rsh)
+      debug "Using CVS_RSH = " + @resource.value(:cvs_rsh)
+      e = { :CVS_RSH => @resource.value(:cvs_rsh) } 
+    else
+      e = {}
+    end
+
+    Puppet::Util::Execution.withenv e do
+      Puppet.debug cvs *args
+    end
+  end
+                                        
 end

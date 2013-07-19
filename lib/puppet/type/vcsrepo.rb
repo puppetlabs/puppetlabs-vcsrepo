@@ -34,6 +34,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :configuration,
 	  "The configuration directory to use"
 
+  feature :cvs_rsh,
+          "The provider understands the CVS_RSH environment variable"
+
   ensurable do
     attr_accessor :latest
 
@@ -182,6 +185,10 @@ Puppet::Type.newtype(:vcsrepo) do
   
   newparam :configuration, :required_features => [:configuration]  do
     desc "The configuration directory to use"
+  end
+
+  newparam :cvs_rsh, :required_features => [:cvs_rsh] do
+    desc "The value to be used for the CVS_RSH environment variable."
   end
 
 end
