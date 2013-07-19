@@ -49,6 +49,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
 
   describe "checking existence" do
     it "should check for the directory" do
+      expects_directory?(true, resource.value(:path))
       expects_directory?(true, File.join(resource.value(:path), '.svn'))
       provider.exists?
     end
