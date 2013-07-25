@@ -69,10 +69,25 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
     before do
       @revision = '30'
     end
-    it "should use 'svn update'" do
-      expects_chdir
-      provider.expects(:svn).with('--non-interactive', 'update', '-r', @revision)
-      provider.revision = @revision
+    resource_without :source do
+      it "should use 'svn update'" do
+        expects_chdir
+        provider.expects(:svn).with('--non-interactive', 'update', '-r', @revision)
+        provider.revision = @revision
+      end
+    end
+  end
+
+  describe "setting the revision property and repo source" do
+    before do
+      @revision = '30'
+    end
+    resource_with :source do
+      it "should use 'svn switch'" do
+        expects_chdir
+        provider.expects(:svn).with('--non-interactive', 'switch', '-r', @revision, 'an-unimportant-value')
+        provider.revision = @revision
+      end
     end
   end
 
