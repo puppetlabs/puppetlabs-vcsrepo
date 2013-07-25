@@ -125,7 +125,12 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       e = {}
     end
 
-    Puppet::Util::Execution.withenv e do
+    # The location of withenv changed from Puppet 2.x to 3.x
+    withenv = Puppet::Util.method(:withenv) if Puppet::Util.respond_to?(:withenv)
+    withenv = Puppet::Util::Execution.method(:withenv) if Puppet::Util::Execution.respond_to?(:withenv)
+    fail("Cannot set custom environment #{e}") if e && !withenv
+
+    withenv.call e do
       Puppet.debug cvs *args
     end
   end
