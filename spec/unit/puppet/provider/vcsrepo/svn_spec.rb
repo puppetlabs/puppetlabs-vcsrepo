@@ -61,7 +61,7 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
     end
     it "should use 'svn info'" do
       expects_chdir
-      provider.revision.should == '3' # From 'Last Changed Rev', not 'Revision'
+      provider.revision.should == '4' # From 'Revision', not 'Last Changed Rev'
     end
   end
 
