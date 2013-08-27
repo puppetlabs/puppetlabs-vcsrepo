@@ -2,6 +2,37 @@ require 'spec_helper'
 
 describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
 
+  context 'authenticating with SSH' do
+    resource_with :source, :identity do
+      it 'should specify the identity file' do
+        expects_chdir('/')
+        expects_chdir
+        provider.expects(:git).with do
+          wrapper = IO.read(ENV['GIT_SSH'])
+          wrapper =~ /-i\s+#{resource.value(:identity)}/
+        end.at_least_once
+        provider.create
+      end
+    end
+
+    resource_with(
+      :source            => 'ssh://git@example.com/repo.git',
+      :forward_ssh_agent => true,
+      :identity          => 'foo.pem'
+    ) do
+      it 'should forward the ssh agent' do
+        expects_chdir('/')
+        expects_chdir
+        provider.expects(:ssh_agent).with do
+          wrapper = IO.read(ENV['GIT_SSH'])
+          wrapper =~ /ssh-add\s+#{resource.value(:identity)}/ &&
+            wrapper =~ /-oForwardAgent=yes/
+        end.at_least_once
+        provider.create
+      end
+    end
+  end
+
   context 'creating' do
     resource_with :source do
       resource_with :ensure => :present do

@@ -22,6 +22,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :ssh_identity,
           "The provider supports a configurable SSH identity file"
 
+  feature :forward_ssh_agent,
+          "The provider supports forwarding its identity via SSH"
+
   feature :user,
           "The provider can run as a different user"
 
@@ -172,6 +175,12 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :identity, :required_features => [:ssh_identity] do
     desc "SSH identity file"
+  end
+
+  newparam :forward_ssh_agent, :required_features => [:ssh_identity, :forward_ssh_agent] do
+    desc "Should the identity be forwarded with ssh-agent?"
+    newvalues(:true, :false)
+    defaultto false
   end
 
   newparam :module, :required_features => [:modules] do
