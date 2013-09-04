@@ -147,7 +147,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def check_force
-    if path_exists?
+    if path_exists? and not path_empty?
       if @resource.value(:force)
         notice "Removing %s to replace with vcsrepo." % @resource.value(:path)
         destroy

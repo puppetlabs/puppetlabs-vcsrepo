@@ -17,6 +17,14 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
     File.directory?(@resource.value(:path))
   end
 
+  def path_empty?
+    # Path is empty if the only entries are '.' and '..'
+    d = Dir.new(@resource.value(:path))
+    d.read # should return '.'
+    d.read # should return '..'
+    d.read.nil?
+  end
+
   # Note: We don't rely on Dir.chdir's behavior of automatically returning the
   # value of the last statement -- for easier stubbing.
   def at_path(&block) #:nodoc:

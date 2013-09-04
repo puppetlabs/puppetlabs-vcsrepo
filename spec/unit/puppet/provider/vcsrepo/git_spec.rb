@@ -74,9 +74,10 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
           end
         end
 
-        context "when the path is not a repository" do
+        context "when the path is not empty and not a repository" do
           it "should raise an exception" do
             provider.expects(:path_exists?).returns(true)
+            provider.expects(:path_empty?).returns(false)
             proc { provider.create }.should raise_error(Puppet::Error)
           end
         end
@@ -102,9 +103,10 @@ describe_provider :vcsrepo, :git, :resource => {:path => '/tmp/vcsrepo'} do
           end
         end
 
-        context "when the path is not a repository" do
+        context "when the path is not empty and not a repository" do
           it "should raise an exception" do
             expects_directory?(true)
+            provider.expects(:path_empty?).returns(false)
             proc { provider.create }.should raise_error(Puppet::Error)
           end
         end
