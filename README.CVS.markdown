@@ -21,6 +21,16 @@ To get the current mainline:
         provider => cvs,
         source => ":pserver:anonymous@example.com:/sources/myproj"
     }
+    
+To get a specific module on the current mainline:
+
+    vcsrepo {"/vagrant/lockss-daemon-source":
+        ensure   => present,
+        provider => cvs,
+        source   => ":pserver:anonymous@lockss.cvs.sourceforge.net:/cvsroot/lockss",
+        module   => "lockss-daemon",
+    }
+
 
 You can use the `compression` parameter (it works like CVS `-z`):
 
