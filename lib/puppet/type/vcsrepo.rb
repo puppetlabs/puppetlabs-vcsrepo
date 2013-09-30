@@ -37,8 +37,8 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :cvs_rsh,
           "The provider understands the CVS_RSH environment variable"
 
-  feature :trust_server_cert,
-          "The provider supports trusting any SSL certificate issuer"
+  feature :verify_ssl,
+          "The provider supports disabling SSL certificate verifications"
 
   ensurable do
     attr_accessor :latest
@@ -194,9 +194,9 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "The value to be used for the CVS_RSH environment variable."
   end
 
-  newparam :trust_server_cert do
-    desc "Wether to always trust certificate issuer or not"
-    defaultto false
+  newparam :verify_ssl do
+    desc "Wether to check SSL certificates or not"
+    defaultto true
   end
 
 end
