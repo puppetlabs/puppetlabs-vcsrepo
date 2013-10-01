@@ -1,27 +1,44 @@
 require 'spec_helper'
 
-describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
+describe Puppet::Type.type(:vcsrepo).provider(:cvs_provider) do
+
+  let(:resource) { Puppet::Type.type(:vcsrepo).new({
+    :name     => 'test',
+    :ensure   => :present,
+    :provider => :cvs,
+    :revision => '2634',
+    :source   => 'lp:do',
+    :path     => '/tmp/test',
+  })}
+
+  let(:provider) { resource.provider }
+
+  before :each do
+    Puppet::Util.stubs(:which).with('cvs').returns('/usr/bin/cvs')
+  end
 
   describe 'creating' do
-    context "with a source", :resource => {:source => ':ext:source@example.com:/foo/bar'} do
-      resource_with :revision do
-        it "should execute 'cvs checkout' and 'cvs update -r'" do
-          provider.expects(:cvs).with('-d', resource.value(:source), 'checkout', '-r', 'an-unimportant-value', '-d', 'vcsrepo', 'bar')
-          expects_chdir(File.dirname(resource.value(:path)))
-          #provider.expects(:cvs).with('update', '-r', resource.value(:revision), '.')
-          provider.create
-        end
+    context "with a source" do
+      it "should execute 'cvs checkout'" do
+        resource[:source] = ':ext:source@example.com:/foo/bar'
+        resource[:revision] = 'an-unimportant-value'
+        expects_chdir('/tmp')
+        provider.expects(:cvs).with('-d', resource.value(:source), 'checkout', '-r', 'an-unimportant-value', '-d', 'test', 'bar')
+        provider.create
       end
 
-      resource_without :revision do
-        it "should just execute 'cvs checkout' without a revision" do
-          provider.expects(:cvs).with('-d', resource.value(:source), 'checkout', '-d', File.basename(resource.value(:path)), File.basename(resource.value(:source)))
-          provider.create
-        end
+      it "should just execute 'cvs checkout' without a revision" do
+        resource[:source] = ':ext:source@example.com:/foo/bar'
+        resource.delete(:revision)
+        provider.expects(:cvs).with('-d', resource.value(:source), 'checkout', '-d', File.basename(resource.value(:path)), File.basename(resource.value(:source)))
+        provider.create
       end
 
-      context "with a compression", :resource => {:compression => '3'} do
+      context "with a compression" do
         it "should just execute 'cvs checkout' without a revision" do
+          resource[:source] = ':ext:source@example.com:/foo/bar'
+          resource[:compression] = '3'
+          resource.delete(:revision)
           provider.expects(:cvs).with('-d', resource.value(:source), '-z', '3', 'checkout', '-d', File.basename(resource.value(:path)), File.basename(resource.value(:source)))
           provider.create
         end
@@ -30,6 +47,7 @@ describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
 
     context "when a source is not given" do
       it "should execute 'cvs init'" do
+        resource.delete(:source)
         provider.expects(:cvs).with('-d', resource.value(:path), 'init')
         provider.create
       end
@@ -38,24 +56,21 @@ describe_provider :vcsrepo, :cvs, :resource => {:path => '/tmp/vcsrepo'} do
 
   describe 'destroying' do
     it "it should remove the directory" do
-      expects_rm_rf
       provider.destroy
     end
   end
 
   describe "checking existence" do
-    resource_with :source do
-      it "should check for the CVS directory" do
-        File.expects(:directory?).with(File.join(resource.value(:path), 'CVS'))
-        provider.exists?
-      end
+    it "should check for the CVS directory with source" do
+      resource[:source] = ':ext:source@example.com:/foo/bar'
+      File.expects(:directory?).with(File.join(resource.value(:path), 'CVS'))
+      provider.exists?
     end
 
-    resource_without :source do
-      it "should check for the CVSROOT directory" do
-        File.expects(:directory?).with(File.join(resource.value(:path), 'CVSROOT'))
-        provider.exists?
-      end
+    it "should check for the CVSROOT directory without source" do
+      resource.delete(:source)
+      File.expects(:directory?).with(File.join(resource.value(:path), 'CVSROOT'))
+      provider.exists?
     end
   end
 

@@ -1,41 +1,55 @@
 require 'spec_helper'
 
-describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
+describe Puppet::Type.type(:vcsrepo).provider(:svn) do
+
+  let(:resource) { Puppet::Type.type(:vcsrepo).new({
+    :name     => 'test',
+    :ensure   => :present,
+    :provider => :svn,
+    :path     => '/tmp/vcsrepo',
+  })}
+
+  let(:provider) { resource.provider }
+
+  before :each do
+    Puppet::Util.stubs(:which).with('git').returns('/usr/bin/git')
+  end
 
   describe 'creating' do
-    resource_with :source do
-      resource_with :revision do
-        it "should execute 'svn checkout' with a revision" do
-          provider.expects(:svn).with('--non-interactive', 'checkout', '-r',
-                                      resource.value(:revision),
-                                      resource.value(:source),
-                                      resource.value(:path))
-          provider.create
-        end
-      end
-      resource_without :revision do
-        it "should just execute 'svn checkout' without a revision" do
-          provider.expects(:svn).with('--non-interactive', 'checkout',
-                                      resource.value(:source),
-                                      resource.value(:path))
-          provider.create
-        end
+    context 'with source and revision' do
+      it "should execute 'svn checkout' with a revision" do
+        resource[:source] = 'exists'
+        resource[:revision] = '1'
+        provider.expects(:svn).with('--non-interactive', 'checkout', '-r',
+          resource.value(:revision),
+          resource.value(:source),
+          resource.value(:path))
+        provider.create
       end
     end
-    resource_without :source do
-      resource_with :fstype do
-        it "should execute 'svnadmin create' with an '--fs-type' option" do
-          provider.expects(:svnadmin).with('create', '--fs-type',
-                                           resource.value(:fstype),
-                                           resource.value(:path))
-          provider.create
-        end
+    context 'with source' do
+      it "should just execute 'svn checkout' without a revision" do
+        resource[:source] = 'exists'
+        provider.expects(:svn).with('--non-interactive', 'checkout',
+          resource.value(:source),
+          resource.value(:path))
+        provider.create
       end
-      resource_without :fstype do
-        it "should execute 'svnadmin create' without an '--fs-type' option" do
-          provider.expects(:svnadmin).with('create', resource.value(:path))
-          provider.create
-        end
+    end
+
+    context 'with fstype' do
+      it "should execute 'svnadmin create' with an '--fs-type' option" do
+        resource[:fstype] = 'ext4'
+        provider.expects(:svnadmin).with('create', '--fs-type',
+                                          resource.value(:fstype),
+                                          resource.value(:path))
+        provider.create
+      end
+    end
+    context 'without fstype' do
+      it "should execute 'svnadmin create' without an '--fs-type' option" do
+        provider.expects(:svnadmin).with('create', resource.value(:path))
+        provider.create
       end
     end
   end
@@ -69,12 +83,10 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
     before do
       @revision = '30'
     end
-    resource_without :source do
-      it "should use 'svn update'" do
-        expects_chdir
-        provider.expects(:svn).with('--non-interactive', 'update', '-r', @revision)
-        provider.revision = @revision
-      end
+    it "should use 'svn update'" do
+      expects_chdir
+      provider.expects(:svn).with('--non-interactive', 'update', '-r', @revision)
+      provider.revision = @revision
     end
   end
 
@@ -82,12 +94,11 @@ describe_provider :vcsrepo, :svn, :resource => {:path => '/tmp/vcsrepo'} do
     before do
       @revision = '30'
     end
-    resource_with :source do
-      it "should use 'svn switch'" do
-        expects_chdir
-        provider.expects(:svn).with('--non-interactive', 'switch', '-r', @revision, 'an-unimportant-value')
-        provider.revision = @revision
-      end
+    it "should use 'svn switch'" do
+      resource[:source] = 'an-unimportant-value'
+      expects_chdir
+      provider.expects(:svn).with('--non-interactive', 'switch', '-r', @revision, 'an-unimportant-value')
+      provider.revision = @revision
     end
   end
 
