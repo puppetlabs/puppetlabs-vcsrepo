@@ -37,6 +37,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :cvs_rsh,
           "The provider understands the CVS_RSH environment variable"
 
+  feature :verify_ssl,
+          "The provider supports disabling SSL certificate verifications"
+
   ensurable do
     attr_accessor :latest
 
@@ -189,6 +192,11 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :cvs_rsh, :required_features => [:cvs_rsh] do
     desc "The value to be used for the CVS_RSH environment variable."
+  end
+
+  newparam :verify_ssl do
+    desc "Wether to check SSL certificates or not"
+    defaultto true
   end
 
 end

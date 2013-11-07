@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
                     :svnadmin => 'svnadmin',
                     :svnlook  => 'svnlook'
 
-  has_features :filesystem_types, :reference_tracking, :basic_auth, :configuration
+  has_features :filesystem_types, :reference_tracking, :basic_auth, :configuration, :verify_ssl
 
   def create
     if !@resource.value(:source)
@@ -50,6 +50,10 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--username', @resource.value(:basic_auth_username))
       args.push('--password', @resource.value(:basic_auth_password))
       args.push('--no-auth-cache')
+    end
+
+    unless @resource.value(:verify_ssl)
+        args.push('--trust-server-cert')
     end
 
     if @resource.value(:force)
