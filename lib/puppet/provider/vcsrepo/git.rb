@@ -49,6 +49,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def revision
+    return false unless path_exists?
     update_references
     current = at_path { git_with_identity('rev-parse', 'HEAD').chomp }
     return current unless @resource.value(:revision)
