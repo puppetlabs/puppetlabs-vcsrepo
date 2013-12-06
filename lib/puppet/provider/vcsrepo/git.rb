@@ -4,9 +4,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   desc "Supports Git repositories"
 
   ##TODO modify the commands below so that the su - is included
-  optional_commands :git => 'git',
-                    :su  => 'su'
-  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user
+  optional_commands :git       => 'git',
+                    :su        => 'su',
+                    :ssh_agent => 'ssh-agent'
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :forward_ssh_agent, :multiple_remotes, :user
 
   def create
     if !@resource.value(:source)
@@ -297,16 +298,36 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def git_with_identity(*args)
     if @resource.value(:identity)
+      do_forward_ssh_agent = @resource.value(:forward_ssh_agent)
       Tempfile.open('git-helper') do |f|
+        ssh_command = []
+        ssh_command << 'exec' << 'ssh' \
+                    << '-oStrictHostKeyChecking=no' \
+                    << '-oPasswordAuthentication=no' \
+                    << '-oKbdInteractiveAuthentication=no' \
+                    << '-oChallengeResponseAuthentication=no' \
+                    << '-oConnectTimeout=120'
+        if do_forward_ssh_agent
+          ssh_command << '-oForwardAgent=yes'
+        else
+          ssh_command << "-i #{@resource.value(:identity)}"
+        end
+        ssh_command << '$*'
+
         f.puts '#!/bin/sh'
-        f.puts "exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
+        f.puts "ssh-add #{@resource.value(:identity)}" if do_forward_ssh_agent
+        f.puts ssh_command.join(' ')
         f.close
 
         FileUtils.chmod(0755, f.path)
         env_save = ENV['GIT_SSH']
         ENV['GIT_SSH'] = f.path
 
-        ret = git(*args)
+        if do_forward_ssh_agent
+          ret = ssh_agent('git', *args)
+        else
+          ret = git(*args)
+        end
 
         ENV['GIT_SSH'] = env_save
 
