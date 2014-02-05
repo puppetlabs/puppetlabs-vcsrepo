@@ -47,11 +47,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def revision
-    update_references
     current = at_path { git_with_identity('rev-parse', 'HEAD').chomp }
     return current unless @resource.value(:revision)
 
     if tag_revision?(@resource.value(:revision))
+      # ensure => present will not check if the tag is updated in the source repo
+      update_references if @resource.value(:ensure) == :latest
       canonical = at_path { git_with_identity('show', @resource.value(:revision)).scan(/^commit (.*)/).to_s }
     else
       # if it's not a tag, look for it as a local ref
@@ -274,11 +275,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     if !working_copy_exists?
       create
     end
-    at_path do
-      update_remote_origin_url
-      git_with_identity('fetch', @resource.value(:remote))
-      git_with_identity('fetch', '--tags', @resource.value(:remote))
-    end
+    update_references
     current = at_path { git_with_identity('rev-parse', rev).strip }
     if @resource.value(:revision)
       if local_branch_revision?
