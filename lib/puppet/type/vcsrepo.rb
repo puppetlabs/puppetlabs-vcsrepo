@@ -177,6 +177,10 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "SSH identity file"
   end
 
+  newparam :tmp_dir, :required_features => [:ssh_identity] do
+    desc "Temp directory for generated ssh wrapper"
+  end
+
   newparam :module, :required_features => [:modules] do
     desc "The repository module to manage"
   end
