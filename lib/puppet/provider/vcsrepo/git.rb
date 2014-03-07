@@ -86,6 +86,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     # whether to reset or pull when we're ensuring latest.
     if local_branch_revision?(desired)
       reset("#{@resource.value(:remote)}/#{desired}")
+    else
+      reset(desired)
     end
     if @resource.value(:ensure) != :bare
       update_submodules
