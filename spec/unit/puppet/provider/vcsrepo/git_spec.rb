@@ -267,6 +267,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
         provider.expects(:git).with('checkout', '--force', resource.value(:revision))
         provider.expects(:git).with('branch', '-a').returns(resource.value(:revision))
         provider.expects(:git).with('reset', '--hard', "origin/#{resource.value(:revision)}")
+        provider.expects(:git).with('clean', '--force')
         provider.revision = resource.value(:revision)
       end
     end
@@ -278,6 +279,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
         provider.expects(:git).with('checkout', '--force', resource.value(:revision))
         provider.expects(:git).with('branch', '-a').returns(resource.value(:revision))
         provider.expects(:git).with('reset', '--hard', "origin/#{resource.value(:revision)}")
+        provider.expects(:git).with('clean', '--force')
         provider.revision = resource.value(:revision)
       end
     end

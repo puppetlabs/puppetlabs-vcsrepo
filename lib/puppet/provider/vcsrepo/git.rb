@@ -80,12 +80,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def revision=(desired)
     checkout(desired)
+    # reset instead of pull to avoid merge conflicts. assuming remote is
+    # authoritative.
+    # might be worthwhile to have an allow_local_changes param to decide
+    # whether to reset or pull when we're ensuring latest.
     if local_branch_revision?(desired)
-      # reset instead of pull to avoid merge conflicts. assuming remote is
-      # authoritative.
-      # might be worthwhile to have an allow_local_changes param to decide
-      # whether to reset or pull when we're ensuring latest.
-      at_path { git_with_identity('reset', '--hard', "#{@resource.value(:remote)}/#{desired}") }
+      reset("#{@resource.value(:remote)}/#{desired}")
     end
     if @resource.value(:ensure) != :bare
       update_submodules
