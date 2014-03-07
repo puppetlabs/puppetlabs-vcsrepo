@@ -230,7 +230,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def reset(desired)
     at_path do
-      git_with_identity('reset', '--hard', desired)
+      git_with_identity('reset', '--hard', desired) # reset tracked files
+      git_with_identity('clean', '--force') # remove untracked files which are not ignored
     end
   end
 
