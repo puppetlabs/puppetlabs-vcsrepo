@@ -180,6 +180,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
 
     context "when its SHA is not different than the current SHA" do
       it "should return the ref" do
+        provider.expects(:git).with('status', '-s').returns('')
         provider.expects(:git).with('config', 'remote.origin.url').returns('')
         provider.expects(:git).with('fetch', 'origin') # FIXME
         provider.expects(:git).with('fetch', '--tags', 'origin')
@@ -191,6 +192,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
 
     context "when its SHA is different than the current SHA" do
       it "should return the current SHA" do
+        provider.expects(:git).with('status', '-s').returns('')
         provider.expects(:git).with('config', 'remote.origin.url').returns('')
         provider.expects(:git).with('fetch', 'origin') # FIXME
         provider.expects(:git).with('fetch', '--tags', 'origin')
@@ -202,6 +204,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
 
     context "when its a ref to a remote head" do
       it "should return the revision" do
+        provider.expects(:git).with('status', '-s').returns('')
         provider.expects(:git).with('config', 'remote.origin.url').returns('')
         provider.expects(:git).with('fetch', 'origin') # FIXME
         provider.expects(:git).with('fetch', '--tags', 'origin')
@@ -214,6 +217,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
 
     context "when its a ref to non existant remote head" do
       it "should fail" do
+        provider.expects(:git).with('status', '-s').returns('')
         provider.expects(:git).with('config', 'remote.origin.url').returns('')
         provider.expects(:git).with('fetch', 'origin') # FIXME
         provider.expects(:git).with('fetch', '--tags', 'origin')
@@ -227,6 +231,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
     context "when the source is modified" do
       it "should update the origin url" do
         resource[:source] = 'git://git@foo.com/bar.git'
+        provider.expects(:git).with('status', '-s').returns('')
         provider.expects(:git).with('config', 'remote.origin.url').returns('old')
         provider.expects(:git).with('config', 'remote.origin.url', 'git://git@foo.com/bar.git')
         provider.expects(:git).with('fetch', 'origin') # FIXME
@@ -234,6 +239,18 @@ describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
         provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('currentsha')
         provider.expects(:git).with('tag', '-l').returns("Hello")
         provider.revision.should == resource.value(:revision)
+      end
+    end
+
+    context "when there is changes in the repo" do
+      it "should return the revision suffixed with '-dirty'" do
+        provider.expects(:git).with('status', '-s').returns(' M lib/puppet/provider/vcsrepo/git.rb')
+        provider.expects(:git).with('config', 'remote.origin.url').returns('')
+        provider.expects(:git).with('fetch', 'origin') # FIXME
+        provider.expects(:git).with('fetch', '--tags', 'origin')
+        provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('othersha')
+        provider.expects(:git).with('tag', '-l').returns("Hello")
+        provider.revision.should == 'currentsha-dirty'
       end
     end
   end

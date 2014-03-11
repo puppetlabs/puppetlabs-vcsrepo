@@ -49,6 +49,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def revision
     update_references
     current = at_path { git_with_identity('rev-parse', 'HEAD').chomp }
+    current << '-dirty' if at_path { git_with_identity('status', '-s').lines.count } > 0
     return current unless @resource.value(:revision)
 
     if tag_revision?(@resource.value(:revision))
