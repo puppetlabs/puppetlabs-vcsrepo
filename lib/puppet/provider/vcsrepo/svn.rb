@@ -54,7 +54,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--no-auth-cache')
     end
 
-    if @resource.value(:force)
+    if @resource.value(:force) == true
       args.push('--force')
     end
 
