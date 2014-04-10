@@ -49,6 +49,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def revision
     update_references
     current = at_path { git_with_identity('rev-parse', 'HEAD').chomp }
+    current << '-dirty' if at_path { git_with_identity('status', '-s').lines.count } > 0
     return current unless @resource.value(:revision)
 
     if tag_revision?(@resource.value(:revision))
@@ -79,12 +80,14 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def revision=(desired)
     checkout(desired)
+    # reset instead of pull to avoid merge conflicts. assuming remote is
+    # authoritative.
+    # might be worthwhile to have an allow_local_changes param to decide
+    # whether to reset or pull when we're ensuring latest.
     if local_branch_revision?(desired)
-      # reset instead of pull to avoid merge conflicts. assuming remote is
-      # authoritative.
-      # might be worthwhile to have an allow_local_changes param to decide
-      # whether to reset or pull when we're ensuring latest.
-      at_path { git_with_identity('reset', '--hard', "#{@resource.value(:remote)}/#{desired}") }
+      reset("#{@resource.value(:remote)}/#{desired}")
+    else
+      reset(desired)
     end
     if @resource.value(:ensure) != :bare
       update_submodules
@@ -229,7 +232,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def reset(desired)
     at_path do
-      git_with_identity('reset', '--hard', desired)
+      git_with_identity('reset', '--hard', desired) # reset tracked files
+      git_with_identity('clean', '--force') # remove untracked files which are not ignored
     end
   end
 
