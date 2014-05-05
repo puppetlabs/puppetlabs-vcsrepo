@@ -49,6 +49,17 @@ Check out as a user:
         user     => 'user'
     }
 
+To check out with basic authentication:
+
+	vcsrepo { '/tmp/vcstest-hg-clone':
+	  ensure   => present,
+	  provider => hg,
+	  source   => 'http://hg.basho.com/riak',
+	  revision => 'riak-0.5.3',
+	  basic_auth_username	=> 'username',
+	  basic_auth_password	=> 'eightstars',
+	}
+
 Specify an SSH identity key:
 
     vcsrepo { "/path/to/repo":
@@ -58,6 +69,7 @@ Specify an SSH identity key:
         identity => "/home/user/.ssh/id_dsa,
     }
 
+	
 For sources that use SSH (eg, `ssh://...`)
 ------------------------------------------
 
