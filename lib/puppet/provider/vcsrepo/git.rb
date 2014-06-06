@@ -39,10 +39,14 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def latest
     branch = on_branch?
-    if !branch
+    if branch == 'master'
+      return get_revision("#{@resource.value(:remote)}/HEAD")
+    elsif branch == '(no branch)'
       return get_revision('HEAD')
+    elsif branch =~ /\(detached from ([0-9a-z]+)\)/
+      return get_revision(Regexp.last_match(1))
     else
-      return get_revision("#{@resource.value(:remote)}/#{branch}")
+      return get_revision("#{@resource.value(:remote)}/%s" % branch)
     end
   end
 
