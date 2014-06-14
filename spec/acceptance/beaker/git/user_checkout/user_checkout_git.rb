@@ -13,7 +13,7 @@ hosts.each do |host|
     on(host, "cd #{tmpdir} && ./create_git_repo.sh")
   end
   step 'setup - start git daemon' do
-    install_package(host, 'git-daemon')
+    install_package(host, 'git-daemon') unless host['platform'] =~ /debian|ubuntu/
     on(host, "git daemon --base-path=#{tmpdir}  --export-all --reuseaddr --verbose --detach")
   end
 
