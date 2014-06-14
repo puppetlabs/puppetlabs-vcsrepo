@@ -6,7 +6,11 @@ repo_name = 'testrepo_bare.git'
 hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup' do
-    install_package(host, 'git')
+    git_pkg = 'git'
+    if host['platform'] =~ /ubuntu-10/
+      git_pkg = 'git-core'
+    end
+    install_package(host, git_pkg)
   end
 
   teardown do

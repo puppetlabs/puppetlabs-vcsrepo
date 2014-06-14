@@ -6,7 +6,11 @@ repo_name = 'testrepo_bare_repo_already_exists.git'
 hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create bare repo' do
-    install_package(host, 'git')
+    git_pkg = 'git'
+    if host['platform'] =~ /ubuntu-10/
+      git_pkg = 'git-core'
+    end
+    install_package(host, git_pkg)
     on(host, "mkdir #{tmpdir}/#{repo_name}")
     on(host, "cd #{tmpdir}/#{repo_name} && git --bare init")
   end

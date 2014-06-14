@@ -7,7 +7,11 @@ hosts.each do |host|
   ruby = (host.is_pe? && '/opt/puppet/bin/ruby') || 'ruby'
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
-    install_package(host, 'git')
+    git_pkg = 'git'
+    if host['platform'] =~ /ubuntu-10/
+      git_pkg = 'git-core'
+    end
+    install_package(host, git_pkg)
     my_root = File.expand_path(File.join(File.dirname(__FILE__), '../../../../..'))
     scp_to(host, "#{my_root}/acceptance/files/create_git_repo.sh", tmpdir)
     on(host, "cd #{tmpdir} && ./create_git_repo.sh")
