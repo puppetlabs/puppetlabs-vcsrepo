@@ -324,8 +324,12 @@ describe 'clones a remote repo' do
     before(:all) do
       shell("chmod 707 #{tmpdir}")
       pp = <<-EOS
+      group { 'testuser':
+        ensure => present,
+      }
       user { 'testuser':
         ensure => present,
+        groups => 'testuser',
       }
       EOS
 
@@ -388,8 +392,12 @@ describe 'clones a remote repo' do
     before(:all) do
       # create user
       pp = <<-EOS
+      group { 'testuser-ssh':
+        ensure => present,
+      }
       user { 'testuser-ssh':
         ensure => present,
+        groups => 'testuser-ssh',
         managehome => true,
       }
       EOS
