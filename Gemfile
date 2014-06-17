@@ -10,6 +10,7 @@ group :development, :test do
   gem 'beaker-rspec', '~>2.2',   :require => false
   gem 'rspec', '~>2.14',         :require => false
   gem 'simplecov',               :require => false
+  gem 'vagrant-wrapper',         :require => false
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']
