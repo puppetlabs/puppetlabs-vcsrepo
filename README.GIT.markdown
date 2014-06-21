@@ -73,6 +73,17 @@ Keep the repository at the latest revision (note: this will always overwrite loc
         revision => 'master',
     }
 
+To get the latest revision with basic authentication:
+    
+    vcsrepo { '/tmp/vcstest-hg-clone':
+        ensure   => latest,
+        provider => hg,
+        source   => 'http://hg.basho.com/riak',
+        revision => 'riak-0.5.3',
+        basic_auth_username	=> 'username',
+        basic_auth_password	=> 'eightstars',
+    }
+	
 For sources that use SSH (eg, `username@server:...`)
 ----------------------------------------------------
 
