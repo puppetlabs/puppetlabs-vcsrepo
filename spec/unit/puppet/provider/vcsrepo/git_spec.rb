@@ -134,7 +134,7 @@ branches
         it "should raise an exception" do
           provider.expects(:path_exists?).returns(true)
           provider.expects(:path_empty?).returns(false)
-          proc { provider.create }.should raise_error(Puppet::Error)
+          expect { provider.create }.to raise_error(Puppet::Error)
         end
       end
     end
@@ -182,7 +182,7 @@ branches
         provider.expects(:path_exists?).returns(true)
         provider.expects(:path_empty?).returns(false)
         provider.expects(:working_copy_exists?).returns(false)
-        proc { provider.create }.should raise_error(Puppet::Error)
+        expect { provider.create }.to raise_error(Puppet::Error)
       end
     end
   end
@@ -210,7 +210,7 @@ branches
         provider.expects(:git).with('fetch', '--tags', 'origin')
         provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('currentsha')
         provider.expects(:git).with('tag', '-l').returns("Hello")
-        provider.revision.should == resource.value(:revision)
+        expect(provider.revision).to eq(resource.value(:revision))
       end
     end
 
@@ -221,7 +221,7 @@ branches
         provider.expects(:git).with('fetch', '--tags', 'origin')
         provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('othersha')
         provider.expects(:git).with('tag', '-l').returns("Hello")
-        provider.revision.should == 'currentsha'
+        expect(provider.revision).to eq('currentsha')
       end
     end
 
@@ -233,7 +233,7 @@ branches
         provider.expects(:git).with('tag', '-l').returns("Hello")
         provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('')
         provider.expects(:git).with('ls-remote', '--heads', '--tags', 'origin', resource.value(:revision)).returns("newsha refs/heads/#{resource.value(:revision)}")
-        provider.revision.should == 'currentsha'
+        expect(provider.revision).to eq('currentsha')
       end
     end
 
@@ -258,7 +258,7 @@ branches
         provider.expects(:git).with('fetch', '--tags', 'origin')
         provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('currentsha')
         provider.expects(:git).with('tag', '-l').returns("Hello")
-        provider.revision.should == resource.value(:revision)
+        expect(provider.revision).to eq(resource.value(:revision))
       end
     end
   end
@@ -320,13 +320,13 @@ branches
       context "when it's listed in 'git branch -a'" do
         it "should return true" do
           resource[:revision] = 'feature/foo'
-          provider.should be_local_branch_revision
+          expect(provider).to be_local_branch_revision
         end
       end
       context "when it's not listed in 'git branch -a'" do
         it "should return false" do
           resource[:revision] = 'feature/notexist'
-          provider.should_not be_local_branch_revision
+          expect(provider).not_to be_local_branch_revision
         end
       end
     end
@@ -334,13 +334,13 @@ branches
       context "when it's listed in 'git branch -a' with an 'origin/' prefix" do
         it "should return true" do
           resource[:revision] = 'only/remote'
-          provider.should be_remote_branch_revision
+          expect(provider).to be_remote_branch_revision
         end
       end
       context "when it's not listed in 'git branch -a' with an 'origin/' prefix" do
         it "should return false" do
           resource[:revision] = 'only/local'
-          provider.should_not be_remote_branch_revision
+          expect(provider).not_to be_remote_branch_revision
         end
       end
     end
@@ -366,14 +366,14 @@ branches
       it do
         provider.expects(:revision).returns('testrev')
         provider.expects(:latest).returns('testrev')
-        provider.latest?.should be_true
+        expect(provider.latest?).to be_truthy
       end
     end
     context 'when false' do
       it do
         provider.expects(:revision).returns('master')
         provider.expects(:latest).returns('testrev')
-        provider.latest?.should be_false
+        expect(provider.latest?).to be_falsey
       end
     end
   end
@@ -386,20 +386,20 @@ branches
     context 'on master' do
       it do
         provider.expects(:git).with('branch','-a').returns("* master")
-        provider.latest.should == 'master'
+        expect(provider.latest).to eq('master')
       end
     end
     context 'no branch' do
       it do
         provider.expects(:git).with('branch','-a').returns("* master")
 
-        provider.latest.should == 'master'
+        expect(provider.latest).to eq('master')
       end
     end
     context 'feature/bar' do
       it do
         provider.expects(:git).with('branch','-a').returns("* master")
-        provider.latest.should == 'master'
+        expect(provider.latest).to eq('master')
       end
     end
   end

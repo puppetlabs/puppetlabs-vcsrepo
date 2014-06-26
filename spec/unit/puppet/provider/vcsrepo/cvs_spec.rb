@@ -86,7 +86,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs_provider) do
       end
       it "should read CVS/Tag" do
         File.expects(:read).with(@tag_file).returns("T#{@tag}")
-        provider.revision.should == @tag
+        expect(provider.revision).to eq(@tag)
       end
     end
 
@@ -95,7 +95,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs_provider) do
         File.expects(:exist?).with(@tag_file).returns(false)
       end
       it "assumes HEAD" do
-        provider.revision.should == 'HEAD'
+        expect(provider.revision).to eq('HEAD')
       end
     end
   end
