@@ -1,5 +1,5 @@
-vcsrepo { "/tmp/vcstest/p4_client_root":
+vcsrepo { '/tmp/vcstest/p4_client_root':
   ensure    => latest,
-  provider  => p4, 
-  source    => "//depot/..."
+  provider  => p4,
+  source    => '//depot/...'
 }
