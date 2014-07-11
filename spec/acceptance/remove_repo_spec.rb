@@ -25,6 +25,6 @@ describe 'remove a repo' do
   end
 
   describe file("#{tmpdir}/testrepo_deleted") do
-    it { should_not be_directory }
+    it { is_expected.not_to be_directory }
   end
 end

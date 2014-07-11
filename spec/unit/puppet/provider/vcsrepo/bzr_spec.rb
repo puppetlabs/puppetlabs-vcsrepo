@@ -67,14 +67,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:bzr_provider) do
         it "should return the ref" do
           resource[:revision] = '2634'
           provider.expects(:bzr).with('revision-info', '2634').returns("2634 menesis@pov.lt-20100309191856-4wmfqzc803fj300x\n")
-          provider.revision.should == resource.value(:revision)
+          expect(provider.revision).to eq(resource.value(:revision))
         end
       end
       context "when its revid is different than the current revid" do
         it "should return the current revid" do
           resource[:revision] = '2636'
           provider.expects(:bzr).with('revision-info', resource.value(:revision)).returns("2635 foo\n")
-          provider.revision.should == @current_revid
+          expect(provider.revision).to eq(@current_revid)
         end
       end
     end
@@ -84,14 +84,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:bzr_provider) do
         it "should return it" do
           resource[:revision] = 'menesis@pov.lt-20100309191856-4wmfqzc803fj300x'
           provider.expects(:bzr).with('revision-info', resource.value(:revision)).returns("1234 #{resource.value(:revision)}\n")
-          provider.revision.should == resource.value(:revision)
+          expect(provider.revision).to eq(resource.value(:revision))
         end
       end
       context "when it is not the same as the current revid" do
         it "should return the current revid" do
           resource[:revision] = 'menesis@pov.lt-20100309191856-4wmfqzc803fj300y'
           provider.expects(:bzr).with('revision-info', resource.value(:revision)).returns("2636 foo\n")
-          provider.revision.should == @current_revid
+          expect(provider.revision).to eq(@current_revid)
         end
       end
 

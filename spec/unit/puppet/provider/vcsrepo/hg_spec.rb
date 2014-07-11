@@ -88,14 +88,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
       context "when its SHA is not different than the current SHA" do
         it "should return the ref" do
           resource[:revision] = '0.6'
-          provider.revision.should == '0.6'
+          expect(provider.revision).to eq('0.6')
         end
       end
 
       context "when its SHA is different than the current SHA" do
         it "should return the current SHA" do
           resource[:revision] = '0.5.3'
-          provider.revision.should == '34e6012c783a'
+          expect(provider.revision).to eq('34e6012c783a')
         end
       end
     end
@@ -108,7 +108,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
         it "should return it" do
           resource[:revision] = '34e6012c783a'
           provider.expects(:hg).with('tags').returns(fixture(:hg_tags))
-          provider.revision.should == resource.value(:revision)
+          expect(provider.revision).to eq(resource.value(:revision))
         end
       end
 
@@ -116,7 +116,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
         it "should return the current SHA" do
           resource[:revision] = 'not-the-same'
           provider.expects(:hg).with('tags').returns(fixture(:hg_tags))
-          provider.revision.should == '34e6012c783a'
+          expect(provider.revision).to eq('34e6012c783a')
         end
       end
     end
