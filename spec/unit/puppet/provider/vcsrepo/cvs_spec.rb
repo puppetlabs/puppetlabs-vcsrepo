@@ -3,7 +3,6 @@ require 'spec_helper'
 describe Puppet::Type.type(:vcsrepo).provider(:cvs_provider) do
 
   let(:resource) { Puppet::Type.type(:vcsrepo).new({
-    :name     => 'test',
     :ensure   => :present,
     :provider => :cvs,
     :revision => '2634',

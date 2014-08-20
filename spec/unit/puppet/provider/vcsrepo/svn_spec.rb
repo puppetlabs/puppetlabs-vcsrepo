@@ -3,7 +3,6 @@ require 'spec_helper'
 describe Puppet::Type.type(:vcsrepo).provider(:svn) do
 
   let(:resource) { Puppet::Type.type(:vcsrepo).new({
-    :name     => 'test',
     :ensure   => :present,
     :provider => :svn,
     :path     => '/tmp/vcsrepo',
