@@ -457,7 +457,6 @@ The vcsrepo module is slightly unusual in that it is simply a type and providers
 * `git`   - Supports the Git VCS. (Contains features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `user`.)
 * `bar`   - Supports the Bazaar VCS. (Contains features: `reference_tracking`.)
 * `cvs`   - Supports the CVS VCS. (Contains features: `cvs_rsh`, `gzip_compression`, `modules`,`reference_tracking`.)
-* `dummy` - 
 * `hg`    - Supports the Mercurial VCS. (Contains features: `reference_tracking`, `ssh_identity`, `user`.)
 * `p4`    - Supports the Perforce VCS. (Contains features: `reference_tracking`, `filesystem_types`, `p4config`.)
 * `svn`   - Supports the Subversion VCS. (Contains features: `basic_auth`, `configuration`, `filesystem_types`, `reference_tracking`.)
