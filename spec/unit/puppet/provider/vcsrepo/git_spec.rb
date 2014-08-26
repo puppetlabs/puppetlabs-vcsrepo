@@ -134,7 +134,7 @@ branches
         it "should raise an exception" do
           provider.expects(:path_exists?).returns(true)
           provider.expects(:path_empty?).returns(false)
-          proc { provider.create }.should raise_error(Puppet::Error)
+          expect { provider.create }.to raise_error(Puppet::Error)
         end
       end
     end
@@ -204,7 +204,7 @@ branches
         provider.expects(:path_exists?).returns(true)
         provider.expects(:path_empty?).returns(false)
         provider.expects(:working_copy_exists?).returns(false)
-        proc { provider.create }.should raise_error(Puppet::Error)
+        expect { provider.create }.to raise_error(Puppet::Error)
       end
     end
   end
@@ -233,14 +233,14 @@ branches
     context "when its SHA is not different than the current SHA" do
       it "should return the ref" do
         provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
-        provider.revision.should == resource.value(:revision)
+        expect(provider.revision).to eq(resource.value(:revision))
       end
     end
 
     context "when its SHA is different than the current SHA" do
       it "should return the current SHA" do
         provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('othersha')
-        provider.revision.should == resource.value(:revision)
+        expect(provider.revision).to eq(resource.value(:revision))
       end
     end
 
@@ -248,7 +248,7 @@ branches
       it "should return the revision" do
         provider.stubs(:git).with('branch', '-a').returns("  remotes/origin/#{resource.value(:revision)}")
         provider.expects(:git).with('rev-parse', "origin/#{resource.value(:revision)}").returns("newsha")
-        provider.revision.should == resource.value(:revision)
+        expect(provider.revision).to eq(resource.value(:revision))
       end
     end
 
@@ -267,7 +267,7 @@ branches
         provider.expects(:git).with('config', 'remote.origin.url').returns('old')
         provider.expects(:git).with('config', 'remote.origin.url', 'git://git@foo.com/bar.git')
         provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
-        provider.revision.should == resource.value(:revision)
+        expect(provider.revision).to eq(resource.value(:revision))
       end
     end
   end
@@ -329,13 +329,13 @@ branches
       context "when it's listed in 'git branch -a'" do
         it "should return true" do
           resource[:revision] = 'feature/foo'
-          provider.should be_local_branch_revision
+          expect(provider).to be_local_branch_revision
         end
       end
       context "when it's not listed in 'git branch -a'" do
         it "should return false" do
           resource[:revision] = 'feature/notexist'
-          provider.should_not be_local_branch_revision
+          expect(provider).not_to be_local_branch_revision
         end
       end
     end
@@ -343,13 +343,13 @@ branches
       context "when it's listed in 'git branch -a' with an 'origin/' prefix" do
         it "should return true" do
           resource[:revision] = 'only/remote'
-          provider.should be_remote_branch_revision
+          expect(provider).to be_remote_branch_revision
         end
       end
       context "when it's not listed in 'git branch -a' with an 'origin/' prefix" do
         it "should return false" do
           resource[:revision] = 'only/local'
-          provider.should_not be_remote_branch_revision
+          expect(provider).not_to be_remote_branch_revision
         end
       end
     end
@@ -360,14 +360,14 @@ branches
       it do
         provider.expects(:revision).returns('testrev')
         provider.expects(:latest_revision).returns('testrev')
-        provider.latest?.should be_true
+        expect(provider.latest?).to be_truthy
       end
     end
     context 'when false' do
       it do
         provider.expects(:revision).returns('master')
         provider.expects(:latest_revision).returns('testrev')
-        provider.latest?.should be_false
+        expect(provider.latest?).to be_falsey
       end
     end
   end

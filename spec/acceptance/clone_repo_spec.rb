@@ -30,11 +30,11 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo/.git") do
-      it { should be_directory }
+      it { is_expected.to be_directory }
     end
 
     describe file("#{tmpdir}/testrepo/.git/HEAD") do
-      it { should contain 'ref: refs/heads/master' }
+      it { is_expected.to contain 'ref: refs/heads/master' }
     end
   end
 
@@ -63,11 +63,11 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_sha/.git") do
-      it { should be_directory }
+      it { is_expected.to be_directory }
     end
 
     describe file("#{tmpdir}/testrepo_sha/.git/HEAD") do
-      it { should contain sha }
+      it { is_expected.to contain sha }
     end
   end
 
@@ -88,7 +88,7 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_tag/.git") do
-      it { should be_directory }
+      it { is_expected.to be_directory }
     end
 
     it 'should have the tag as the HEAD' do
@@ -113,11 +113,11 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_branch/.git") do
-      it { should be_directory }
+      it { is_expected.to be_directory }
     end
 
     describe file("#{tmpdir}/testrepo_branch/.git/HEAD") do
-      it { should contain 'ref: refs/heads/a_branch' }
+      it { is_expected.to contain 'ref: refs/heads/a_branch' }
     end
   end
 
@@ -183,7 +183,7 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_shallow/.git/shallow") do
-      it { should be_file }
+      it { is_expected.to be_file }
     end
   end
 
@@ -229,8 +229,8 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_owner") do
-      it { should be_directory }
-      it { should be_owned_by 'vagrant' }
+      it { is_expected.to be_directory }
+      it { is_expected.to be_owned_by 'vagrant' }
     end
   end
 
@@ -259,8 +259,8 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_group") do
-      it { should be_directory }
-      it { should be_grouped_into 'vagrant' }
+      it { is_expected.to be_directory }
+      it { is_expected.to be_grouped_into 'vagrant' }
     end
   end
 
@@ -281,8 +281,15 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_excludes/.git/info/exclude") do
-      its(:content) { should match /exclude1.txt/ }
-      its(:content) { should match /exclude2.txt/ }
+      describe '#content' do
+        subject { super().content }
+        it { is_expected.to match /exclude1.txt/ }
+      end
+
+      describe '#content' do
+        subject { super().content }
+        it { is_expected.to match /exclude2.txt/ }
+      end
     end
   end
 
@@ -308,15 +315,15 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_force/folder") do
-      it { should_not be_directory }
+      it { is_expected.not_to be_directory }
     end
 
     describe file("#{tmpdir}/testrepo_force/temp.txt") do
-      it { should_not be_file }
+      it { is_expected.not_to be_file }
     end
 
     describe file("#{tmpdir}/testrepo_force/.git") do
-      it { should be_directory }
+      it { is_expected.to be_directory }
     end
 
     context 'and noop' do
@@ -382,13 +389,13 @@ describe 'clones a remote repo' do
     end
 
     describe file("#{tmpdir}/testrepo_user") do
-      it { should be_directory }
-      it { should be_owned_by 'testuser' }
+      it { is_expected.to be_directory }
+      it { is_expected.to be_owned_by 'testuser' }
     end
 
     describe file("#{tmpdir}/testrepo_user") do
-      it { should be_directory }
-      it { should be_grouped_into 'testuser' }
+      it { is_expected.to be_directory }
+      it { is_expected.to be_grouped_into 'testuser' }
     end
   end
 
