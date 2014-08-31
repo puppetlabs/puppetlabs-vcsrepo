@@ -349,7 +349,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   # @!visibility private
   def git_with_identity(*args)
     if @resource.value(:identity)
-      Tempfile.open('git-helper') do |f|
+      tmp_dir = @resource.value(:tmp_dir) || Dir.tmpdir
+      Tempfile.open('git-helper', tmp_dir) do |f|
         f.puts '#!/bin/sh'
         f.puts "exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
         f.close
