@@ -162,6 +162,10 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :excludes do
     desc "Files to be excluded from the repository"
   end
+  
+  newparam :exclude do
+    desc "Single file to be excluded from the repository"
+  end
 
   newparam :force do
     desc "Force repository creation, destroying any files on the path in the process."
