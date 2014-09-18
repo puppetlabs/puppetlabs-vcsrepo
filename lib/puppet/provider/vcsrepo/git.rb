@@ -293,6 +293,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     end
   end
 
+  def set_exclude
+    at_path { open('.git/info/exclude', 'w') { |f| @resource.value(:exclude).each_line { |ex| f.write(ex + "\n") }}}
+  end
+  
   # Finds the latest revision or sha of the current branch if on a branch, or
   # of HEAD otherwise.
   # @note Calls create which can forcibly destroy and re-clone the repo if
