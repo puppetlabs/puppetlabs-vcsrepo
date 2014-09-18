@@ -75,7 +75,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     end
     it "should use 'svn info'" do
       expects_chdir
-      provider.revision.should == '4' # From 'Revision', not 'Last Changed Rev'
+      expect(provider.revision).to eq('4') # From 'Revision', not 'Last Changed Rev'
     end
   end
 

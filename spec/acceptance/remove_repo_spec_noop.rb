@@ -26,6 +26,6 @@ describe 'does not remove a repo if noop' do
   end
 
   describe file("#{tmpdir}/testrepo_noop_deleted") do
-    it { should be_directory }
+    it { is_expected.to be_directory }
   end
 end
