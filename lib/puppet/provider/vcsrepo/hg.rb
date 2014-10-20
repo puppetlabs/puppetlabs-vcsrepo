@@ -123,7 +123,9 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     end
     if @resource.value(:user) and @resource.value(:user) != Facter['id'].value
       args.map! { |a| if a =~ /\s/ then "'#{a}'" else a end }  # Adds quotes to arguments with whitespaces.
-      su(@resource.value(:user), '-c', "hg #{args.join(' ')}")
+      # set shell to external shell for su command
+      shell = ['-s', '/bin/sh'] if Facter['kernel'].value == 'Linux'
+      su(@resource.value(:user), '-c', "hg #{args.join(' ')}", *shell)
     else
       hg(*args)
     end
