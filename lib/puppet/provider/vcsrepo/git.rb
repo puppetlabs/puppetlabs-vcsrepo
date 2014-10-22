@@ -128,7 +128,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--branch', @resource.value(:branch).to_s)
     end
     if @resource.value(:singlebranch)
-      args.push('--single-branch', ' ')
+      args.push('--single-branch', '')
     end
     if @resource.value(:ensure) == :bare
       args << '--bare'
