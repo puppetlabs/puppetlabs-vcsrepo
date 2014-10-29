@@ -5,7 +5,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   commands :git => 'git'
 
-  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth, :branch, :singlebranch
 
   def create
     if @resource.value(:revision) and @resource.value(:ensure) == :bare
@@ -121,6 +121,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     args = ['clone']
     if @resource.value(:depth) and @resource.value(:depth).to_i > 0
       args.push('--depth', @resource.value(:depth).to_s)
+    end
+    if @resource.value(:branch)
+      args.push('--branch', @resource.value(:branch).to_s)
+    end
+    if @resource.value(:singlebranch)
+      args.push('--single-branch', '')
     end
     if @resource.value(:ensure) == :bare
       args << '--bare'
