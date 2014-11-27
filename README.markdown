@@ -458,7 +458,7 @@ The vcsrepo module is slightly unusual in that it is simply a type and providers
 
 **Note**: Not all features are available with all providers.
 
-* `git`   - Supports the Git VCS. (Contains features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `user`.)
+* `git`   - Supports the Git VCS. (Contains features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `user`, `basic_auth`.)
 * `bar`   - Supports the Bazaar VCS. (Contains features: `reference_tracking`.)
 * `cvs`   - Supports the CVS VCS. (Contains features: `cvs_rsh`, `gzip_compression`, `modules`, `reference_tracking`, `user`.)
 * `dummy` - 
@@ -511,7 +511,7 @@ The vcsrepo module is slightly unusual in that it is simply a type and providers
 ####Features and Parameters by Provider
 
 #####`git`
-**Features**: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `user`
+**Features**: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `user`, `basic_auth`
 
 **Parameters**: `depth`, `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `remote`, `revision`, `source`, `user`
 
