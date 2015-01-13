@@ -298,41 +298,6 @@ branches
     end
   end
 
-  context "checking if revision" do
-    before do
-      expects_chdir
-      provider.expects(:git).with('branch', '-a').returns(fixture(:git_branch_a))
-    end
-    context "is a local branch" do
-      context "when it's listed in 'git branch -a'" do
-        it "should return true" do
-          resource[:revision] = 'feature/foo'
-          expect(provider).to be_local_branch_revision
-        end
-      end
-      context "when it's not listed in 'git branch -a'" do
-        it "should return false" do
-          resource[:revision] = 'feature/notexist'
-          expect(provider).not_to be_local_branch_revision
-        end
-      end
-    end
-    context "is a remote branch" do
-      context "when it's listed in 'git branch -a' with an 'origin/' prefix" do
-        it "should return true" do
-          resource[:revision] = 'only/remote'
-          expect(provider).to be_remote_branch_revision
-        end
-      end
-      context "when it's not listed in 'git branch -a' with an 'origin/' prefix" do
-        it "should return false" do
-          resource[:revision] = 'only/local'
-          expect(provider).not_to be_remote_branch_revision
-        end
-      end
-    end
-  end
-
   describe 'latest?' do
     context 'when true' do
       it do
