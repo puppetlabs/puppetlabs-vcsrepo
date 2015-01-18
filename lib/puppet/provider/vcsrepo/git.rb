@@ -1,11 +1,12 @@
 require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
+require 'uri'
 
 Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) do
   desc "Supports Git repositories"
 
   commands :git => 'git'
 
-  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth, :basic_auth
 
   def create
     if @resource.value(:revision) and @resource.value(:ensure) == :bare
@@ -14,7 +15,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     if !@resource.value(:source)
       init_repository(@resource.value(:path))
     else
-      clone_repository(@resource.value(:source), @resource.value(:path))
+      clone_repository(remote_source, @resource.value(:path))
       if @resource.value(:revision)
         checkout
       end
@@ -97,8 +98,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def update_remote_origin_url
     current = git_with_identity('config', "remote.#{@resource.value(:remote)}.url")
     unless @resource.value(:source).nil?
-      if current.nil? or current.strip != @resource.value(:source)
-        git_with_identity('config', "remote.#{@resource.value(:remote)}.url", @resource.value(:source))
+      if current.nil? or current.strip != remote_source
+        git_with_identity('config', "remote.#{@resource.value(:remote)}.url", remote_source)
       end
     end
   end
@@ -355,6 +356,16 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     if @resource.value(:excludes)
       set_excludes
     end
+  end
+
+  def remote_source
+    source = @resource.value(:source)
+    if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
+      uri = URI(@resource.value(:source))
+      uri.userinfo = "#{@resource.value(:basic_auth_username)}:#{@resource.value(:basic_auth_password)}"
+      source = uri.to_s
+    end
+    source
   end
 
   # @!visibility private

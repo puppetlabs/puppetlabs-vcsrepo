@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'uri'
 
 describe Puppet::Type.type(:vcsrepo).provider(:git_provider) do
   def branch_a_list(include_branch = nil?)
@@ -185,6 +186,25 @@ branches
         expect { provider.create }.to raise_error(Puppet::Error)
       end
     end
+
+    context "when basic auth is used" do
+      it "should execute 'git clone'" do
+        resource[:source] = 'http://something'
+        resource[:basic_auth_username] = 'user'
+        resource[:basic_auth_password] = 'pass'
+        resource[:revision] = 'only/remote'
+        Dir.expects(:chdir).with('/').at_least_once.yields
+        Dir.expects(:chdir).with('/tmp/test').at_least_once.yields
+        uri = URI(resource.value(:source))
+        uri.userinfo = "#{resource.value(:basic_auth_username)}:#{resource.value(:basic_auth_password)}"
+        source = uri.to_s
+        provider.expects(:git).with('clone', source, resource.value(:path))
+        provider.expects(:update_submodules)
+        provider.expects(:git).with('branch', '-a').returns(branch_a_list(resource.value(:revision)))
+        provider.expects(:git).with('checkout', '--force', resource.value(:revision))
+        provider.create
+      end
+    end
   end
 
 
@@ -244,6 +264,20 @@ branches
         resource[:source] = 'git://git@foo.com/bar.git'
         provider.expects(:git).with('config', 'remote.origin.url').returns('old')
         provider.expects(:git).with('config', 'remote.origin.url', 'git://git@foo.com/bar.git')
+        provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
+        expect(provider.revision).to eq(resource.value(:revision))
+      end
+    end
+
+    context "when basic auth is used" do
+      it "should update the origin url" do
+        resource[:source] = 'http://something'
+        resource[:basic_auth_username] = 'user'
+        resource[:basic_auth_password] = 'pass'
+        uri = URI(resource.value(:source))
+        uri.userinfo = "#{resource.value(:basic_auth_username)}:#{resource.value(:basic_auth_password)}"
+        source = uri.to_s
+        provider.expects(:git).with('config', 'remote.origin.url').returns(source)
         provider.expects(:git).with('rev-parse', resource.value(:revision)).returns('currentsha')
         expect(provider.revision).to eq(resource.value(:revision))
       end
