@@ -11,6 +11,10 @@ Puppet::Type.newtype(:vcsrepo) do
           "The provider differentiates between bare repositories
           and those with working copies",
           :methods => [:bare_exists?, :working_copy_exists?]
+  feature :mirror,
+          "The provider differentiates between plain and mirror
+          repositories",
+          :methods => [:mirror_exists?, :working_copy_exists?]
 
   feature :filesystem_types,
           "The provider supports different filesystem types"
@@ -77,6 +81,12 @@ Puppet::Type.newtype(:vcsrepo) do
       end
     end
 
+    newvalue :mirror, :required_features => [:mirror] do
+      if !provider.exists?
+        provider.create
+      end
+    end
+
     newvalue :absent do
       provider.destroy
     end
@@ -106,6 +116,8 @@ Puppet::Type.newtype(:vcsrepo) do
           (@should.include?(:latest) && prov.latest?) ? :latest : :present
         elsif prov.class.feature?(:bare_repositories) and prov.bare_exists?
           :bare
+        elsif prov.class.feature?(:mirror) and prov.mirror_exists?
+          :mirror
         else
           :absent
         end

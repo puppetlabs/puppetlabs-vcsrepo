@@ -5,7 +5,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   commands :git => 'git'
 
-  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth, :submodules
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth, :submodules, :mirror
 
   def create
     if @resource.value(:revision) and @resource.value(:ensure) == :bare
@@ -20,7 +20,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       if @resource.value(:revision)
         checkout
       end
-      if @resource.value(:ensure) != :bare && @resource.value(:submodules) == :true
+      if @resource.value(:ensure) != :bare && @resource.value(:ensure) != :mirror && @resource.value(:submodules) == :true
         update_submodules
       end
 
@@ -75,14 +75,18 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       at_path { git_with_identity('reset', '--hard', "#{@resource.value(:remote)}/#{desired}") }
     end
     #TODO Would this ever reach here if it is bare?
-    if @resource.value(:ensure) != :bare
+    if @resource.value(:ensure) != :bare && @resource.value(:ensure) != :mirror
       update_submodules
     end
     update_owner_and_excludes
   end
 
+  def mirror_exists?
+    bare_git_config_exists? && at_path { git('config', "remote.#{@resource.value(:remote)}.mirror") == 'true' }
+  end
+
   def bare_exists?
-    bare_git_config_exists? && !working_copy_exists?
+    bare_git_config_exists? && !working_copy_exists? && !mirror_exists?
   end
 
   # If :source is set to a hash (for supporting multiple remotes),
@@ -110,7 +114,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def exists?
-    working_copy_exists? || bare_exists?
+    working_copy_exists? || bare_exists? || mirror_exists?
   end
 
   def update_remote_url(remote_name, remote_url)
@@ -183,6 +187,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     if @resource.value(:ensure) == :bare
       args << '--bare'
     end
+    if @resource.value(:ensure) == :mirror
+      args << '--mirror'
+    end
     if @resource.value(:remote) != 'origin'
       args.push('--origin', @resource.value(:remote))
     end
@@ -222,6 +229,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       args = ['init']
       if @resource.value(:ensure) == :bare
         args << '--bare'
+      end
+      if @resource.value(:ensure) == :mirror
+        args << '--mirror'
       end
       at_path do
         git_with_identity(*args)
