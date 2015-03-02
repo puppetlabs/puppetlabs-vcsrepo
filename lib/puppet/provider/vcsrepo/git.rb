@@ -413,6 +413,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   # @!visibility private
   def git_with_identity(*args)
+    if @resource.value(:http_proxy)
+      ENV['http_proxy'] = @resource.value(:http_proxy)
+      ENV['https_proxy'] = @resource.value(:http_proxy)
+    end
     if @resource.value(:identity)
       Tempfile.open('git-helper') do |f|
         f.puts '#!/bin/sh'

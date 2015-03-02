@@ -214,6 +214,10 @@ Puppet::Type.newtype(:vcsrepo) do
     defaultto true
   end
 
+  newparam :http_proxy do
+    desc "Define a http_proxy environment variable."
+  end
+
   autorequire(:package) do
     ['git', 'git-core']
   end
