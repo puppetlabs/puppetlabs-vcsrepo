@@ -1,4 +1,4 @@
 vcsrepo { '/tmp/vcstest/p4_client_root':
-  ensure    => present,
-  provider  => 'p4',
+  ensure   => present,
+  provider => 'p4',
 }
