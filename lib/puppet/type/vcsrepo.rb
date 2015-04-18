@@ -85,7 +85,7 @@ Puppet::Type.newtype(:vcsrepo) do
     end
 
     newvalue :latest, :required_features => [:reference_tracking] do
-      if provider.exists? && !@resource.value(:force)
+      if provider.exists? && @resource.value(:force) != :true
         if provider.respond_to?(:update_references)
           provider.update_references
         end

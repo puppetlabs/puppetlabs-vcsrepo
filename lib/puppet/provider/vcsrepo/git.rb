@@ -199,11 +199,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   # @!visibility private
   def check_force
-    if path_exists? and not path_empty?
-      if @resource.value(:force)
+    if File.exists?(@resource.value(:path))
+      if @resource.value(:force) == :true
         notice "Removing %s to replace with vcsrepo." % @resource.value(:path)
         destroy
-      else
+      elsif not (path_exists? and path_empty?)
         raise Puppet::Error, "Could not create repository (non-repository at path)"
       end
     end
@@ -360,7 +360,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   # @return [String] Returns the output of get_revision
   def latest_revision
     #TODO Why is create called here anyway?
-    create if @resource.value(:force) && working_copy_exists?
+    create if (@resource.value(:force) == :true && working_copy_exists?)
     create if !working_copy_exists?
 
     if branch = on_branch?
