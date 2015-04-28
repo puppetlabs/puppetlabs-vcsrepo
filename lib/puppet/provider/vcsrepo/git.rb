@@ -417,26 +417,33 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   # @!visibility private
   def git_with_identity(*args)
-    if @resource.value(:identity)
-      Tempfile.open('git-helper') do |f|
-        f.puts '#!/bin/sh'
-        f.puts "exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
-        f.close
-
-        FileUtils.chmod(0755, f.path)
-        env_save = ENV['GIT_SSH']
-        ENV['GIT_SSH'] = f.path
-
-        ret = git(*args)
-
-        ENV['GIT_SSH'] = env_save
-
-        return ret
+    with_identity_helper do
+      if @resource.value(:user) and @resource.value(:user) != Facter['id'].value
+        Puppet::Util::Execution.execute("git #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true)
+      else
+        git(*args)
       end
-    elsif @resource.value(:user) and @resource.value(:user) != Facter['id'].value
-      Puppet::Util::Execution.execute("git #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true)
-    else
-      git(*args)
+    end
+  end
+
+  # @!visibility private
+  def with_identity_helper
+    return yield unless @resource.value(:identity)
+
+    Tempfile.open('git-helper') do |f|
+      f.puts '#!/bin/sh'
+      f.puts "exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
+      f.close
+
+      FileUtils.chmod(0755, f.path)
+      env_save = ENV['GIT_SSH']
+
+      begin
+        ENV['GIT_SSH'] = f.path
+        return yield
+      ensure
+        ENV['GIT_SSH'] = env_save
+      end
     end
   end
 end
