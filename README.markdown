@@ -221,7 +221,7 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
-To branch from a specific revision, set `revision` to a valid [Bazaar revisionspec](http://wiki.bazaar.canonical.com/BzrRevisionSpec):
+To branch from a specific revision, set `revision` to a valid [Bazaar revision spec](http://wiki.bazaar.canonical.com/BzrRevisionSpec):
 
 ~~~
 vcsrepo { '/path/to/repo':
@@ -686,7 +686,7 @@ Specifies the remote repository to track. (Requires the `multiple_remotes` featu
 Sets the revision of the repository. Valid options vary by provider:
 
 * `git` - a string containing a Git branch name, or a commit SHA or tag
-* `bzr` - a string containing a Bazaar [revisionspec](http://wiki.bazaar.canonical.com/BzrRevisionSpec)
+* `bzr` - a string containing a Bazaar [revision spec](http://wiki.bazaar.canonical.com/BzrRevisionSpec)
 * `cvs` - a string containing a CVS [tag or revision number](http://www.thathost.com/wincvs-howto/cvsdoc/cvs_4.html)
 * `hg` - a string containing a Mercurial [changeset ID](http://mercurial.selenic.com/wiki/ChangeSetID) or [tag](http://mercurial.selenic.com/wiki/Tag)
 * `p4` - a string containing a Perforce [change number, label name, client name, or date spec](http://www.perforce.com/perforce/r12.1/manuals/cmdref/o.fspecs.html)
@@ -723,10 +723,13 @@ This module has been tested with Puppet 2.7 and higher.
 
 The module has been tested on:
 
-* Red Hat Enterprise Linux 5/6
+* CentOS 5/6/7
 * Debian 6/7
-* CentOS 5/6
-* Ubuntu 12.04
+* Oracle 5/6/7
+* Red Hat Enterprise Linux 5/6/7
+* Scientific Linux 5/6/7
+* SLES 10/11/12
+* Ubuntu 10.04/12.04/14.04
 
 Testing on other platforms has been light and cannot be guaranteed.
 
