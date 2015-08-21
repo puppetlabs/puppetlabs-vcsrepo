@@ -457,7 +457,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
         return ret
       end
     elsif @resource.value(:user) and @resource.value(:user) != Facter['id'].value
-      Puppet::Util::Execution.execute("git #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true)
+      if Puppet::Util::Execution.respond_to?('execute')
+        Puppet::Util::Execution.execute("git #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true)
+      else
+        Puppet::Util.execute("git #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true)
+      end
     else
       git(*args)
     end
