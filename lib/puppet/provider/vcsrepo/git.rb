@@ -188,6 +188,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def clone_repository(source, path)
     check_force
     args = ['clone']
+    if @resource.value(:trust_server_cert) == :true
+      args.push("-c http.sslVerify=false")
+    end
     if @resource.value(:depth) and @resource.value(:depth).to_i > 0
       args.push('--depth', @resource.value(:depth).to_s)
       if @resource.value(:revision)

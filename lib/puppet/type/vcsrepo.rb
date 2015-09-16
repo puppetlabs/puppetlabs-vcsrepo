@@ -231,7 +231,7 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :trust_server_cert do
     desc "Trust server certificate"
     newvalues(:true, :false)
-    defaultto false
+    defaultto :false
   end
 
   autorequire(:package) do
