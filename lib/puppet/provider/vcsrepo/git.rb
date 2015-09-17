@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     environment({ 'HOME' => ENV['HOME'] })
   end
 
-  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth, :branch, :submodules
+  has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes, :user, :depth, :branch, :submodules, :mirror
 
   def create
     if @resource.value(:revision) and @resource.value(:ensure) == :bare
@@ -198,7 +198,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--branch', @resource.value(:branch).to_s)
     end
     if @resource.value(:ensure) == :bare
-      args << '--bare'
+      if @ressource.value(:mirror) == true
+        args << '--bare --mirror'
+      else
+        args << '--bare'
+      end
     end
     if @resource.value(:remote) != 'origin'
       args.push('--origin', @resource.value(:remote))

@@ -158,6 +158,10 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "The user to run for repository operations"
   end
 
+  newparam :mirror do
+    desc "Specify if this repository should be treated as a mirror."
+  end
+
   newparam :excludes do
     desc "Files to be excluded from the repository"
   end
