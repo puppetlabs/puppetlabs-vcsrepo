@@ -187,6 +187,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   # @!visibility private
   def clone_repository(source, path)
     check_force
+    if is_git?
+        update_remotes
+    end
     args = ['clone']
     if @resource.value(:depth) and @resource.value(:depth).to_i > 0
       args.push('--depth', @resource.value(:depth).to_s)
@@ -213,9 +216,13 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     end
   end
 
+  def is_git?
+    File.directory?(File.join(@resource.value(:path), '.git'))
+  end
+
   # @!visibility private
   def check_force
-    if path_exists? and not path_empty?
+    if path_exists? and not path_empty? and not is_git?
       if @resource.value(:force)
         notice "Removing %s to replace with vcsrepo." % @resource.value(:path)
         destroy
