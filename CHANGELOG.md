@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - Supported Release
+###Summary
+
+Small release for support of newer PE versions. This increments the version of PE in the metadata.json file.
+
 ## [1.3.1] - 2015-07-28 Supported Release
 ###Summary
 This release includes a number of bugfixes along with some test updates.
@@ -135,6 +140,7 @@ our many contributors for all of these fixes!
 - CVS:
  - Documented the "module" attribute.
 
+[1.3.2]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.1.0...1.2.0
