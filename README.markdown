@@ -559,7 +559,7 @@ The vcsrepo module adds only one type with several providers. Each provider abst
 
 Features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `submodules`, `user`
 
-Parameters: `depth`, `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `remote`, `revision`, `source`, `user`
+Parameters: `depth`, `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `remote`, `revision`, `source`, `user`, `trust_server_cert`
 
 #####`bzr` - Supports the Bazaar VCS.
 
@@ -725,7 +725,7 @@ Specifies whether to initialize and update each submodule in the repository. (Re
 
 ##### `trust_server_cert`
 
-Instructs Subversion to accept SSL server certificates issued by unknown certificate authorities. Valid options: 'true' and 'false'. Default: 'false'. 
+Instructs Subversion/Git to accept SSL server certificates issued by unknown certificate authorities. Valid options: 'true' and 'false'. Default: 'false'. 
 
 ##### `user`
 
