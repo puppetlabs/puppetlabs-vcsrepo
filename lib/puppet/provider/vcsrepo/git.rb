@@ -119,9 +119,16 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     end
   end
 
+  def correct_default_url?
+      File.readlines(File.join(@resource.value(:path), '.git', 'config')).grep(/#{Regexp.escape(default_url)}/).any?
+  end
+
   def working_copy_exists?
     if @resource.value(:source) and File.exists?(File.join(@resource.value(:path), '.git', 'config'))
-      File.readlines(File.join(@resource.value(:path), '.git', 'config')).grep(/#{Regexp.escape(default_url)}/).any?
+      if !correct_default_url?
+          update_remotes
+      end
+      correct_default_url?
     else
       File.directory?(File.join(@resource.value(:path), '.git'))
     end
