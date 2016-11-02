@@ -521,7 +521,9 @@ vcsrepo { '/path/to/repo':
 
 ####Checking out only specific paths
 
-You can check out only specific paths in a particular repository by providing their relative paths to the `include` parameter, like so:
+**Note:** The `includes` param is only supported when subversion client version is >= 1.7.
+
+You can check out only specific paths in a particular repository by providing their relative paths to the `includes` parameter, like so:
 
 ~~~
 vcsrepo { '/path/to/repo':
@@ -803,7 +805,7 @@ Specifies a source repository to serve as the upstream for your managed reposito
 * `cvs` - A string containing a CVS root.
 * `hg` - A string containing the local path or URL of a Mercurial repository.
 * `p4` - A string containing a Perforce depot path.
-* `svn` - A string containing a Subversion repository URL.
+* `svn` - A string containing a Subversion repository URL, without trailing slash.
 
 Default: none.
 
@@ -822,6 +824,8 @@ Specifies the user to run as for repository operations. (Requires the `user` fea
 ## Limitations
 
 Git is the only VCS provider officially [supported by Puppet Inc.](https://forge.puppet.com/supported)
+
+The includes parameter is only supported when SVN client version is >= 1.7
 
 This module has been tested with Puppet 2.7 and higher.
 

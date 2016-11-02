@@ -220,6 +220,12 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def update_includes(paths)
+    #If svn version < 1.7, '--parents' isn't supported. Raise legible error.
+    svn_ver = get_svn_client_version
+    if svn_ver == nil || Gem::Version.new(svn_ver) < Gem::Version.new('1.7')
+      raise "Includes option is not available for SVN versions < 1.7. Version installed: #{svn_ver}"
+    end
+
     at_path do
       args = buildargs.push('update')
       if @resource.value(:revision)
@@ -232,6 +238,12 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push(*paths)
       svn(*args)
     end
+  end
+
+  def get_svn_client_version
+    ver = Facter.value(:vcsrepo_svn_version)
+    return '0.0' if ver == nil
+    return ver;
   end
 
 end
