@@ -340,7 +340,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def bare_git_config_exists?
     return false if not File.exist?(File.join(@resource.value(:path), 'config'))
     begin
-      at_path { git('config', '-l', '--local') }
+      at_path { git('config', '--list', '--file', 'config') }
       return true
     rescue Puppet::ExecutionFailure
       return false

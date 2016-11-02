@@ -13,7 +13,7 @@ describe 'subversion tests' do
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
-        source   => "http://svn.apache.org/repos/asf/subversion/svn-logos/",
+        source   => "http://svn.apache.org/repos/asf/subversion/svn-logos",
       }
       EOS
 
@@ -42,7 +42,7 @@ describe 'subversion tests' do
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
-        source   => "http://svn.apache.org/repos/asf/subversion/developer-resources/",
+        source   => "http://svn.apache.org/repos/asf/subversion/developer-resources",
         revision => 1000000,
       }
       EOS
@@ -71,7 +71,7 @@ describe 'subversion tests' do
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
-        source   => "http://svn.apache.org/repos/asf/subversion/developer-resources/",
+        source   => "http://svn.apache.org/repos/asf/subversion/developer-resources",
         revision => 1700000,
       }
       EOS
@@ -101,7 +101,7 @@ describe 'subversion tests' do
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
-        source   => "http://svn.apache.org/repos/asf/subversion/tags/1.9.0/",
+        source   => "http://svn.apache.org/repos/asf/subversion/tags/1.9.0",
       }
       EOS
       # Run it twice and test for idempotency
@@ -122,7 +122,7 @@ describe 'subversion tests' do
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
-        source   => "http://svn.apache.org/repos/asf/subversion/tags/1.9.4/",
+        source   => "http://svn.apache.org/repos/asf/subversion/tags/1.9.4",
       }
       EOS
       # Run it twice and test for idempotency

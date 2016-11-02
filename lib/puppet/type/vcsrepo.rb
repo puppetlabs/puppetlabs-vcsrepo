@@ -166,14 +166,6 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newproperty :source do
     desc "The source URI for the repository"
-    # Strip tailing slashes
-    munge do |value|
-      if value[-1] == '/'
-        value[0..-2]
-      else
-        value
-      end
-    end
   end
 
   newparam :fstype, :required_features => [:filesystem_types] do
