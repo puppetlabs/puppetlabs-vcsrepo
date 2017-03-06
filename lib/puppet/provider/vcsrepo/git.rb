@@ -54,7 +54,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   #
   # @return [String] Returns the target sha/tag/branch
   def latest
-    if not @resource.value(:revision) and branch = on_branch?
+    if not @resource.value(:revision) and branch == on_branch?
       return branch
     else
       return @resource.value(:revision)
