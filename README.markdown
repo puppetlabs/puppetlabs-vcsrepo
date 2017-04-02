@@ -14,6 +14,7 @@
     * [Mercurial](#mercurial)
     * [Perforce](#perforce)
     * [Subversion](#subversion)
+    * [Configuring with Hiera](#configuring-with-hiera)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
     * [Type: vcsrepo](#type-vcsrepo)
         * [Providers](#providers)
@@ -644,6 +645,28 @@ vcsrepo { '/path/to/repo':
   user     => 'toto', #uses toto's $HOME/.ssh setup
   require  => File['/home/toto/.ssh/id_rsa'],
 }
+~~~
+
+### Configuring with Hiera
+
+In a Hiera include the class `vcsrepo::hiera` and then define repo paramater to the class.
+
+~~~ yaml
+classes:
+  - vcsrepo::hiera
+
+vcsrepo::hiera::repo:
+  repo1:
+    ensure: present
+    path: /some/local/on/disk/repo1
+    provider: svn
+    source: svn://svnrepo/hello/branches/foo
+    configuration: /path/to/.subversion
+  repo2:
+    ensure: present
+    path: /some/local/on/disk/repo2
+    provider: git
+    source: git://example.com/repo.git
 ~~~
 
 ## Reference
