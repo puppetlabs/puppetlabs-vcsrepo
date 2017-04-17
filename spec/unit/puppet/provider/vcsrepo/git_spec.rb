@@ -368,6 +368,7 @@ branches
     context "when it's an existing local branch" do
       it "should use 'git fetch' and 'git reset'" do
         resource[:revision] = 'feature/foo'
+        provider.expects(:update_references)
         provider.expects(:update_submodules)
         provider.expects(:git).with('branch', '-a').at_least_once.returns(branch_a_list(resource.value(:revision)))
         provider.expects(:git).with('checkout', '--force', resource.value(:revision))
@@ -378,6 +379,7 @@ branches
     context "when it's a remote branch" do
       it "should use 'git fetch' and 'git reset'" do
         resource[:revision] = 'only/remote'
+        provider.expects(:update_references)
         provider.expects(:update_submodules)
         provider.expects(:git).with('branch', '-a').at_least_once.returns(resource.value(:revision))
         provider.expects(:git).with('checkout', '--force', resource.value(:revision))
@@ -388,6 +390,8 @@ branches
     context "when it's a commit or tag" do
       it "should use 'git fetch' and 'git reset'" do
         resource[:revision] = 'a-commit-or-tag'
+        provider.expects(:git).with('fetch', 'origin')
+        provider.expects(:git).with('fetch', '--tags', 'origin')
         provider.expects(:git).with('branch', '-a').at_least_once.returns(fixture(:git_branch_a))
         provider.expects(:git).with('checkout', '--force', resource.value(:revision))
         provider.expects(:git).with('branch', '-a').returns(fixture(:git_branch_a))

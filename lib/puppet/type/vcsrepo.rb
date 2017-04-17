@@ -120,7 +120,7 @@ Puppet::Type.newtype(:vcsrepo) do
           provider.update_references
         end
         if provider.respond_to?(:latest?)
-            reference = provider.latest || provider.revision
+          reference = provider.latest || provider.revision
         else
           reference = resource.value(:revision) || provider.revision
         end
