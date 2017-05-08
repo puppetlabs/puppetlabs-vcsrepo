@@ -128,14 +128,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     # Thus, changing the `source` property from a string to a string (which
     # changes the origin url), or if the @resource.value(:remote)'s url is
     # changed, the provider will require force.
-    ## return false if not File.directory?(File.join(@resource.value(:path), '.git'))
-    if not File.directory?(File.join(@resource.value(:path), '.git'))
-      begin
-        raise Puppet::ExecutionFailure, "Path is not a git repo"
-      rescue Puppet::ExecutionFailure
-        return false
-      end
-    end
+    return false if not File.directory?(File.join(@resource.value(:path), '.git'))
     at_path do
       if @resource.value(:source)
         begin
