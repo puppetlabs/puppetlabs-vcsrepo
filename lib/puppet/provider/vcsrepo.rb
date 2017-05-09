@@ -16,6 +16,10 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
     end
   end
 
+  def working_copy_exists?
+    raise Puppet::Error, 'Not implemented'
+  end
+
   private
 
   def set_ownership
@@ -36,6 +40,7 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
     d.read.nil?
   end
 
+
   # Note: We don't rely on Dir.chdir's behavior of automatically returning the
   # value of the last statement -- for easier stubbing.
   def at_path(&block) #:nodoc:
@@ -48,10 +53,6 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
 
   def tempdir
     @tempdir ||= File.join(Dir.tmpdir, 'vcsrepo-' + Digest::MD5.hexdigest(@resource.value(:path)))
-  end
-
-  def working_copy_exists?
-    raise Puppet::Error, 'Not implemented'
   end
 
 end
