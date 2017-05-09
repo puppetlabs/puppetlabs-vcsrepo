@@ -233,12 +233,6 @@ Puppet::Type.newtype(:vcsrepo) do
     defaultto false
   end
 
-###   newparam :force do
-###     desc "Force repository creation, destroying any files on the path in the process."
-###     newvalues(:true, :false)
-###     defaultto false
-###   end
-
   newparam :compression, :required_features => [:gzip_compression] do
     desc "Compression level"
     validate do |amount|
