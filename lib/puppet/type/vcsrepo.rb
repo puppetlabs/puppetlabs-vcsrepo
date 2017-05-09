@@ -233,7 +233,7 @@ Puppet::Type.newtype(:vcsrepo) do
      defaultto false
   end
 
-###   newparam :force d#o
+###   newparam :force do
 ###     desc "Force repository creation, destroying any files on the path in the process."
 ###     newvalues(:true, :false)
 ###     defaultto false
