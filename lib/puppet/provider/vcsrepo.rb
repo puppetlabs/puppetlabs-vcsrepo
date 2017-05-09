@@ -50,4 +50,8 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
     @tempdir ||= File.join(Dir.tmpdir, 'vcsrepo-' + Digest::MD5.hexdigest(@resource.value(:path)))
   end
 
+  def working_copy_exists?
+    raise Puppet::Error, 'Not implemented'
+  end
+
 end
