@@ -6,7 +6,7 @@ require 'fileutils'
 class Puppet::Provider::Vcsrepo < Puppet::Provider
 
   def check_force
-    if path_exists? and not path_empty? and working_copy_exists?
+    if path_exists? and not path_empty?
       if @resource.value(:force)
         notice "Removing %s to replace with desired repository." % @resource.value(:path)
         destroy
@@ -14,10 +14,6 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
         raise Puppet::Error, "Path %s exists and is not the desired repository." % @resource.value(:path)
       end
     end
-  end
-
-  def working_copy_exists?
-    raise Puppet::Error, 'Not implemented'
   end
 
   private
