@@ -11,7 +11,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     :user, :depth, :branch, :submodules
 
   def create
-    check_force
+    if path_exists? and not path_empty? and not working_copy_exists?
+      raise Puppet::Error, "Path %s exists and is not the desired repository." % @resource.value(:path)
+    else
+      check_force
+    end
     if @resource.value(:revision) and ensure_bare_or_mirror?
       fail("Cannot set a revision (#{@resource.value(:revision)}) on a bare repository")
     end
