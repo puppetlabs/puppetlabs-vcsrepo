@@ -222,7 +222,7 @@ branches
       it "should raise an exception" do
         provider.expects(:path_exists?).returns(true)
         provider.expects(:path_empty?).returns(false)
-        provider.expects(:working_copy_exists?).returns(false)
+        # provider.expects(:working_copy_exists?).returns(false)
         expect { provider.create }.to raise_error(Puppet::Error)
       end
     end
