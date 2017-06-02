@@ -127,10 +127,10 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
 
     if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
       args += [
-        "--config", "\"auth.x.prefix=#{@resource.value(:source)}\"",
-        "--config", "\"auth.x.username=#{@resource.value(:basic_auth_username)}\"",
-        "--config", "\"auth.x.password=#{@resource.value(:basic_auth_password)}\"",
-        "--config", "\"auth.x.schemes=http https\""
+        "--config", "auth.x.prefix=#{@resource.value(:source)}",
+        "--config", "auth.x.username=#{@resource.value(:basic_auth_username)}",
+        "--config", "auth.x.password=#{@resource.value(:basic_auth_password)}",
+        "--config", "auth.x.schemes=http https"
       ]
     end
 
