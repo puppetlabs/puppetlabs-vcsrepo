@@ -54,7 +54,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   #
   # @return [String] Returns the target sha/tag/branch
   def latest
-    if not @resource.value(:revision) and branch = on_branch?
+    if not @resource.value(:revision) and branch == on_branch?
       return branch
     else
       return @resource.value(:revision)
@@ -504,7 +504,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     create if @resource.value(:force) && working_copy_exists?
     create if !working_copy_exists?
 
-    if branch = on_branch?
+    if branch == on_branch?
       return get_revision("#{@resource.value(:remote)}/#{branch}")
     else
       return get_revision
