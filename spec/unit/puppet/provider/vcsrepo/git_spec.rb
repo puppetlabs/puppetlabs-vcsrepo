@@ -42,6 +42,19 @@ branches
           provider.expects(:git).with('checkout', '--force', resource.value(:revision))
           provider.create
         end
+
+        it "passes timeouts along" do
+          resource[:timeout] = '300'
+          resource[:revision] = 'only/remote'
+          Dir.expects(:chdir).with('/').at_least_once.yields
+          Dir.expects(:chdir).with('/tmp/test').at_least_once.yields
+          provider.expects(:git_with_timeout).with('clone', resource.value(:source), resource.value(:path))
+          provider.expects(:update_submodules)
+          provider.expects(:update_remote_url).with("origin", resource.value(:source)).returns false
+          provider.expects(:git_with_timeout).with('branch', '-a').returns(branch_a_list(resource.value(:revision)))
+          provider.expects(:git_with_timeout).with('checkout', '--force', resource.value(:revision))
+          provider.create
+        end
       end
 
       context "with a remote not named 'origin'" do
@@ -510,6 +523,24 @@ branches
         provider.expects(:revision).returns('master')
         provider.expects(:latest_revision).returns('testrev')
         expect(provider.latest?).to be_falsey
+      end
+    end
+  end
+
+  describe 'timeout' do
+    context 'by default' do
+      it 'has no timeout' do
+        expect(provider.timeout).to eq(0)
+      end
+    end
+
+    context 'with one provided' do
+      before do
+        resource[:timeout] = '300'
+      end
+
+      it 'has the requested timeout' do
+        expect(provider.timeout).to eq(300)
       end
     end
   end

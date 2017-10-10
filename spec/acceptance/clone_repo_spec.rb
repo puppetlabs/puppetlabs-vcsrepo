@@ -62,6 +62,56 @@ describe 'clones a remote repo' do
     end
   end
 
+  context 'using a https source on github with a permissive timeout' do
+    it 'successfully clones a repo' do
+      pp = <<-EOS
+      vcsrepo { "#{tmpdir}/longtimeoutrepo":
+        ensure => present,
+        provider => git,
+        source => "https://github.com/puppetlabs/puppetlabs-vcsrepo.git",
+        timeout => 300,
+      }
+      EOS
+
+      apply_manifest(pp, :check_failures => true)
+    end
+
+    describe file("#{tmpdir}/longtimeoutrepo/.git") do
+      it { is_expected.to exist }
+    end
+
+    describe process("git") do
+      it { is_expected.to_not be_running }
+    end
+  end
+
+  context 'using a https source on github with a tiny timeout' do
+    it 'fails to clone a repo' do
+      pp = <<-EOS
+      vcsrepo { "#{tmpdir}/timeoutrepo":
+        ensure => present,
+        provider => git,
+        source => "https://github.com/WebKit/webkit.git",
+        timeout => 1,
+      }
+      EOS
+
+      apply_manifest(pp, :expect_failures => true)
+    end
+
+    describe process("git") do
+      before do
+        sleep 30 # give it a chance to die
+      end
+
+      it { is_expected.to_not be_running }
+    end
+
+    describe file("#{tmpdir}/timeoutrepo/.git") do
+      it { is_expected.to_not exist }
+    end
+  end
+
   context 'using a commit SHA' do
     let (:sha) do
       shell("git --git-dir=#{tmpdir}/testrepo.git rev-list HEAD | tail -1").stdout.chomp

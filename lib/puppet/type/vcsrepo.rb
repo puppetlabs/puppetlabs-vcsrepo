@@ -56,6 +56,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :include_paths,
           "The provider supports checking out only specific paths"
 
+  feature :timeout,
+          "The provider supports timing out its commands"
+
   ensurable do
     attr_accessor :latest
 
@@ -297,6 +300,16 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "Trust server certificate"
     newvalues(:true, :false)
     defaultto :false
+  end
+
+  newparam :timeout, :required_features => [:timeout] do
+    desc "Timeout. 0 means no timeout"
+    defaultto '0'
+    validate do |value|
+      unless Integer(value) >= 0
+        raise ArgumentError, "Timeout must be >= 0, given #{value}"
+      end
+    end
   end
 
   autorequire(:package) do

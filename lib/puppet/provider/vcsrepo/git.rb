@@ -7,8 +7,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     environment({ 'HOME' => ENV['HOME'] })
   end
 
+  has_command(:gnu_timeout, 'timeout') do
+    environment({ 'HOME' => ENV['HOME'] })
+  end
+
   has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes,
-    :user, :depth, :branch, :submodules
+    :user, :depth, :branch, :submodules, :timeout
 
   def create
     check_force
@@ -132,13 +136,13 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     at_path do
       if @resource.value(:source)
         begin
-          return git('config', '--get', "remote.#{@resource.value(:remote)}.url").chomp == default_url
+          return git_with_timeout('config', '--get', "remote.#{@resource.value(:remote)}.url").chomp == default_url
         rescue Puppet::ExecutionFailure
           return false
         end
       else
         begin
-          git('status')
+          git_with_timeout('status')
           return true
         rescue Puppet::ExecutionFailure
           return false
@@ -180,12 +184,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
 
   def source
     at_path do
-      remotes = git('remote').split("\n")
+      remotes = git_with_timeout('remote').split("\n")
       if remotes.size == 1
-        return git('config', '--get', "remote.#{remotes[0]}.url").chomp
+        return git_with_timeout('config', '--get', "remote.#{remotes[0]}.url").chomp
       else
         Hash[remotes.map { |remote|
-          [remote, git('config', '--get', "remote.#{remote}.url").chomp]
+          [remote, git_with_timeout('config', '--get', "remote.#{remote}.url").chomp]
         }]
       end
     end
@@ -258,7 +262,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     FileUtils.rm_rf(@resource.value(:path))
     FileUtils.mv(tempdir, @resource.value(:path))
     at_path do
-      git('config', '--local', '--bool', 'core.bare', 'true')
+      git_with_timeout('config', '--local', '--bool', 'core.bare', 'true')
       if @resource.value(:ensure) == :mirror
         if !@resource.value(:source)
           fail('Cannot have empty repository that is also a mirror.')
@@ -283,7 +287,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     FileUtils.mv(tempdir, File.join(@resource.value(:path), '.git'))
     if has_commits?
       at_path do
-        git('config', '--local', '--bool', 'core.bare', 'false')
+        git_with_timeout('config', '--local', '--bool', 'core.bare', 'false')
         reset('HEAD')
         git_with_identity('checkout', '--force')
         update_owner_and_excludes
@@ -295,7 +299,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def mirror?
     at_path do
       begin
-        git('config', '--get-regexp', 'remote\..*\.mirror')
+        git_with_timeout('config', '--get-regexp', 'remote\..*\.mirror')
         return true
       rescue Puppet::ExecutionFailure
         return false
@@ -306,10 +310,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def set_mirror
     at_path do
       if @resource.value(:source).is_a?(String)
-        git('config', "remote.#{@resource.value(:remote)}.mirror", 'true')
+        git_with_timeout('config', "remote.#{@resource.value(:remote)}.mirror", 'true')
       else
         @resource.value(:source).keys.each { |remote|
-          git('config', "remote.#{remote}.mirror", 'true')
+          git_with_timeout('config', "remote.#{remote}.mirror", 'true')
         }
       end
     end
@@ -319,13 +323,13 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     at_path do
       if @resource.value(:source).is_a?(String)
         begin
-          git('config', '--unset', "remote.#{@resource.value(:remote)}.mirror")
+          git_with_timeout('config', '--unset', "remote.#{@resource.value(:remote)}.mirror")
         rescue Puppet::ExecutionFailure
         end
       else
         @resource.value(:source).keys.each { |remote|
           begin
-          git('config', '--unset', "remote.#{remote}.mirror")
+          git_with_timeout('config', '--unset', "remote.#{remote}.mirror")
           rescue Puppet::ExecutionFailure
           end
         }
@@ -333,6 +337,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
     end
   end
 
+  def timeout
+    Integer(@resource.value(:timeout))
+  end
 
   private
 
@@ -340,7 +347,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
   def bare_git_config_exists?
     return false if not File.exist?(File.join(@resource.value(:path), 'config'))
     begin
-      at_path { git('config', '--list', '--file', 'config') }
+      at_path { git_with_timeout('config', '--list', '--file', 'config') }
       return true
     rescue Puppet::ExecutionFailure
       return false
@@ -577,7 +584,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
         env_save = ENV['GIT_SSH']
         ENV['GIT_SSH'] = f.path
 
-        ret = git(*args)
+        ret = git_with_timeout(*args)
 
         ENV['GIT_SSH'] = env_save
 
@@ -585,7 +592,20 @@ Puppet::Type.type(:vcsrepo).provide(:git, :parent => Puppet::Provider::Vcsrepo) 
       end
     elsif @resource.value(:user) and @resource.value(:user) != Facter['id'].value
       env = Etc.getpwnam(@resource.value(:user))
-      Puppet::Util::Execution.execute("git #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true, :custom_environment => {'HOME' => env['dir']}, :combine => true)
+      command = timeout > 0 ? "timeout #{timeout} git" : "git"
+      Puppet::Util::Execution.execute("#{command} #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true, :custom_environment => {'HOME' => env['dir']}, :combine => true)
+    else
+      git_with_timeout(*args)
+    end
+  end
+
+  # @!visibility private
+  def git_with_timeout(*args)
+    if timeout > 0
+      # Ruby's timeout doesn't seem to actually kill the child processes
+      # correctly, even with changes in newer Util::Execution, so this uses
+      # GNU's timeout instead.
+      gnu_timeout(timeout.to_s, "git", *args)
     else
       git(*args)
     end
