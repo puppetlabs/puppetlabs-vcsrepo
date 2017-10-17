@@ -4,14 +4,13 @@ require 'fileutils'
 
 # Abstract
 class Puppet::Provider::Vcsrepo < Puppet::Provider
-
   def check_force
-    if path_exists? and not path_empty?
+    if path_exists? && !path_empty?
       if @resource.value(:force)
-        notice "Removing %s to replace with desired repository." % @resource.value(:path)
+        notice 'Removing %s to replace with desired repository.' % @resource.value(:path)
         destroy
       else
-        raise Puppet::Error, "Path %s exists and is not the desired repository." % @resource.value(:path)
+        raise Puppet::Error, 'Path %s exists and is not the desired repository.' % @resource.value(:path)
       end
     end
   end
@@ -38,7 +37,7 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
 
   # Note: We don't rely on Dir.chdir's behavior of automatically returning the
   # value of the last statement -- for easier stubbing.
-  def at_path(&block) #:nodoc:
+  def at_path #:nodoc:
     value = nil
     Dir.chdir(@resource.value(:path)) do
       value = yield
@@ -49,5 +48,4 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
   def tempdir
     @tempdir ||= File.join(Dir.tmpdir, 'vcsrepo-' + Digest::MD5.hexdigest(@resource.value(:path)))
   end
-
 end

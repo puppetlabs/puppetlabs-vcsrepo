@@ -24,13 +24,13 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice to test for idempotency
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
       # need to create a file to make sure we aren't destroying the repo
       # because fun fact, if you call destroy/create in 'retrieve' puppet won't
       # register that any changes happen, because that method isn't supposed to
       # be making any changes.
       shell("touch #{tmpdir}/vcsrepo/foo")
-      apply_manifest(pp, :catch_changes  => true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/vcsrepo/foo") do
@@ -58,15 +58,14 @@ describe 'clones a remote repo' do
       }
       EOS
 
-
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
       # create a file to make sure we're destroying the repo
       shell("touch #{tmpdir}/vcsrepo/foo")
-      apply_manifest(pp2, :catch_failures  => true)
+      apply_manifest(pp2, catch_failures: true)
     end
 
     describe file("#{tmpdir}/vcsrepo/foo") do
-      it { is_expected.to_not be_file }
+      it { is_expected.not_to be_file }
     end
   end
 end

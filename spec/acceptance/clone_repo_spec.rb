@@ -25,8 +25,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo/.git") do
@@ -49,8 +49,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/httpstestrepo/.git") do
@@ -82,8 +82,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_sha/.git") do
@@ -107,15 +107,15 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_tag/.git") do
       it { is_expected.to be_directory }
     end
 
-    it 'should have the tag as the HEAD' do
+    it 'has the tag as the HEAD' do
       shell("git --git-dir=#{tmpdir}/testrepo_tag/.git name-rev HEAD | grep '0.0.2'")
     end
   end
@@ -132,8 +132,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_branch/.git") do
@@ -157,8 +157,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     it 'verifies the HEAD commit SHA on remote and local match' do
@@ -179,8 +179,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     it 'verifies the HEAD commit SHA on remote and local match' do
@@ -202,8 +202,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_shallow/.git/shallow") do
@@ -213,11 +213,11 @@ describe 'clones a remote repo' do
 
   context 'path is not empty and not a repository' do
     before(:all) do
-      shell("mkdir #{tmpdir}/not_a_repo", :acceptable_exit_codes => [0,1])
-      shell("touch #{tmpdir}/not_a_repo/file1.txt", :acceptable_exit_codes => [0,1])
+      shell("mkdir #{tmpdir}/not_a_repo", acceptable_exit_codes: [0, 1])
+      shell("touch #{tmpdir}/not_a_repo/file1.txt", acceptable_exit_codes: [0, 1])
     end
 
-    it 'should raise an exception' do
+    it 'raises an exception' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/not_a_repo":
         ensure => present,
@@ -225,7 +225,7 @@ describe 'clones a remote repo' do
         source => "file://#{tmpdir}/testrepo.git",
       }
       EOS
-      apply_manifest(pp, :expect_failures => true)
+      apply_manifest(pp, expect_failures: true)
     end
   end
 
@@ -236,7 +236,7 @@ describe 'clones a remote repo' do
     }
     EOS
 
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
     it 'clones a repo' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/testrepo_owner":
@@ -248,8 +248,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_owner") do
@@ -265,7 +265,7 @@ describe 'clones a remote repo' do
     }
     EOS
 
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
 
     it 'clones a repo' do
       pp = <<-EOS
@@ -278,8 +278,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_group") do
@@ -300,19 +300,21 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_excludes/.git/info/exclude") do
       describe '#content' do
         subject { super().content }
-        it { is_expected.to match /exclude1.txt/ }
+
+        it { is_expected.to match %r{exclude1.txt} }
       end
 
       describe '#content' do
         subject { super().content }
-        it { is_expected.to match /exclude2.txt/ }
+
+        it { is_expected.to match %r{exclude2.txt} }
       end
     end
   end
@@ -334,8 +336,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_force/folder") do
@@ -371,7 +373,7 @@ describe 'clones a remote repo' do
         }
         EOS
 
-        apply_manifest(pp, :catch_changes => true)
+        apply_manifest(pp, catch_changes: true)
       end
     end
   end
@@ -389,7 +391,7 @@ describe 'clones a remote repo' do
       }
       EOS
 
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
     end
 
     it 'applies the manifest' do
@@ -403,8 +405,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_user") do
@@ -419,7 +421,7 @@ describe 'clones a remote repo' do
 
     after(:all) do
       pp = 'user { "testuser": ensure => absent }'
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
     end
   end
 
@@ -435,8 +437,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     it 'remote name is "testorigin"' do
@@ -457,7 +459,7 @@ describe 'clones a remote repo' do
         managehome => true,
       }
       EOS
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
 
       # create ssh keys
       shell('mkdir -p /home/testuser-ssh/.ssh')
@@ -480,8 +482,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     after(:all) do
@@ -491,7 +493,7 @@ describe 'clones a remote repo' do
         managehome => true,
       }
       EOS
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
     end
   end
 
@@ -504,7 +506,7 @@ describe 'clones a remote repo' do
         managehome => true,
       }
       EOS
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
 
       # create ssh keys
       shell('mkdir -p /home/testuser-ssh/.ssh')
@@ -527,8 +529,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
   end
 
@@ -543,8 +545,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_bare_repo/config") do
@@ -569,8 +571,8 @@ describe 'clones a remote repo' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/testrepo_mirror_repo/config") do
@@ -584,5 +586,4 @@ describe 'clones a remote repo' do
       it { is_expected.to contain 'ref: refs/heads/master' }
     end
   end
-
 end

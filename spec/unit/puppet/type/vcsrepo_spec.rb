@@ -2,7 +2,6 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:vcsrepo) do
-
   before :each do
     Puppet::Type.type(:vcsrepo).stubs(:defaultprovider).returns(providerclass)
   end
@@ -11,7 +10,9 @@ describe Puppet::Type.type(:vcsrepo) do
     described_class.provide(:fake_vcsrepo_provider) do
       attr_accessor :property_hash
       def create; end
+
       def destroy; end
+
       def exists?
         get(:ensure) != :absent
       end
@@ -21,14 +22,14 @@ describe Puppet::Type.type(:vcsrepo) do
   end
 
   let(:provider) do
-    providerclass.new(:name => 'fake-vcs')
+    providerclass.new(name: 'fake-vcs')
   end
 
   let(:resource) do
-    described_class.new(:name => '/repo',
-                        :ensure => :present,
-                        :source => 'http://example.com/repo/',
-                        :provider => provider)
+    described_class.new(name: '/repo',
+                        ensure: :present,
+                        source: 'http://example.com/repo/',
+                        provider: provider)
   end
 
   let(:ensureprop) do
@@ -39,7 +40,7 @@ describe Puppet::Type.type(:vcsrepo) do
     resource.property(:source)
   end
 
-  properties = [ :ensure, :source ]
+  properties = [:ensure, :source]
 
   properties.each do |property|
     it "should have a #{property} property" do
@@ -47,7 +48,7 @@ describe Puppet::Type.type(:vcsrepo) do
     end
   end
 
-  parameters = [ :ensure ]
+  parameters = [:ensure]
 
   parameters.each do |parameter|
     it "should have a #{parameter} parameter" do
@@ -56,7 +57,7 @@ describe Puppet::Type.type(:vcsrepo) do
   end
 
   describe "with an include path that starts with a '/'" do
-    it "should raise a Puppet::ResourceError error" do
+    it 'raises a Puppet::ResourceError error' do
       expect {
         resource[:includes] = ['/path1/file1', '/path2/file2']
       }.to raise_error(Puppet::ResourceError, /Include path '.*' starts with a '\/'/)
@@ -64,42 +65,42 @@ describe Puppet::Type.type(:vcsrepo) do
   end
 
   describe 'when using a provider that adds/removes a trailing / to the source' do
-    it "should stay in sync when it leaves it as-is" do
+    it 'stays in sync when it leaves it as-is' do
       sourceprop.should = 'http://example.com/repo/'
       expect(sourceprop.safe_insync?('http://example.com/repo/')).to eq(true)
     end
-    it "should stay in sync when it adds a slash" do
+    it 'stays in sync when it adds a slash' do
       sourceprop.should = 'http://example.com/repo'
       expect(sourceprop.safe_insync?('http://example.com/repo/')).to eq(true)
     end
-    it "should stay in sync when it removes a slash" do
+    it 'stays in sync when it removes a slash' do
       sourceprop.should = 'http://example.com/repo/'
       expect(sourceprop.safe_insync?('http://example.com/repo')).to eq(true)
     end
-    it "should be out of sync with a different source" do
+    it 'is out of sync with a different source' do
       sourceprop.should = 'http://example.com/repo/asdf'
       expect(sourceprop.safe_insync?('http://example.com/repo')).to eq(false)
     end
   end
 
   describe 'default resource with required params' do
-    it 'should have a valid name parameter' do
+    it 'has a valid name parameter' do
       expect(resource[:name]).to eq('/repo')
     end
 
-    it 'should have ensure set to present' do
+    it 'has ensure set to present' do
       expect(resource[:ensure]).to eq(:present)
     end
 
-    it 'should have path set to /repo' do
+    it 'has path set to /repo' do
       expect(resource[:path]).to eq('/repo')
     end
 
     defaults = {
-      :owner => nil,
-      :group => nil,
-      :user => nil,
-      :revision => nil,
+      owner: nil,
+      group: nil,
+      user: nil,
+      revision: nil,
     }
 
     defaults.each_pair do |param, value|
@@ -110,22 +111,22 @@ describe Puppet::Type.type(:vcsrepo) do
   end
 
   describe 'when changing the ensure' do
-    it 'should be in sync if it is :absent and should be :absent' do
+    it 'is in sync if it is :absent and should be :absent' do
       ensureprop.should = :absent
       expect(ensureprop.safe_insync?(:absent)).to eq(true)
     end
 
-    it 'should be in sync if it is :present and should be :present' do
+    it 'is in sync if it is :present and should be :present' do
       ensureprop.should = :present
       expect(ensureprop.safe_insync?(:present)).to eq(true)
     end
 
-    it 'should be out of sync if it is :absent and should be :present' do
+    it 'is out of sync if it is :absent and should be :present' do
       ensureprop.should = :present
       expect(ensureprop.safe_insync?(:absent)).not_to eq(true)
     end
 
-    it 'should be out of sync if it is :present and should be :absent' do
+    it 'is out of sync if it is :present and should be :absent' do
       ensureprop.should = :absent
       expect(ensureprop.safe_insync?(:present)).not_to eq(true)
     end
@@ -135,12 +136,12 @@ describe Puppet::Type.type(:vcsrepo) do
     before :each do
       @catalog = Puppet::Resource::Catalog.new
       ['git', 'git-core', 'mercurial', 'subversion'].each do |pkg|
-        @catalog.add_resource(Puppet::Type.type(:package).new(:name => pkg))
+        @catalog.add_resource(Puppet::Type.type(:package).new(name: pkg))
       end
     end
 
-    it 'should require package packages' do
-      @resource = described_class.new(:name => '/foo', :provider => provider)
+    it 'requires package packages' do
+      @resource = described_class.new(name: '/foo', provider: provider)
       @catalog.add_resource(@resource)
       req = @resource.autorequire
       expect(req.size).to eq(4)

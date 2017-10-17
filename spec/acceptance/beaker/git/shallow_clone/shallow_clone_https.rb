@@ -9,7 +9,7 @@ hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
-    if host['platform'] =~ /ubuntu-10/
+    if host['platform'] =~ %r{ubuntu-10}
       git_pkg = 'git-core'
     end
     install_package(host, git_pkg)
@@ -18,7 +18,7 @@ hosts.each do |host|
     on(host, "cd #{tmpdir} && ./create_git_repo.sh")
   end
   step 'setup - start https server' do
-    https_daemon =<<-EOF
+    https_daemon = <<-EOF
     require 'webrick'
     require 'webrick/https'
     server = WEBrick::HTTPServer.new(
@@ -33,7 +33,7 @@ hosts.each do |host|
     server.start
     EOF
     create_remote_file(host, '/tmp/https_daemon.rb', https_daemon)
-    #on(host, "#{ruby} /tmp/https_daemon.rb")
+    # on(host, "#{ruby} /tmp/https_daemon.rb")
   end
 
   teardown do
@@ -51,18 +51,17 @@ hosts.each do |host|
     }
     EOS
 
-    apply_manifest_on(host, pp, :catch_failures => true)
-    apply_manifest_on(host, pp, :catch_changes  => true)
+    apply_manifest_on(host, pp, catch_failures: true)
+    apply_manifest_on(host, pp, catch_changes: true)
   end
 
   step 'verify checkout is shallow and of the correct depth' do
     on(host, "ls #{tmpdir}/#{repo_name}/.git/") do |res|
-      fail_test('shallow not found') unless res.stdout.include? "shallow"
+      fail_test('shallow not found') unless res.stdout.include? 'shallow'
     end
 
     on(host, "wc -l #{tmpdir}/#{repo_name}/.git/shallow") do |res|
       fail_test('shallow not found') unless res.stdout.include? "1 #{tmpdir}/#{repo_name}/.git/shallow"
     end
   end
-
 end

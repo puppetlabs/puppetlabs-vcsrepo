@@ -10,7 +10,7 @@ hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
-    if host['platform'] =~ /ubuntu-10/
+    if host['platform'] =~ %r{ubuntu-10}
       git_pkg = 'git-core'
     end
     install_package(host, git_pkg)
@@ -20,7 +20,7 @@ hosts.each do |host|
   end
 
   step 'setup - start git daemon' do
-    install_package(host, 'git-daemon') unless host['platform'] =~ /debian|ubuntu/
+    install_package(host, 'git-daemon') unless host['platform'] =~ %r{debian|ubuntu}
     on(host, "git daemon --base-path=#{tmpdir}  --export-all --reuseaddr --verbose --detach")
   end
 
@@ -40,14 +40,13 @@ hosts.each do |host|
     }
     EOS
 
-    apply_manifest_on(host, pp, :catch_failures => true)
-    apply_manifest_on(host, pp, :catch_changes  => true)
+    apply_manifest_on(host, pp, catch_failures: true)
+    apply_manifest_on(host, pp, catch_changes: true)
   end
 
-  step "verify checkout (silent error for basic auth using git protocol)" do
+  step 'verify checkout (silent error for basic auth using git protocol)' do
     on(host, "ls #{tmpdir}/#{repo_name}/.git/") do |res|
-      fail_test('checkout not found') unless res.stdout.include? "HEAD"
+      fail_test('checkout not found') unless res.stdout.include? 'HEAD'
     end
   end
-
 end

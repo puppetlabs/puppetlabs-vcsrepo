@@ -7,8 +7,8 @@ describe 'subversion tests' do
     shell("mkdir -p #{tmpdir}") # win test
   end
 
-  context "plain checkout" do
-    it "can checkout svn" do
+  context 'plain checkout' do
+    it 'can checkout svn' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
@@ -18,26 +18,24 @@ describe 'subversion tests' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do
       it { is_expected.to be_directory }
     end
     describe file("#{tmpdir}/svnrepo/images/tyrus-svn2.png") do
-      its(:md5sum) { should eq '6b20cbc4a793913190d1548faad1ae80' }
+      its(:md5sum) { is_expected.to eq '6b20cbc4a793913190d1548faad1ae80' }
     end
 
     after(:all) do
       shell("rm -rf #{tmpdir}/svnrepo")
     end
-
   end
 
-  context "handles revisions" do
-    it "can checkout a specific revision of svn" do
+  context 'handles revisions' do
+    it 'can checkout a specific revision of svn' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
@@ -48,25 +46,23 @@ describe 'subversion tests' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do
       it { is_expected.to be_directory }
     end
     describe command("svn info #{tmpdir}/svnrepo") do
-      its(:stdout) { should match( /.*Revision: 1000000.*/ ) }
+      its(:stdout) { is_expected.to match(%r{.*Revision: 1000000.*}) }
     end
     describe file("#{tmpdir}/svnrepo/difftools/README") do
-      its(:md5sum) { should eq '540241e9d5d4740d0ef3d27c3074cf93' }
+      its(:md5sum) { is_expected.to eq '540241e9d5d4740d0ef3d27c3074cf93' }
     end
-
   end
 
-  context "handles revisions" do
-    it "can switch revisions" do
+  context 'handles revisions' do
+    it 'can switch revisions' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
@@ -77,26 +73,24 @@ describe 'subversion tests' do
       EOS
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do
       it { is_expected.to be_directory }
     end
     describe command("svn info #{tmpdir}/svnrepo") do
-      its(:stdout) { should match( /.*Revision: 1700000.*/ ) }
+      its(:stdout) { is_expected.to match(%r{.*Revision: 1700000.*}) }
     end
 
     after(:all) do
       shell("rm -rf #{tmpdir}/svnrepo")
     end
-
   end
 
-  context "switching sources" do
-    it "can checkout tag=1.9.0" do
+  context 'switching sources' do
+    it 'can checkout tag=1.9.0' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
@@ -105,19 +99,19 @@ describe 'subversion tests' do
       }
       EOS
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
     describe file("#{tmpdir}/svnrepo/.svn") do
       it { is_expected.to be_directory }
     end
     describe file("#{tmpdir}/svnrepo/STATUS") do
-      its(:md5sum) { should eq '286708a30aea43d78bc2b11f3ac57fff' }
+      its(:md5sum) { is_expected.to eq '286708a30aea43d78bc2b11f3ac57fff' }
     end
   end
 
-  context "switching sources" do
-    it "can switch to tag=1.9.4" do
+  context 'switching sources' do
+    it 'can switch to tag=1.9.4' do
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
@@ -126,18 +120,15 @@ describe 'subversion tests' do
       }
       EOS
       # Run it twice and test for idempotency
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do
       it { is_expected.to be_directory }
     end
     describe file("#{tmpdir}/svnrepo/STATUS") do
-      its(:md5sum) { should eq '7f072a1c0e2ba37ca058f65e554de95e' }
+      its(:md5sum) { is_expected.to eq '7f072a1c0e2ba37ca058f65e554de95e' }
     end
-
   end
-
 end
-

@@ -19,7 +19,7 @@ describe 'MODULES-660' do
       source   => "file://#{tmpdir}/testrepo.git",
     }
     EOS
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
   end
 
   after(:all) do
@@ -36,8 +36,8 @@ describe 'MODULES-660' do
         source   => "file://#{tmpdir}/testrepo.git",
       }
       EOS
-      apply_manifest(pp, :expect_changes => true)
-      apply_manifest(pp, :catch_changes  => true)
+      apply_manifest(pp, expect_changes: true)
+      apply_manifest(pp, catch_changes: true)
     end
     it 'checks out the tag' do
       pp = <<-EOS
@@ -48,8 +48,8 @@ describe 'MODULES-660' do
         source   => "file://#{tmpdir}/testrepo.git",
       }
       EOS
-      apply_manifest(pp, :expect_changes => true)
-      apply_manifest(pp, :catch_changes  => true)
+      apply_manifest(pp, expect_changes: true)
+      apply_manifest(pp, catch_changes: true)
     end
     it 'checks out the sha' do
       sha = shell("cd #{tmpdir}/testrepo && git rev-parse origin/master").stdout.chomp
@@ -61,8 +61,8 @@ describe 'MODULES-660' do
         source   => "file://#{tmpdir}/testrepo.git",
       }
       EOS
-      apply_manifest(pp, :expect_changes => true)
-      apply_manifest(pp, :catch_changes  => true)
+      apply_manifest(pp, expect_changes: true)
+      apply_manifest(pp, catch_changes: true)
     end
   end
 
