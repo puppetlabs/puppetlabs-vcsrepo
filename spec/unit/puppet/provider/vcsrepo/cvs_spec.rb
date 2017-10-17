@@ -75,7 +75,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
         File.expects(:directory?).with(File.join(resource.value(:path), 'CVS')).returns(true)
         expects_chdir
         Puppet::Util::Execution.expects(:execute).with([:cvs, '-nq', 'status', '-l'], custom_environment: {}, combine: true, failonfail: true)
-        provider.exists?
+        provider.exist?
       end
     end
 
@@ -83,8 +83,8 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
       it 'checks for the CVSROOT directory and config file' do
         resource.delete(:source)
         File.expects(:directory?).with(File.join(resource.value(:path), 'CVSROOT')).returns(true)
-        File.expects(:exists?).with(File.join(resource.value(:path), 'CVSROOT', 'config,v')).returns(true)
-        provider.exists?
+        File.expects(:exist?).with(File.join(resource.value(:path), 'CVSROOT', 'config,v')).returns(true)
+        provider.exist?
       end
     end
   end
