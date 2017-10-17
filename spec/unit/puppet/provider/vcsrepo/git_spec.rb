@@ -121,7 +121,7 @@ branches
       context 'with revision' do
         it 'raises an error' do
           resource[:ensure] = :bare
-          expect { provider.create }.to raise_error(Puppet::Error, %r{cannot set a revision.+bare}i)
+          expect { provider.create }.to raise_error(RuntimeError, %r{cannot set a revision.+bare}i)
         end
       end
       context 'without revision' do
@@ -152,7 +152,7 @@ branches
       context 'with revision' do
         it 'raises an error' do
           resource[:ensure] = :mirror
-          expect { provider.create }.to raise_error(Puppet::Error, %r{cannot set a revision.+bare}i)
+          expect { provider.create }.to raise_error(RuntimeError, %r{cannot set a revision.+bare}i)
         end
       end
       context 'without revision' do
@@ -171,7 +171,7 @@ branches
           resource[:ensure] = :mirror
           resource.delete(:source)
           resource.delete(:revision)
-          expect { provider.create }.to raise_error(Puppet::Error, %r{cannot init repository with mirror.+try bare}i)
+          expect { provider.create }.to raise_error(RuntimeError, %r{cannot init repository with mirror.+try bare}i)
         end
       end
     end
@@ -336,7 +336,7 @@ branches
         provider.expects(:git).with('branch', '-a').returns(branch_a_list)
         provider.expects(:git).with('rev-parse', '--revs-only', resource.value(:revision)).returns('')
         provider.expects(:update_references)
-        expect { provider.revision }.to raise_error(Puppet::Error, %r{not a local or remote ref$})
+        expect { provider.revision }.to raise_error(RuntimeError, %r{not a local or remote ref$})
       end
     end
 
