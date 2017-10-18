@@ -112,7 +112,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # value for the default URL.
   def default_url
     if @resource.value(:source).is_a?(Hash)
-      if @resource.value(:source).key?(@resource.value(:remote))
+      if @resource.value(:source).key?(@resource.value(:remote)) #TODO: 2 errors when guard statement is used './spec/acceptance/modules_753_spec.rb'
         @resource.value(:source)[@resource.value(:remote)]
       else
         raise("You must specify the URL for remote '#{@resource.value(:remote)}' in the :source hash")
@@ -180,13 +180,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def source
     at_path do
       remotes = git('remote').split("\n")
-      if remotes.size == 1
-        return git('config', '--get', "remote.#{remotes[0]}.url").chomp
-      else
-        Hash[remotes.map do |remote|
-          [remote, git('config', '--get', "remote.#{remote}.url").chomp]
-        end]
-      end
+
+      return git('config', '--get', "remote.#{remotes[0]}.url").chomp if remotes.size == 1
+      Hash[remotes.map do |remote|
+        [remote, git('config', '--get', "remote.#{remote}.url").chomp]
+      end]
     end
   end
 
@@ -229,9 +227,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
     # If at least one remote was added or updated, then we must
     # call the 'git remote update' command
-    if do_update == true
-      at_path { git_with_identity('remote', 'update') }
-    end
+    at_path { git_with_identity('remote', 'update') } if do_update == true
   end
 
   def update_references
@@ -258,11 +254,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     at_path do
       git('config', '--local', '--bool', 'core.bare', 'true')
       if @resource.value(:ensure) == :mirror
-        if !@resource.value(:source)
-          raise('Cannot have empty repository that is also a mirror.')
-        else
+          raise('Cannot have empty repository that is also a mirror.') if !@resource.value(:source)
           set_mirror
-        end
       end
     end
   end
@@ -500,8 +493,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     # TODO: Why is create called here anyway?
     create if @resource.value(:force) && working_copy_exists?
     create unless working_copy_exists?
-
-    if branch = on_branch?
+    # TODO: Is meant to be branch = on_branch? not ==
+    if branch = on_branch? # TODO: 8 errors when guard statement is used './spec/acceptance/modules_1800_spec.rb' + './spec/acceptance/modules_660_spec.rb' + './spec/acceptance/clone_repo_spec.rb'
       return get_revision("#{@resource.value(:remote)}/#{branch}")
     else
       return get_revision
@@ -555,9 +548,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     if @resource.value(:owner) || @resource.value(:group)
       set_ownership
     end
-    if @resource.value(:excludes)
-      set_excludes
-    end
+    set_excludes if @resource.value(:excludes)
   end
 
   # @!visibility private
@@ -567,7 +558,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
         f.puts '#!/bin/sh'
         f.puts 'SSH_AUTH_SOCKET='
         f.puts 'export SSH_AUTH_SOCKET'
-        f.puts "exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
+        f.puts 'exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no ' \
+               "-oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
         f.close
 
         FileUtils.chmod(0o755, f.path)
