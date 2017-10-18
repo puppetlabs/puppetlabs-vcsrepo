@@ -75,10 +75,12 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
       begin
         hg_wrapper('pull', remote: true)
       rescue
+        next
       end
       begin
         hg_wrapper('merge')
       rescue Puppet::ExecutionFailure
+        next
         # If there's nothing to merge, just skip
       end
       hg_wrapper('update', '--clean', '-r', desired)
@@ -114,9 +116,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
   end
 
   def update_owner
-    if @resource.value(:owner) || @resource.value(:group)
-      set_ownership
-    end
+    set_ownership if @resource.value(:owner) || @resource.value(:group)
   end
 
   def hg_wrapper(*args)

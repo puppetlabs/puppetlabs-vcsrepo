@@ -99,9 +99,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
   private
 
   def update_owner
-    if @resource.value(:owner) || @resource.value(:group)
-      set_ownership
-    end
+    set_ownership if @resource.value(:owner) || @resource.value(:group)
   end
 
   # Sync the client workspace files to head or specified revision.
@@ -157,7 +155,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     # check is source is a Stream
     source = @resource.value(:source)
     if source
-      parts = source.split(/\//)
+      parts = source.split(%r{/})
       if parts && parts.length >= 4
         source = '//' + parts[2] + '/' + parts[3]
         streams = p4(['streams', source], raise: false)
@@ -242,7 +240,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
       end
 
       if opts[:marshal]
-        hash = Marshal.load(o)
+        hash = Marshal.dump(o)
       else
         hash['data'] = o.read
       end
