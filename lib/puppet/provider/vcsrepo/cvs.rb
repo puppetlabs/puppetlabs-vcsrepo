@@ -1,9 +1,9 @@
 require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 
-Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) do
-  desc "Supports CVS repositories/workspaces"
+Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
+  desc 'Supports CVS repositories/workspaces'
 
-  commands :cvs => 'cvs'
+  commands cvs: 'cvs'
   has_features :gzip_compression, :reference_tracking, :modules, :cvs_rsh, :user
 
   def create
@@ -16,14 +16,14 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
     update_owner
   end
 
-  def exists?
+  def exist?
     working_copy_exists?
   end
 
   def working_copy_exists?
     if @resource.value(:source)
       directory = File.join(@resource.value(:path), 'CVS')
-      return false if not File.directory?(directory)
+      return false unless File.directory?(directory)
       begin
         at_path { runcvs('-nq', 'status', '-l') }
         return true
@@ -32,10 +32,10 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       end
     else
       directory = File.join(@resource.value(:path), 'CVSROOT')
-      return false if not File.directory?(directory)
+      return false unless File.directory?(directory) # TODO: Errors if set to unless
       config = File.join(@resource.value(:path), 'CVSROOT', 'config,v')
-      return false if not File.exists?(config)
-      return true
+      return false unless File.exist?(config) # TODO: Errors if converted to .exist?
+      true
     end
   end
 
@@ -49,8 +49,8 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       # We cannot use -P to prune empty dirs, otherwise
       # CVS would report those as "missing", regardless
       # if they have contents or updates.
-      is_current = (runcvs('-nq', 'update', '-d').strip == "")
-      if (!is_current) then Puppet.debug "There are updates available on the checkout's current branch/tag." end
+      is_current = (runcvs('-nq', 'update', '-d').strip == '')
+      unless is_current then Puppet.debug "There are updates available on the checkout's current branch/tag." end
       return is_current
     end
   end
@@ -60,12 +60,12 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
     # sets, so we can only have the current branch name (or the
     # requested one, if that differs) as the "latest" revision.
     should = @resource.value(:revision)
-    current = self.revision
-    return should != current ? should : current
+    current = revision
+    (should != current) ? should : current
   end
 
   def revision
-    if !@rev
+    unless @rev
       if File.exist?(tag_file)
         contents = File.read(tag_file).strip
         # Note: Doesn't differentiate between N and T entries
@@ -75,7 +75,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
       end
       Puppet.debug "Checkout is on branch/tag '#{@rev}'"
     end
-    return @rev
+    @rev
   end
 
   def revision=(desired)
@@ -90,7 +90,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
     File.read(File.join(@resource.value(:path), 'CVS', 'Root')).chomp
   end
 
-  def source=(desired)
+  def source=(_desired)
     create # recreate
   end
 
@@ -98,7 +98,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
     File.read(File.join(@resource.value(:path), 'CVS', 'Repository')).chomp
   end
 
-  def module=(desired)
+  def module=(_desired)
     create # recreate
   end
 
@@ -126,7 +126,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
 
   # If no module is provided, use '.', the root of the repo
   def module_name
-    @resource.value(:module) or '.'
+    @resource.value(:module) || '.'
   end
 
   def create_repository(path)
@@ -134,24 +134,22 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def update_owner
-    if @resource.value(:owner) or @resource.value(:group)
-      set_ownership
-    end
+    set_ownership if @resource.value(:owner) || @resource.value(:group)
   end
 
   def runcvs(*args)
     if @resource.value(:cvs_rsh)
-      Puppet.debug "Using CVS_RSH = " + @resource.value(:cvs_rsh)
-      e = { :CVS_RSH => @resource.value(:cvs_rsh) }
+      Puppet.debug 'Using CVS_RSH = ' + @resource.value(:cvs_rsh)
+      e = { CVS_RSH: @resource.value(:cvs_rsh) }
     else
       e = {}
     end
 
-    if @resource.value(:user) and @resource.value(:user) != Facter['id'].value
-      Puppet.debug "Running as user " + @resource.value(:user)
-      Puppet::Util::Execution.execute([:cvs, *args], :uid => @resource.value(:user), :custom_environment => e, :combine => true, :failonfail => true)
+    if @resource.value(:user) && @resource.value(:user) != Facter['id'].value
+      Puppet.debug 'Running as user ' + @resource.value(:user)
+      Puppet::Util::Execution.execute([:cvs, *args], uid: @resource.value(:user), custom_environment: e, combine: true, failonfail: true)
     else
-      Puppet::Util::Execution.execute([:cvs, *args], :custom_environment => e, :combine => true, :failonfail => true)
+      Puppet::Util::Execution.execute([:cvs, *args], custom_environment: e, combine: true, failonfail: true)
     end
   end
 end

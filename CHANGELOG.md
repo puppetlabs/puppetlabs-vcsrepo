@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] - 11/10/2017 Supported Release
+
+### Summary
+This is to provide a clean release from which to run Rebucop
+
+### Added
+- Addition of Debian 9.
+### Changed
+- Fix to cvs working copy detection
+- Removal of Debian 6 and SLES 10.
+- typo error for sshed-git-source
+- Update to existence test, Use 'svn info' instead of 'svn status'. 'svn status' does not return proper exit codes, while 'svn info' does.
+- Fix for working_copy_exists, Change method 'working_copy_exists' to use 'svn info' instead of 'svn status'. 'svn status' does not return proper exit codes, while 'svn info' does.
+- Remove unsupported Ubuntu
+- fixing tests associated with hg
+- hg provider: remove escaped quotes - authentication fix
+- Removal of commented out test
+
 ## Supported Release [2.0.0]
 
 ### Summary

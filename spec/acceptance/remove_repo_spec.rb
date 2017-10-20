@@ -10,7 +10,7 @@ describe 'remove a repo' do
       provider => git,
     }
     EOS
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
   end
 
   it 'removes a repo' do
@@ -21,7 +21,7 @@ describe 'remove a repo' do
     }
     EOS
 
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
   end
 
   describe file("#{tmpdir}/testrepo_deleted") do

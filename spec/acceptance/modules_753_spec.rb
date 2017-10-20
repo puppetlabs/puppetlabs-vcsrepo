@@ -22,11 +22,10 @@ describe 'clones a remote repo' do
       }
       EOS
 
-      apply_manifest(pp, :catch_failures => true)
-
+      apply_manifest(pp, catch_failures: true)
     end
 
-    it "git config output should contain the remote" do
+    it 'git config output should contain the remote' do
       shell("/usr/bin/git config -l -f #{tmpdir}/vcsrepo/.git/config") do |r|
         expect(r.stdout).to match(/remote.origin.url=https:\/\/github.com\/puppetlabs\/puppetlabs-vcsrepo.git/)
       end
@@ -35,7 +34,6 @@ describe 'clones a remote repo' do
     after(:all) do
       shell("rm -rf #{tmpdir}/vcsrepo")
     end
-
   end
 
   context 'clone with multiple remotes' do
@@ -48,11 +46,10 @@ describe 'clones a remote repo' do
       }
       EOS
 
-      apply_manifest(pp, :catch_failures => true)
-
+      apply_manifest(pp, catch_failures: true)
     end
 
-    it "git config output should contain the remotes" do
+    it 'git config output should contain the remotes' do
       shell("/usr/bin/git config -l -f #{tmpdir}/vcsrepo/.git/config") do |r|
         expect(r.stdout).to match(/remote.origin.url=https:\/\/github.com\/puppetlabs\/puppetlabs-vcsrepo.git/)
         expect(r.stdout).to match(/remote.test1.url=https:\/\/github.com\/puppetlabs\/puppetlabs-vcsrepo.git/)
@@ -62,7 +59,5 @@ describe 'clones a remote repo' do
     after(:all) do
       shell("rm -rf #{tmpdir}/vcsrepo")
     end
-
   end
-
 end

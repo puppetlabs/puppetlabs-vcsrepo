@@ -10,7 +10,7 @@ describe 'does not remove a repo if noop' do
       provider => git,
     }
     EOS
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
   end
 
   it 'does not remove a repo if noop' do
@@ -22,7 +22,7 @@ describe 'does not remove a repo if noop' do
     }
     EOS
 
-    apply_manifest(pp, :catch_failures => true, :noop => true, :verbose => false)
+    apply_manifest(pp, catch_failures: true, noop: true, verbose: false)
   end
 
   describe file("#{tmpdir}/testrepo_noop_deleted") do
