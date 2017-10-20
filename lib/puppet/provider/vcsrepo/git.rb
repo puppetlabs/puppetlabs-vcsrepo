@@ -111,15 +111,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # we throw an error. If :source is just a string, we use that
   # value for the default URL.
   def default_url
-    if @resource.value(:source).is_a?(Hash)
-      if @resource.value(:source).key?(@resource.value(:remote)) #TODO: 2 errors when guard statement is used './spec/acceptance/modules_753_spec.rb'
-        @resource.value(:source)[@resource.value(:remote)]
-      else
-        raise("You must specify the URL for remote '#{@resource.value(:remote)}' in the :source hash")
-      end
-    else
-      @resource.value(:source)
-    end
+    return @resource.value(:source) unless @resource.value(:source).is_a?(Hash)
+    return @resource.value(:source)[@resource.value(:remote)] if @resource.value(:source).key?(@resource.value(:remote))
+    raise("You must specify the URL for remote '#{@resource.value(:remote)}' in the :source hash")
   end
 
   def working_copy_exists?
@@ -160,20 +154,19 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def update_remote_url(remote_name, remote_url)
     current = git_with_identity('config', '-l')
 
-    unless remote_url.nil?
-      # Check if remote exists at all, regardless of URL.
-      # If remote doesn't exist, add it
-      if !current.include? "remote.#{remote_name}.url"
-        git_with_identity('remote', 'add', remote_name, remote_url)
-        return true
+    return if remote_url.nil?
+    # Check if remote exists at all, regardless of URL.
+    # If remote doesn't exist, add it
+    if !current.include? "remote.#{remote_name}.url"
+      git_with_identity('remote', 'add', remote_name, remote_url)
+      return true
 
-      # If remote exists, but URL doesn't match, update URL
-      elsif !current.include? "remote.#{remote_name}.url=#{remote_url}"
-        git_with_identity('remote', 'set-url', remote_name, remote_url)
-        return true
-      else
-        return false
-      end
+    # If remote exists, but URL doesn't match, update URL
+    elsif !current.include? "remote.#{remote_name}.url=#{remote_url}"
+      git_with_identity('remote', 'set-url', remote_name, remote_url)
+      return true
+    else
+      return false
     end
   end
 
@@ -253,10 +246,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     FileUtils.mv(tempdir, @resource.value(:path))
     at_path do
       git('config', '--local', '--bool', 'core.bare', 'true')
-      if @resource.value(:ensure) == :mirror
-          raise('Cannot have empty repository that is also a mirror.') if !@resource.value(:source)
-          set_mirror
-      end
+      return unless @resource.value(:ensure) == :mirror
+      raise('Cannot have empty repository that is also a mirror.') unless @resource.value(:source)
+      set_mirror
     end
   end
 
@@ -272,7 +264,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     FileUtils.mv(@resource.value(:path), tempdir)
     FileUtils.mkdir(@resource.value(:path))
     FileUtils.mv(tempdir, File.join(@resource.value(:path), '.git'))
-    if has_commits?
+    if commits?
       at_path do
         git('config', '--local', '--bool', 'core.bare', 'false')
         reset('HEAD')
@@ -312,12 +304,14 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
         begin
           git('config', '--unset', "remote.#{@resource.value(:remote)}.mirror")
         rescue Puppet::ExecutionFailure
+          next
         end
       else
         @resource.value(:source).keys.each do |remote|
           begin
             git('config', '--unset', "remote.#{remote}.mirror")
           rescue Puppet::ExecutionFailure
+            next
           end
         end
       end
@@ -389,7 +383,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   end
 
   # @!visibility private
-  def has_commits?
+  def commits?
     at_path do
       begin
         commits = git_with_identity('rev-list', '--all', '--count').to_i
@@ -432,7 +426,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def remote_branch_revision?(revision = @resource.value(:revision))
     # git < 1.6 returns '#{@resource.value(:remote)}/#{revision}'
     # git 1.6+ returns 'remotes/#{@resource.value(:remote)}/#{revision}'
-    branch = at_path { branches.grep /(remotes\/)?#{@resource.value(:remote)}\/#{revision}$/ }
+    branch = at_path { branches.grep %r{(remotes/)?#{@resource.value(:remote)}/#{revision}$} }
     branch unless branch.empty?
   end
 
@@ -493,12 +487,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     # TODO: Why is create called here anyway?
     create if @resource.value(:force) && working_copy_exists?
     create unless working_copy_exists?
-    # TODO: Is meant to be branch = on_branch? not ==
-    if branch = on_branch? # TODO: 8 errors when guard statement is used './spec/acceptance/modules_1800_spec.rb' + './spec/acceptance/modules_660_spec.rb' + './spec/acceptance/clone_repo_spec.rb'
-      return get_revision("#{@resource.value(:remote)}/#{branch}")
-    else
-      return get_revision
-    end
+
+    branch = on_branch?
+    return get_revision("#{@resource.value(:remote)}/#{branch}") if branch
+    get_revision
   end
 
   # Returns the current revision given if the revision is a tag or branch and

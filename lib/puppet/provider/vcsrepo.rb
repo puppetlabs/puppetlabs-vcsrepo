@@ -5,14 +5,10 @@ require 'fileutils'
 # Abstract
 class Puppet::Provider::Vcsrepo < Puppet::Provider
   def check_force
-    if path_exists? && !path_empty?
-      if @resource.value(:force)
-        notice 'Removing %s to replace with desired repository.' % @resource.value(:path)
-        destroy
-      else
-        raise Puppet::Error, 'Path %s exists and is not the desired repository.' % @resource.value(:path)
-      end
-    end
+    return unless path_exists? && !path_empty?
+    raise Puppet::Error, 'Path %s exists and is not the desired repository.' % @resource.value(:path) unless @resource.value(:force)
+    notice 'Removing %s to replace with desired repository.' % @resource.value(:path)
+    destroy
   end
 
   private

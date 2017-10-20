@@ -66,11 +66,8 @@ Puppet::Type.newtype(:vcsrepo) do
       when :present
         return true unless [:absent, :purged, :held].include?(is)
       when :latest
-        if is == :latest
-          return true
-        else
-          return false
-        end
+        return true if is == :latest
+        return false
       when :bare
         return is == :bare
       when :mirror
@@ -135,20 +132,17 @@ Puppet::Type.newtype(:vcsrepo) do
 
     def retrieve
       prov = @resource.provider
-      if prov
-        if prov.working_copy_exists?
-          (@should.include?(:latest) && prov.latest?) ? :latest : :present
-        elsif prov.class.feature?(:bare_repositories) && prov.bare_exists?
-          if prov.mirror?
-            :mirror
-          else
-            :bare
-          end
+      raise Puppet::Error, 'Could not find provider' unless prov
+      if prov.working_copy_exists?
+        (@should.include?(:latest) && prov.latest?) ? :latest : :present
+      elsif prov.class.feature?(:bare_repositories) && prov.bare_exists?
+        if prov.mirror?
+          :mirror
         else
-          :absent
+          :bare
         end
       else
-        raise Puppet::Error, 'Could not find provider'
+        :absent
       end
     end
   end
@@ -178,6 +172,7 @@ Puppet::Type.newtype(:vcsrepo) do
           return true if is[0..-2] == should
         end
       rescue
+        return
       end
       false
     end
@@ -218,11 +213,8 @@ Puppet::Type.newtype(:vcsrepo) do
       end
     end
     validate do |path|
-      if path[0..0] == '/'
-        raise Puppet::Error, "Include path '#{path}' starts with a '/'; remove it"
-      else
-        super(path)
-      end
+      raise Puppet::Error, "Include path '#{path}' starts with a '/'; remove it" if path[0..0] == '/'
+      super(path)
     end
   end
 

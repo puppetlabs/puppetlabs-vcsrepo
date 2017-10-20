@@ -4,7 +4,7 @@ test_name 'C3494 - checkout with basic auth (git protocol)'
 repo_name = 'testrepo_checkout'
 user      = 'foo'
 password  = 'bar'
-http_server_script = 'basic_auth_http_daemon.rb'
+# http_server_script = 'basic_auth_http_daemon.rb'
 
 hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')

@@ -142,7 +142,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
   end
 
   def includes
-    return nil if Gem::Version.new(get_svn_client_version) < Gem::Version.new('1.6.0')
+    return nil if Gem::Version.new(return_svn_client_version) < Gem::Version.new('1.6.0')
     get_includes('.')
   end
 
@@ -165,7 +165,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
         return directory[2..-1].gsub(File::SEPARATOR, '/')
       end
       Dir.entries(directory).map { |entry|
-        next if entry == '.' || entry == '..' || entry == '.svn'
+        next if entry.include?('.') || entry.include?('..') || entry.include?('.svn')
         entry = File.join(directory, entry)
         if File.directory?(entry)
           get_includes(entry)
@@ -181,7 +181,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
       # svn version 1.6 has an incorrect implementation of the `exclude`
       # parameter to `--set-depth`; it doesn't handle files, only
       # directories. I know, I rolled my eyes, too.
-      svn_ver = get_svn_client_version
+      svn_ver = return_svn_client_version
       if Gem::Version.new(svn_ver) < Gem::Version.new('1.7.0') && !File.directory?(path)
         # In the non-happy case, we delete the file, and check if the only
         # thing left in that directory is the .svn folder. If that's the case,
@@ -236,9 +236,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
   end
 
   def update_owner
-    if @resource.value(:owner) || @resource.value(:group)
-      set_ownership
-    end
+    set_ownership if @resource.value(:owner) || @resource.value(:group)
   end
 
   def update_includes(paths)
@@ -274,14 +272,12 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
     }.flatten
   end
 
-  def get_svn_client_version
+  def return_svn_client_version
     Facter.value('vcsrepo_svn_ver').dup
   end
 
   def validate_version
-    svn_ver = get_svn_client_version
-    if Gem::Version.new(svn_ver) < Gem::Version.new('1.6.0')
-      raise "Includes option is not available for SVN versions < 1.6. Version installed: #{svn_ver}"
-    end
+    svn_ver = return_svn_client_version
+    raise "Includes option is not available for SVN versions < 1.6. Version installed: #{svn_ver}" if Gem::Version.new(svn_ver) < Gem::Version.new('1.6.0')
   end
 end

@@ -8,8 +8,10 @@ password  = 'bar'
 http_server_script = 'basic_auth_http_daemon.rb'
 
 hosts.each do |host|
-  ruby = '/opt/puppet/bin/ruby' if host.is_pe? || 'ruby'
-  gem = '/opt/puppet/bin/gem' if host.is_pe? || 'gem'
+  ruby = host.is_pe? ? '/opt/puppet/bin/ruby' : 'ruby'
+  # ruby = '/opt/puppet/bin/ruby' if host.is_pe?
+  gem = host.is_pe? ? '/opt/puppet/bin/gem' : 'gem'
+  # gem = '/opt/puppet/bin/gem' if host.is_pe? || 'gem'
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'

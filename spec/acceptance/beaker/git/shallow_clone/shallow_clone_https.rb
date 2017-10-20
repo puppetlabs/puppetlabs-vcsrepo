@@ -5,7 +5,8 @@ skip_test 'Not currently supported. See FM-1286'
 repo_name = 'testrepo_shallow_clone'
 
 hosts.each do |host|
-  ruby = (host.is_pe? && '/opt/puppet/bin/ruby') || 'ruby'
+  # ruby = (host.is_pe? && '/opt/puppet/bin/ruby') || 'ruby'
+  ruby = host.is_pe? ? '/opt/puppet/bin/ruby' : 'ruby'
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
@@ -38,7 +39,7 @@ hosts.each do |host|
 
   teardown do
     on(host, "rm -fr #{tmpdir}")
-    on(host, 'ps ax | grep "#{ruby} /tmp/https_daemon.rb" | grep -v grep | awk \'{print "kill -9 " $1}\' | sh ; sleep 1')
+    on(host, "ps ax | grep '#{ruby} /tmp/https_daemon.rb' | grep -v grep | awk '{print \"kill -9 \" $1}' | sh ; sleep 1")
   end
 
   step 'shallow clone repo with puppet' do

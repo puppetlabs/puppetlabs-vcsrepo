@@ -255,7 +255,7 @@ branches
         FileUtils.expects(:mkdir).returns(true)
         FileUtils.expects(:mv).returns(true)
         expects_chdir
-        provider.expects(:has_commits?).returns(true)
+        provider.expects(:commits?).returns(true)
         # If you forget to stub these out you lose 3 hours of rspec work.
         provider.expects(:git)
                 .with('config', '--local', '--bool', 'core.bare', 'false').returns(true)
@@ -273,7 +273,7 @@ branches
         FileUtils.expects(:mkdir).returns(true)
         FileUtils.expects(:mv).returns(true)
         expects_chdir
-        provider.expects(:has_commits?).returns(true)
+        provider.expects(:commits?).returns(true)
         provider.expects(:git)
                 .with('config', '--local', '--bool', 'core.bare', 'false').returns(true)
         provider.expects(:reset).with('HEAD').returns(true)
