@@ -4,7 +4,7 @@ tmpdir = default.tmpdir('vcsrepo')
 
 describe 'clones a remote repo' do
   before(:all) do
-    my_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+    File.expand_path(File.join(File.dirname(__FILE__), '..'))
     shell("mkdir -p #{tmpdir}") # win test
   end
 
@@ -13,16 +13,15 @@ describe 'clones a remote repo' do
   end
 
   context 'force with a remote' do
-    it 'clones from remote' do
-      pp = <<-EOS
+    pp = <<-EOS
       vcsrepo { "#{tmpdir}/vcsrepo":
         ensure   => present,
         provider => git,
         source   => 'https://github.com/puppetlabs/puppetlabs-vcsrepo',
         force    => true,
       }
-      EOS
-
+    EOS
+    it 'clones from remote' do
       # Run it twice to test for idempotency
       apply_manifest(pp, catch_failures: true)
       # need to create a file to make sure we aren't destroying the repo
@@ -39,25 +38,24 @@ describe 'clones a remote repo' do
   end
 
   context 'force over an existing repo' do
-    it 'clones from remote' do
-      pp = <<-EOS
+    pp = <<-EOS
       vcsrepo { "#{tmpdir}/vcsrepo":
         ensure   => present,
         provider => git,
         source   => 'https://github.com/puppetlabs/puppetlabs-vcsrepo',
         force    => true,
       }
-      EOS
+    EOS
 
-      pp2 = <<-EOS
+    pp2 = <<-EOS
       vcsrepo { "#{tmpdir}/vcsrepo":
         ensure   => present,
         provider => git,
         source   => 'https://github.com/puppetlabs/puppetlabs-stdlib',
         force    => true,
       }
-      EOS
-
+    EOS
+    it 'clones from remote' do
       apply_manifest(pp, catch_failures: true)
       # create a file to make sure we're destroying the repo
       shell("touch #{tmpdir}/vcsrepo/foo")
