@@ -349,6 +349,10 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     when :mirror then args << '--mirror'
     end
 
+    if @resource.value(:trust_server_cert) != :false
+      args.push('-c http.sslVerify=false')
+    end
+
     if @resource.value(:remote) != 'origin'
       args.push('--origin', @resource.value(:remote))
     end
