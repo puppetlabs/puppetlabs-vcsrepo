@@ -545,6 +545,13 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def git_with_identity(*args)
+    if @resource.value(:trust_server_cert) == :true
+      git_ver = git('--version').match(%r{[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?})[0]
+      git_ver_err = "Can't set sslVerify to false, the -c parameter is not supported in Git #{git_ver}. Please install Git 1.7.2 or higher."
+      return raise(git_ver_err) unless Gem::Version.new(git_ver) >= Gem::Version.new('1.7.2')
+      args.unshift('-c', 'http.sslVerify=false')
+    end
+
     if @resource.value(:identity)
       Tempfile.open('git-helper', Puppet[:statedir]) do |f|
         f.puts '#!/bin/sh'
