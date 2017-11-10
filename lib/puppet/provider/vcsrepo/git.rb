@@ -333,19 +333,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def clone_repository(source, path)
-    args = []
-
-    if @resource.value(:trust_server_cert) == :true
-      git_ver = return_git_client_version
-      if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.2')
-        args.push('-c', 'http.sslVerify=false')
-      else
-        raise("Can't set sslVerify to false, the -c parameter is not supported in Git #{git_ver}. Please install Git 1.7.2 or higher.")
-      end
-    end
-
-    args.push('clone')
-
+    args = ['clone']
     if @resource.value(:depth) && @resource.value(:depth).to_i > 0
       args.push('--depth', @resource.value(:depth).to_s)
       if @resource.value(:revision) && !@resource.value(:branch)
@@ -557,6 +545,15 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def git_with_identity(*args)
+    if @resource.value(:trust_server_cert) == :true
+      git_ver = return_git_client_version
+      if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.2')
+        args.unshift('-c', 'http.sslVerify=false')
+      else
+        raise("Can't set sslVerify to false, the -c parameter is not supported in Git #{git_ver}. Please install Git 1.7.2 or higher.")
+      end
+    end
+
     if @resource.value(:identity)
       Tempfile.open('git-helper', Puppet[:statedir]) do |f|
         f.puts '#!/bin/sh'
