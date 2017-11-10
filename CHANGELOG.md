@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Supported Release [2.2.0]
+
+### Summary
+This is to enable Rubocop within the module.
+
+### Added
+- Rubocop has been enabled and will now run against all future pull requests.
+
+### Fixed
+- Entire module has been put through the rubocop process and now matches the expected standards.
+
 ## Supported Release [2.1.0]
 
 ### Summary
