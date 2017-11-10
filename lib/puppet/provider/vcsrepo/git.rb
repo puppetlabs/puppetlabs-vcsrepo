@@ -333,7 +333,19 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def clone_repository(source, path)
-    args = ['clone']
+    args = []
+
+    if @resource.value(:trust_server_cert) == :true
+      git_ver = return_git_client_version
+      if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.2')
+        args.push('-c', 'http.sslVerify=false')
+      else
+        raise("Can't set sslVerify to false, the -c parameter is not supported in Git #{git_ver}. Please install Git 1.7.2 or higher.")
+      end
+    end
+
+    args.push('clone')
+
     if @resource.value(:depth) && @resource.value(:depth).to_i > 0
       args.push('--depth', @resource.value(:depth).to_s)
       if @resource.value(:revision) && !@resource.value(:branch)
@@ -347,10 +359,6 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     case @resource.value(:ensure)
     when :bare then args << '--bare'
     when :mirror then args << '--mirror'
-    end
-
-    if @resource.value(:trust_server_cert) != :false
-      args.push('-c http.sslVerify=false')
     end
 
     if @resource.value(:remote) != 'origin'
@@ -574,5 +582,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     else
       git(*args)
     end
+  end
+
+  def return_git_client_version
+    Facter.value('vcsrepo_git_ver')
   end
 end
