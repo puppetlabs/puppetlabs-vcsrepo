@@ -175,6 +175,17 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+To clone the repository and trust the server certificate (sslVerify=false), set `trust_server_cert` to 'true':
+
+~~~ puppet
+vcsrepo { '/path/to/repo':
+  ensure            => present,
+  provider          => git,
+  source            => 'git://example.com/repo.git',
+  trust_server_cert => true,
+}
+~~~
+
 #### Use multiple remotes with a repository
 
 In place of a single string, you can set `source` to a hash of one or more name => URL pairs:
