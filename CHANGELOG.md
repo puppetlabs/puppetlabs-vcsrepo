@@ -16,7 +16,7 @@ This is to enable Rubocop within the module.
 ## Supported Release [2.1.0]
 
 ### Summary
-This is to provide a clean release from which to run Rebucop
+This is to provide a clean release from which to run Rubocop.
 
 ### Added
 - Debian 9 as supported platform
