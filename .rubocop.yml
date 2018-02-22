@@ -70,7 +70,7 @@ Style/MethodCalledOnDoEndBlock:
 Style/StringMethods:
   Enabled: true
 Layout/EndOfLine:
-  Enabled: false
+  Enabled: true
 Metrics/AbcSize:
   Enabled: false
 Metrics/BlockLength:
@@ -92,9 +92,9 @@ RSpec/DescribeClass:
 RSpec/MessageExpectation:
   Enabled: false
 RSpec/MultipleExpectations:
-  Enabled: false
+  Enabled: true
 RSpec/NestedGroups:
-  Enabled: false
+  Enabled: true
 Style/AsciiComments:
   Enabled: false
 Style/IfUnlessModifier:
