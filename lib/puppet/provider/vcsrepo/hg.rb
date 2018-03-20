@@ -80,7 +80,6 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
       begin
         hg_wrapper('merge')
       rescue Puppet::ExecutionFailure
-        next
         # If there's nothing to merge, just skip
       end
       hg_wrapper('update', '--clean', '-r', desired)
