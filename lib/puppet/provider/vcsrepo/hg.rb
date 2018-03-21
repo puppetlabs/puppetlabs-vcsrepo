@@ -78,9 +78,13 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
         next
       end
       begin
-        hg_wrapper('merge')
-      rescue Puppet::ExecutionFailure
-        # If there's nothing to merge, just skip
+        hg_wrapper('merge', '--tool', ':merge3')
+      rescue Puppet::ExecutionFailure => e
+        # Merge command exits with 255 code if there is nothing to do and we want to ignore that case
+        # We look for 'has one head' as that line shows there's nothing there for it to try to merge
+        if ( e.to_s !~ (/has one head/) )
+          raise("Error merging #{@resource.value(:path)} Cannot update to #{desired}")
+        end
       end
       hg_wrapper('update', '--clean', '-r', desired)
     end
