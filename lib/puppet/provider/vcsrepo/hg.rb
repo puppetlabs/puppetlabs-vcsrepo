@@ -82,7 +82,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
       rescue Puppet::ExecutionFailure => e
         # Merge command exits with 255 code if there is nothing to do and we want to ignore that case
         # We look for 'has one head' as that line shows there's nothing there for it to try to merge
-        if ( e.to_s !~ (/has one head/) )
+        if e.to_s !~ %r{has one head}
           raise("Error merging #{@resource.value(:path)} Cannot update to #{desired}")
         end
       end
