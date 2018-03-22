@@ -114,7 +114,6 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
     it "uses 'hg update ---clean -r'" do
       expects_chdir
       provider.expects(:hg).with('pull')
-      provider.expects(:hg).with('heads', '-q')
       provider.expects(:hg).with('update', '--clean', '-r', revision)
       provider.revision = revision
     end
