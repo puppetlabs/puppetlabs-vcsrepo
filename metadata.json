@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "author": "Puppet Labs",
   "summary": "Puppet module providing a type to manage repositories from various version control systems",
-  "license": "GPL-2.0+",
+  "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-vcsrepo",
   "project_page": "https://github.com/puppetlabs/puppetlabs-vcsrepo",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
