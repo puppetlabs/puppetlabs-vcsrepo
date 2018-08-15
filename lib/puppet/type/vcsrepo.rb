@@ -292,9 +292,9 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :temp_dir, required_features: [:ssh_identity] do
     desc 'The directory to write the ephemeral cloning script to.'
     validate do |directory|
-        unless File.directory?(directory) and File.writable?(directory)
-            raise ArgumentError, "Directory #{directory} doesn't exist or is not writable."
-        end
+      unless File.directory?(directory) && File.writable?(directory)
+        raise ArgumentError, "Directory #{directory} doesn't exist or is not writable."
+      end
     end
   end
 
