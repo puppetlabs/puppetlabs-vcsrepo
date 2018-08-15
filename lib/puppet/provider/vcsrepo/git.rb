@@ -562,7 +562,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     end
 
     if @resource.value(:identity)
-      temp_dir = @resource.value(:tmpdir) ? @resource.value(:tmpdir) : Puppet[:statedir]
+      temp_dir = @resource.value(:temp_dir) ? @resource.value(:temp_dir) : Puppet[:statedir]
       Tempfile.open('git-helper', temp_dir) do |f|
         f.puts '#!/bin/sh'
         f.puts 'SSH_AUTH_SOCKET='
