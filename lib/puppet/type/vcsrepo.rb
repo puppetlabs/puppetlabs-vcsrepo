@@ -289,6 +289,15 @@ Puppet::Type.newtype(:vcsrepo) do
     defaultto :false
   end
 
+  newparam :temp_dir, required_features: [:ssh_identity] do
+    desc 'The directory to write the ephemeral cloning script to.'
+    validate do |directory|
+        unless File.directory?(directory) and File.writable?(directory)
+            raise ArgumentError, "Directory #{directory} doesn't exist or is not writable."
+        end
+    end
+  end
+
   autorequire(:package) do
     ['git', 'git-core', 'mercurial', 'subversion']
   end
