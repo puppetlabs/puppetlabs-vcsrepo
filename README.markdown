@@ -230,6 +230,17 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+When specifying a identity key without a user, Puppet utilises an ephemeral helper script to clone the repository. To ensure Puppet writes the helper script to a location with executable permissions:
+
+~~~ puppet
+vcsrepo { '/path/to/repo':
+  ensure   => present,
+  provider => git,
+  source   => 'ssh://username@example.com/repo.git',
+  identity => '/home/user/.ssh/id_dsa1',
+  tmp_dir  => '/var/tmp',
+}
+~~~
 
 ### Bazaar
 
@@ -430,19 +441,6 @@ vcsrepo { '/path/to/repo':
   identity => '/home/user/.ssh/id_dsa1',
 }
 ~~~
-
-When specifying a identity key without a user, Puppet utilises an ephemeral helper script to clone the repository. To ensure Puppet writes the helper script to a location with executable permissions:
-
-~~~ puppet
-vcsrepo { '/path/to/repo':
-  ensure   => present,
-  provider => hg,
-  source   => 'ssh://hg@hg.example.com/myrepo',
-  identity => '/home/user/.ssh/id_dsa1',
-  tmp_dir  => '/var/tmp',
-}
-~~~
-
 
 To specify a username and password for HTTP Basic authentication:
 
