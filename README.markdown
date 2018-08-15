@@ -238,7 +238,7 @@ vcsrepo { '/path/to/repo':
   provider => git,
   source   => 'ssh://username@example.com/repo.git',
   identity => '/home/user/.ssh/id_dsa1',
-  tmp_dir  => '/var/tmp',
+  temp_dir => '/var/tmp',
 }
 ~~~
 
