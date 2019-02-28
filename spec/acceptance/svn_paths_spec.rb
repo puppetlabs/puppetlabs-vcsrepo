@@ -4,8 +4,8 @@ tmpdir = default.tmpdir('vcsrepo')
 
 describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop:disable RSpec/MultipleDescribes : The
     # test's on this page must be kept seperate as they are for different operating systems.
-    (fact('osfamily') == 'RedHat' && fact('operatingsystemmajrelease') =~ %r{^(5|6)$}) ||
-    (fact('osfamily') == 'SLES')
+    (os[:family] == 'redhat' && os[:release].start_with?('5', '6')) ||
+    (os[:family] == 'sles')
 ) do
 
   before(:all) do
@@ -134,7 +134,7 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
 end
 
 describe 'subversion :includes tests on SVN version == 1.6', if: (
-    (fact('osfamily') == 'RedHat' && fact('operatingsystemmajrelease') =~ %r{^(5|6)$})
+    (os[:family] == 'redhat' && os[:release].start_with?('5', '6'))
 ) do
 
   after(:all) do
@@ -258,7 +258,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
   end
 end
 
-describe 'subversion :includes tests on SVN version < 1.6', if: (fact('osfamily') == 'SLES') do
+describe 'subversion :includes tests on SVN version < 1.6', if: (os[:family] == 'sles') do
   context 'with include paths' do
     pp = <<-MANIFEST
         vcsrepo { "#{tmpdir}/svnrepo":
