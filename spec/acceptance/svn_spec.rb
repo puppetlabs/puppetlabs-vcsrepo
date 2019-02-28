@@ -44,8 +44,7 @@ describe 'subversion tests' do
     MANIFEST
     it 'can checkout a specific revision of svn' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do

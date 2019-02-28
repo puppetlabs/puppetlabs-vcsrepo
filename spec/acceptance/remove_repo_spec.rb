@@ -13,17 +13,36 @@ describe 'remove a repo' do
     apply_manifest(pp, catch_failures: true)
   end
 
-  pp = <<-MANIFEST
+  pp_noop_remove = <<-MANIFEST
+    vcsrepo { "#{tmpdir}/testrepo_deleted":
+      ensure   => absent,
+      provider => git,
+      force    => true,
+    }
+  MANIFEST
+  context 'when ran with noop' do
+    it 'does not remove a repo' do
+      apply_manifest(pp_noop_remove, catch_failures: true, noop: true, verbose: false)
+    end
+
+    describe file("#{tmpdir}/testrepo_deleted") do
+      it { is_expected.to be_directory }
+    end
+  end
+
+  pp_remove = <<-MANIFEST
     vcsrepo { "#{tmpdir}/testrepo_deleted":
       ensure => absent,
       provider => git,
     }
   MANIFEST
-  it 'removes a repo' do # rubocop:disable RSpec/RepeatedExample : Examples are not the same, difference comes from the pp variable
-    apply_manifest(pp, catch_failures: true)
-  end
+  context 'when ran without noop' do
+    it 'removes a repo' do # rubocop:disable RSpec/RepeatedExample : Examples are not the same, difference comes from the pp variable
+      apply_manifest(pp_remove, catch_failures: true)
+    end
 
-  describe file("#{tmpdir}/testrepo_deleted") do
-    it { is_expected.not_to be_directory }
+    describe file("#{tmpdir}/testrepo_deleted") do
+      it { is_expected.not_to be_directory }
+    end
   end
 end

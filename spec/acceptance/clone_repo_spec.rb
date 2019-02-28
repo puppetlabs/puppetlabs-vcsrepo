@@ -415,7 +415,7 @@ describe 'clones a remote repo' do
     end
   end
 
-  context 'with as a user with ssh' do
+  context 'with as a user with ssh - includes special characters' do
     before(:all) do
       # create user
       pp = <<-MANIFEST
@@ -444,7 +444,7 @@ describe 'clones a remote repo' do
       vcsrepo { "#{tmpdir}/testrepo_user_ssh":
         ensure => present,
         provider => git,
-        source => "testuser-ssh@localhost:#{tmpdir}/testrepo.git",
+        source => "git+ssh://testuser-ssh@localhost#{tmpdir}/testrepo.git",
         user => 'testuser-ssh',
       }
     MANIFEST
