@@ -24,8 +24,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo/.git") do
@@ -47,8 +46,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/httpstestrepo/.git") do
@@ -79,8 +77,7 @@ describe 'clones a remote repo' do
       }
       MANIFEST
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_sha/.git") do
@@ -103,8 +100,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_tag/.git") do
@@ -127,8 +123,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_branch/.git") do
@@ -151,8 +146,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     it 'verifies the HEAD commit SHA on remote and local match' do
@@ -172,8 +166,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     it 'verifies the HEAD commit SHA on remote and local match' do
@@ -194,8 +187,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'does a shallow clone' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_shallow/.git/shallow") do
@@ -239,8 +231,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_owner") do
@@ -268,8 +259,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_group") do
@@ -289,8 +279,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'clones a repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_excludes/.git/info/exclude") do
@@ -322,8 +311,7 @@ describe 'clones a remote repo' do
       MANIFEST
 
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_force/folder") do
@@ -389,8 +377,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'applies the manifest' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_user") do
@@ -420,8 +407,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'applies the manifest' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     it 'remote name is "testorigin"' do
@@ -464,8 +450,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'applies the manifest' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     after(:all) do
@@ -510,8 +495,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'applies the manifest' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
   end
 
@@ -525,8 +509,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'creates a bare repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_bare_repo/config") do
@@ -550,8 +533,7 @@ describe 'clones a remote repo' do
     MANIFEST
     it 'creates a mirror repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_mirror_repo/config") do

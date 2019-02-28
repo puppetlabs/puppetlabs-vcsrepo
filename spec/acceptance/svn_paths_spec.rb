@@ -28,8 +28,7 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     MANIFEST
     it 'can checkout specific paths from svn' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/difftools") do
@@ -67,8 +66,7 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     MANIFEST
     it 'can add paths to includes' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
@@ -91,8 +89,7 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     MANIFEST
     it 'can remove paths (and empty parent directories) from includes' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
@@ -124,8 +121,7 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     MANIFEST
     it 'can change revisions' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe command("svn info #{tmpdir}/svnrepo") do
@@ -157,8 +153,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     MANIFEST
     it 'can checkout specific paths from svn' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/difftools") do
@@ -196,8 +191,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     MANIFEST
     it 'can add paths to includes' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
@@ -220,7 +214,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     MANIFEST
     it 'can remove directory paths (and empty parent directories) from includes, but not files with siblings' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
@@ -252,8 +246,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     MANIFEST
     it 'can change revisions' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe command("svn info #{tmpdir}/svnrepo") do

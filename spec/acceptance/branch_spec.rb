@@ -36,8 +36,7 @@ describe 'MODULES-660' do
       }
     MANIFEST
     it 'pulls the new branch commits' do
-      apply_manifest(pp, expect_changes: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     pp = <<-MANIFEST
@@ -49,8 +48,7 @@ describe 'MODULES-660' do
       }
     MANIFEST
     it 'checks out the tag' do
-      apply_manifest(pp, expect_changes: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     it 'checks out the sha' do
@@ -63,8 +61,7 @@ describe 'MODULES-660' do
         source   => "file://#{tmpdir}/testrepo.git",
       }
       MANIFEST
-      apply_manifest(pp, expect_changes: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
   end
 

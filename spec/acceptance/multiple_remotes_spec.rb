@@ -44,7 +44,7 @@ describe 'clones a remote repo', unless: only_supports_weak_encryption do
       }
     MANIFEST
     it 'clones from default remote and adds 2 remotes to config file' do
-      apply_manifest(pp, catch_failures: true)
+      idempotent_apply(default, pp)
     end
 
     it 'git config output should contain the remotes - origin' do

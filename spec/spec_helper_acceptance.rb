@@ -53,6 +53,20 @@ RSpec.configure do |c|
   end
 end
 
+def idempotent_apply(hosts, manifest, opts = {}, &block)
+  block_on hosts, opts do |host|
+    file_path = host.tmpfile('apply_manifest.pp')
+    create_remote_file(host, file_path, manifest + "\n")
+
+    puppet_apply_opts = { :verbose => nil, 'detailed-exitcodes' => nil }
+    on_options = { acceptable_exit_codes: [0, 2] }
+    on host, puppet('apply', file_path, puppet_apply_opts), on_options, &block
+    puppet_apply_opts2 = { :verbose => nil, 'detailed-exitcodes' => nil }
+    on_options2 = { acceptable_exit_codes: [0] }
+    on host, puppet('apply', file_path, puppet_apply_opts2), on_options2, &block
+  end
+end
+
 # git with 3.18 changes the maximum enabled TLS protocol version, older OSes will fail these tests
 def only_supports_weak_encryption
   return_val = (fact('osfamily') == 'RedHat' && fact('operatingsystemmajrelease') == '5') ||

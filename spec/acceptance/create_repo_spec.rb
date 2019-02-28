@@ -12,8 +12,7 @@ describe 'create a repo' do
     MANIFEST
     it 'creates a blank repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_blank_repo/") do
@@ -39,8 +38,7 @@ describe 'create a repo' do
     MANIFEST
     it 'does not fail (MODULES-2125)' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
   end
 
@@ -53,8 +51,7 @@ describe 'create a repo' do
     MANIFEST
     it 'creates a bare repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_bare_repo/config") do

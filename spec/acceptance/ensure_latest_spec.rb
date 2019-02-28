@@ -33,8 +33,7 @@ describe 'clones a remote repo', unless: only_supports_weak_encryption do
       }
     MANIFEST
     it 'updates' do
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
   end
 end
