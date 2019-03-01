@@ -9,7 +9,7 @@ describe 'remove a repo' do
       provider => git,
     }
   MANIFEST
-  it 'creates a blank repo' do # rubocop:disable RSpec/RepeatedExample : Examples are not the same, difference comes from the pp variable
+  it 'creates a blank repo' do
     apply_manifest(pp, catch_failures: true)
   end
 
@@ -37,7 +37,7 @@ describe 'remove a repo' do
     }
   MANIFEST
   context 'when ran without noop' do
-    it 'removes a repo' do # rubocop:disable RSpec/RepeatedExample : Examples are not the same, difference comes from the pp variable
+    it 'removes a repo' do
       apply_manifest(pp_remove, catch_failures: true)
     end
 
