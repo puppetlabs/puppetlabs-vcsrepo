@@ -213,8 +213,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
         }
     MANIFEST
     it 'can remove directory paths (and empty parent directories) from includes, but not files with siblings' do
-      # Run it twice and test for idempotency
-      idempotent_apply(default, pp)
+      apply_manifest(pp, catch_failures: true)
     end
 
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
