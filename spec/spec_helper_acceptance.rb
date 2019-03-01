@@ -70,6 +70,6 @@ end
 # git with 3.18 changes the maximum enabled TLS protocol version, older OSes will fail these tests
 def only_supports_weak_encryption
   return_val = (os[:family] == 'redhat' && os[:release].start_with?('5') ||
-               (host_inventory['facter']['os']['name'] == 'oraclelinux' && os[:release].start_with?('6')))
+               (host_inventory['facter']['os']['name'] == 'OracleLinux' && os[:release].start_with?('6')))
   return_val
 end
