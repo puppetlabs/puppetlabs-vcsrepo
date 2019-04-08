@@ -45,7 +45,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
         svn('info', @resource.value(:path))
         return true
       rescue Puppet::ExecutionFailure => detail
-        if detail.message =~ /This client is too old/
+        if detail.message =~ %r{This client is too old}
           raise Puppet::Error, detail.message
         end
         return false
