@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [2.4.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/2.4.0) (2018-09-27)
+## [2.5.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/2.5.0) (2019-04-08)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.4.0...2.5.0)
+
+### Added
+
+- \(MODULES-8140\) - Add SLES 15 support [\#399](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/399) ([eimlav](https://github.com/eimlav))
+
+### Fixed
+
+- \(maint\) Add HTML anchor tag [\#404](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/404) ([clairecadman](https://github.com/clairecadman))
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#401](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/401) ([tphoney](https://github.com/tphoney))
+
+## [2.4.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/2.4.0) (2018-09-28)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.3.0...2.4.0)
 
