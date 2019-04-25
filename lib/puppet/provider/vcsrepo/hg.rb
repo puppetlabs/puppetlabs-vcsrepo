@@ -140,7 +140,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
 
     sensitive = (@resource.parameters.key?(:basic_auth_password) && @resource.parameters[:basic_auth_password].sensitive) ? true : false # Check if there is a sensitive parameter
     args.map! { |a| (a =~ %r{\s}) ? "'#{a}'" : a } # Adds quotes to arguments with whitespaces.
-    
+
     if @resource.value(:user) && @resource.value(:user) != Facter['id'].value
       Puppet::Util::Execution.execute("hg #{args.join(' ')}", uid: @resource.value(:user), failonfail: true, combine: true, sensitive: sensitive)
     else
