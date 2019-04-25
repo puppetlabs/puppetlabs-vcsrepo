@@ -22,7 +22,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       it "executes 'svn checkout' with a revision" do
         resource[:source] = 'exists'
         resource[:revision] = '1'
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout', '-r', resource.value(:revision),
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout', '-r', resource.value(:revision),
                                                resource.value(:source), resource.value(:path))
         provider.create
       end
@@ -30,7 +30,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     context 'with source' do
       it "justs execute 'svn checkout' without a revision" do
         resource[:source] = 'exists'
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout',
                                                resource.value(:source),
                                                resource.value(:path))
         provider.create
@@ -57,7 +57,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       it "executes 'svn checkout' with a depth" do
         resource[:source] = 'exists'
         resource[:depth] = 'infinity'
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout', '--depth', 'infinity',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout', '--depth', 'infinity',
                                                resource.value(:source), resource.value(:path))
         provider.create
       end
@@ -67,14 +67,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       it "executes 'svn checkout' without a trust-server-cert" do
         resource[:source] = 'exists'
         resource[:trust_server_cert] = false
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout',
                                                resource.value(:source), resource.value(:path))
         provider.create
       end
       it "executes 'svn checkout' with a trust-server-cert" do
         resource[:source] = 'exists'
         resource[:trust_server_cert] = true
-        expect(provider).to receive(:svn).with('--non-interactive', '--trust-server-cert', 'checkout',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', '--trust-server-cert', 'checkout',
                                                resource.value(:source), resource.value(:path))
         provider.create
       end
@@ -90,12 +90,12 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:source] = 'exists'
         resource[:includes] = test_paths
         expect(Dir).to receive(:chdir).with('/tmp/vcsrepo').once.and_yield
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout', '--depth', 'empty',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout', '--depth', 'empty',
                                                resource.value(:source),
                                                resource.value(:path))
-        expect(provider).to receive(:svn).with('--non-interactive', 'update', '--depth', 'empty',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update', '--depth', 'empty',
                                                *test_paths_parents)
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                *resource[:includes])
         provider.create
       end
@@ -104,16 +104,16 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:revision] = 1
         resource[:includes] = test_paths
         expect(Dir).to receive(:chdir).with('/tmp/vcsrepo').once.and_yield
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout', '-r',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout', '-r',
                                                resource.value(:revision),
                                                '--depth', 'empty',
                                                resource.value(:source),
                                                resource.value(:path))
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                '--depth', 'empty',
                                                '-r', resource.value(:revision),
                                                *test_paths_parents)
-        expect(provider).to receive(:svn).with('--non-interactive', 'update', '-r',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update', '-r',
                                                resource.value(:revision),
                                                *resource[:includes])
         provider.create
@@ -123,13 +123,13 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:depth] = 'files'
         resource[:includes] = test_paths
         expect(Dir).to receive(:chdir).with('/tmp/vcsrepo').once.and_yield
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout', '--depth', 'empty',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout', '--depth', 'empty',
                                                resource.value(:source),
                                                resource.value(:path))
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                '--depth', 'empty',
                                                *test_paths_parents)
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                '--depth', resource.value(:depth),
                                                *resource[:includes])
         provider.create
@@ -140,16 +140,16 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:depth] = 'files'
         resource[:includes] = test_paths
         expect(Dir).to receive(:chdir).with('/tmp/vcsrepo').once.and_yield
-        expect(provider).to receive(:svn).with('--non-interactive', 'checkout', '-r',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'checkout', '-r',
                                                resource.value(:revision),
                                                '--depth', 'empty',
                                                resource.value(:source),
                                                resource.value(:path))
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                '--depth', 'empty',
                                                '-r', resource.value(:revision),
                                                *test_paths_parents)
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                '-r', resource.value(:revision),
                                                '--depth', resource.value(:depth),
                                                *resource[:includes])
@@ -169,7 +169,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     it "runs `svn info` on the path when there's a source" do
       resource[:source] = 'dummy'
       expect_directory?(true, resource.value(:path))
-      expect(provider).to receive(:svn).with('info', resource[:path])
+      expect(provider).to receive(:svn_wrapper).with('info', resource[:path])
       provider.exists?
     end
     it "runs `svnlook uuid` on the path when there's no source" do
@@ -181,7 +181,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
 
   describe 'checking the revision property' do
     before(:each) do
-      allow(provider).to receive(:svn).with('--non-interactive', 'info').and_return(fixture(:svn_info))
+      allow(provider).to receive(:svn_wrapper).with('--non-interactive', 'info').and_return(fixture(:svn_info))
     end
     it "uses 'svn info'" do
       expect_chdir
@@ -196,7 +196,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       it "uses 'svn update'" do
         resource[:conflict] = 'theirs-full'
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'update',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update',
                                                '-r', revision, '--accept', resource.value(:conflict))
         provider.revision = revision
       end
@@ -204,7 +204,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     context 'without conflict' do
       it "uses 'svn update'" do
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'update', '-r', revision)
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'update', '-r', revision)
         provider.revision = revision
       end
     end
@@ -218,7 +218,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:source] = 'an-unimportant-value'
         resource[:conflict] = 'theirs-full'
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'switch', '-r', revision, 'an-unimportant-value', '--accept', resource.value(:conflict))
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'switch', '-r', revision, 'an-unimportant-value', '--accept', resource.value(:conflict))
         provider.revision = revision
       end
     end
@@ -226,14 +226,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       it "uses 'svn switch' - variation one" do
         resource[:source] = 'an-unimportant-value'
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'switch', '-r', revision, 'an-unimportant-value')
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'switch', '-r', revision, 'an-unimportant-value')
         provider.revision = revision
       end
       it "uses 'svn switch' - variation two" do
         resource[:source] = 'an-unimportant-value'
         resource[:revision] = '30'
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'switch', '-r', resource.value(:revision), 'an-unimportant-value')
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'switch', '-r', resource.value(:revision), 'an-unimportant-value')
         provider.source = resource.value(:source)
       end
     end
@@ -241,7 +241,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
 
   describe 'checking the source property' do
     before(:each) do
-      allow(provider).to receive(:svn).with('--non-interactive', 'info').and_return(fixture(:svn_info))
+      allow(provider).to receive(:svn_wrapper).with('--non-interactive', 'info').and_return(fixture(:svn_info))
     end
     it "uses 'svn info'" do
       expect_chdir
@@ -272,7 +272,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:source] = 'http://example.com/svn/tags/1.0'
         resource[:conflict] = 'theirs-full'
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'switch', '--accept', resource.value(:conflict), resource.value(:source))
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'switch', '--accept', resource.value(:conflict), resource.value(:source))
         provider.source = resource.value(:source)
       end
     end
@@ -280,7 +280,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       it "uses 'svn switch'" do
         resource[:source] = 'http://example.com/svn/tags/1.0'
         expect_chdir
-        expect(provider).to receive(:svn).with('--non-interactive', 'switch',
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'switch',
                                                resource.value(:source))
         provider.source = resource.value(:source)
       end
