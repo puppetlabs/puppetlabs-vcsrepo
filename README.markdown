@@ -723,7 +723,7 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 **Note:** Not all features are available with all providers.
 
 * `bare_repositories` - Differentiates between bare repositories and those with working copies. (Available with `git`.)
-* `basic_auth` - Supports HTTP Basic authentication. (Available with `svn`.)
+* `basic_auth` - Supports HTTP Basic authentication. (Available with `hg` and `svn`.)
 * `conflict` - Lets you decide how to resolve any conflicts between the source repository and your working copy. (Available with `svn`.)
 * `configuration` - Lets you specify the location of your configuration files. (Available with `svn`.)
 * `cvs_rsh` - Understands the `CVS_RSH` environment variable. (Available with `cvs`.)
@@ -746,7 +746,7 @@ All parameters are optional, except where specified otherwise.
 
 ##### `basic_auth_password`
 
-Specifies the password for HTTP Basic authentication. (Requires the `basic_auth` feature.) Valid options: a string. Default: none.
+Specifies the password for HTTP Basic authentication. (Requires the `basic_auth` feature.) Valid options: a string or Sensitive string. Default: none.
 
 ##### `basic_auth_username`
 
