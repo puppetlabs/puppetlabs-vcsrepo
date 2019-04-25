@@ -19,8 +19,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
       it "executes 'hg clone -u' with the revision" do
         resource[:source] = 'something'
         resource[:revision] = '1'
-        expect(provider).to receive(:hg).with('clone', '-u', resource.value(:revision),
-                                              resource.value(:source), resource.value(:path))
+        expect(Puppet::Util::Execution).to receive(:execute).with("hg clone -u #{resource.value(:revision)} #{resource.value(:source)} #{resource.value(:path)}", sensitive: false)
         provider.create
       end
     end
@@ -28,14 +27,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
     context 'without revision' do
       it "justs execute 'hg clone' without a revision" do
         resource[:source] = 'something'
-        expect(provider).to receive(:hg).with('clone', resource.value(:source), resource.value(:path))
+        expect(Puppet::Util::Execution).to receive(:execute).with("hg clone #{resource.value(:source)} #{resource.value(:path)}", sensitive: false)
         provider.create
       end
     end
 
     context 'when a source is not given' do
       it "executes 'hg init'" do
-        expect(provider).to receive(:hg).with('init', resource.value(:path))
+        expect(Puppet::Util::Execution).to receive(:execute).with("hg init #{resource.value(:path)}", sensitive: false)
         provider.create
       end
     end
@@ -45,9 +44,12 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
         resource[:source] = 'something'
         resource[:basic_auth_username] = 'user'
         resource[:basic_auth_password] = 'pass'
-        expect(provider).to receive(:hg).with('clone', resource.value(:source), resource.value(:path), '--config',
-                                              'auth.x.prefix=' + resource.value(:source), '--config', 'auth.x.username=' + resource.value(:basic_auth_username),
-                                              '--config', 'auth.x.password=' + resource.value(:basic_auth_password), '--config', 'auth.x.schemes=http https')
+
+        command = "hg clone #{resource.value(:source)} #{resource.value(:path)} --config auth.x.prefix=#{resource.value(:source)} "\
+        "--config auth.x.username=#{resource.value(:basic_auth_username)} --config auth.x.password=#{resource.value(:basic_auth_password)} "\
+        "--config 'auth.x.schemes=http https'"\
+
+        expect(Puppet::Util::Execution).to receive(:execute).with(command, sensitive: false)
         provider.create
       end
     end
@@ -63,7 +65,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
   describe 'checking existence' do
     it 'checks for the directory' do
       expect_directory?(true, resource.value(:path))
-      expect(provider).to receive(:hg).with('status', resource.value(:path))
+      expect(Puppet::Util::Execution).to receive(:execute).with("hg status #{resource.value(:path)}", sensitive: false)
       provider.exists?
     end
   end
@@ -75,8 +77,8 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
 
     context 'when given a non-SHA as the resource revision' do
       before(:each) do
-        allow(provider).to receive(:hg).with('parents').and_return(fixture(:hg_parents))
-        allow(provider).to receive(:hg).with('tags').and_return(fixture(:hg_tags))
+        allow(Puppet::Util::Execution).to receive(:execute).with('hg parents', sensitive: false).and_return(fixture(:hg_parents))
+        allow(Puppet::Util::Execution).to receive(:execute).with('hg tags', sensitive: false).and_return(fixture(:hg_tags))
       end
 
       it 'when its sha is not different from the current SHA it and_return the ref' do
@@ -91,18 +93,18 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
     end
     context 'when given a SHA as the resource revision' do
       before(:each) do
-        allow(provider).to receive(:hg).with('parents').and_return(fixture(:hg_parents))
+        allow(Puppet::Util::Execution).to receive(:execute).with('hg parents', sensitive: false).and_return(fixture(:hg_parents))
       end
 
       it 'when it is the same as the current SHA it and_return it' do
         resource[:revision] = '34e6012c783a'
-        expect(provider).to receive(:hg).with('tags').and_return(fixture(:hg_tags))
+        expect(Puppet::Util::Execution).to receive(:execute).with('hg tags', sensitive: false).and_return(fixture(:hg_tags))
         expect(provider.revision).to eq(resource.value(:revision))
       end
 
       it 'when it is not the same as the current SHA it and_return the current SHA' do
         resource[:revision] = 'not-the-same'
-        expect(provider).to receive(:hg).with('tags').and_return(fixture(:hg_tags))
+        expect(Puppet::Util::Execution).to receive(:execute).with('hg tags', sensitive: false).and_return(fixture(:hg_tags))
         expect(provider.revision).to eq('34e6012c783a')
       end
     end
@@ -113,9 +115,9 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
 
     it "uses 'hg update ---clean -r'" do
       expect_chdir
-      expect(provider).to receive(:hg).with('pull')
-      expect(provider).to receive(:hg).with('merge')
-      expect(provider).to receive(:hg).with('update', '--clean', '-r', revision)
+      expect(provider).to receive(:hg_wrapper).with('pull', remote: true)
+      expect(provider).to receive(:hg_wrapper).with('merge')
+      expect(provider).to receive(:hg_wrapper).with('update', '--clean', '-r', revision)
       provider.revision = revision
     end
   end
