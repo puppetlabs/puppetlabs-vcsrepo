@@ -78,7 +78,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
     args = ['--non-interactive']
     if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
       args.push('--username', @resource.value(:basic_auth_username))
-      args.push('--password', @resource.value(:basic_auth_password))
+      args.push('--password', sensitive? ? @resource.value(:basic_auth_password).unwrap : @resource.value(:basic_auth_password))
       args.push('--no-auth-cache')
     end
 
@@ -167,12 +167,15 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
     update_includes(new_paths)
   end
 
+  private
+
   def svn_wrapper(*args)
-    sensitive = (@resource.parameters.key?(:basic_auth_password) && @resource.parameters[:basic_auth_password].sensitive) ? true : false # Check if there is a sensitive parameter
-    Puppet::Util::Execution.execute("svn #{args.join(' ')}", sensitive: sensitive)
+    Puppet::Util::Execution.execute("svn #{args.join(' ')}", sensitive: sensitive?)
   end
 
-  private
+  def sensitive?
+    (@resource.parameters.key?(:basic_auth_password) && @resource.parameters[:basic_auth_password].sensitive) ? true : false # Check if there is a sensitive parameter
+  end
 
   def get_includes(directory)
     at_path do

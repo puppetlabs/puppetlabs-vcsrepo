@@ -53,6 +53,28 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
         provider.create
       end
     end
+
+    context 'when basic auth is used with Sensitive basic_auth_password' do
+      let(:resource) do
+        Puppet::Type.type(:vcsrepo).new(name: 'test',
+                                        ensure: :present,
+                                        provider: :hg,
+                                        path: '/tmp/vcsrepo',
+                                        source: 'something',
+                                        sensitive_parameters: [:basic_auth_password],
+                                        basic_auth_username: 'user',
+                                        basic_auth_password: Puppet::Pops::Types::PSensitiveType::Sensitive.new('pass'))
+      end
+
+      it "executes 'hg clone'" do
+        command = "hg clone #{resource.value(:source)} #{resource.value(:path)} --config auth.x.prefix=#{resource.value(:source)} "\
+        "--config auth.x.username=#{resource.value(:basic_auth_username)} --config auth.x.password=#{resource.value(:basic_auth_password).unwrap} "\
+        "--config 'auth.x.schemes=http https'"\
+
+        expect(Puppet::Util::Execution).to receive(:execute).with(command, sensitive: true)
+        provider.create
+      end
+    end
   end
 
   describe 'destroying' do

@@ -264,6 +264,25 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         expect { provider.create }.to raise_error RuntimeError, %r{you must specify the HTTP .+username.*}i
       end
     end
+    context 'when basic_auth_password is Sensitive' do
+      let(:resource) do
+        Puppet::Type.type(:vcsrepo).new(name: 'test',
+                                        ensure: :present,
+                                        provider: :svn,
+                                        path: '/tmp/vcsrepo',
+                                        source: 'an-unimportant-value',
+                                        sensitive_parameters: [:basic_auth_password],
+                                        basic_auth_username: 'dummy_user',
+                                        basic_auth_password: Puppet::Pops::Types::PSensitiveType::Sensitive.new('dummy_pass'))
+      end
+
+      it 'works' do
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', '--username', resource.value(:basic_auth_username),
+                                                       '--password', resource.value(:basic_auth_password).unwrap, '--no-auth-cache',
+                                                       'checkout', resource.value(:source), resource.value(:path))
+        provider.create
+      end
+    end
   end
 
   describe 'setting the source property' do
