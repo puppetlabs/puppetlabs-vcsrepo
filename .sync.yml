@@ -32,6 +32,7 @@ spec/spec_helper.rb:
     - travis_deb
     - travis_el6
     - travis_el7
+    - travis_el8
     complex:
     - collection:
         puppet_collection:
