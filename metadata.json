@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-vcsrepo",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "author": "puppetlabs",
   "summary": "Puppet module providing a type to manage repositories from various version control systems",
   "license": "GPL-2.0+",
