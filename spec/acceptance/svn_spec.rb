@@ -111,6 +111,23 @@ describe 'subversion tests' do
     end
   end
 
+  context 'with Sensitive password' do
+    pp = <<-MANIFEST
+      vcsrepo { 'SVN':
+      ensure => latest,
+      path => '/tmp/svn',
+      provider => svn,
+      source => 'http://svn.apache.org/repos/asf/subversion/svn-logos',
+      basic_auth_username => 'svn_user',
+      basic_auth_password => Sensitive('sensitivePassword'),
+    }
+    MANIFEST
+    it 'can use Sensitive' do
+      # Run it twice and test for idempotency
+      idempotent_apply(pp)
+    end
+  end
+
   context 'with switching sources' do
     pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/svnrepo":
