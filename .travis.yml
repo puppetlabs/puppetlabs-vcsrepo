@@ -28,45 +28,27 @@ jobs:
   fast_finish: true
   include:
     - before_script:
-      - "bundle exec rake 'litmus:provision_list[travis_ub_6]'"
+      - "bundle exec rake 'litmus:provision[docker, litmusimage/debian:9]'"
       - "bundle exec rake 'litmus:install_agent[puppet6]'"
       - "bundle exec rake litmus:install_module"
       env:
-        PLATFORMS: travis_ub_6_puppet6
+        PLATFORMS: travis_deb9_puppet6
         BUNDLE_WITH: system_tests
       rvm: 2.5.7
-      script: ["travis_wait 45 bundle exec rake litmus:acceptance:parallel"]
+      script: "bundle exec rake litmus:acceptance:localhost:2222"
       services: docker
       stage: acceptance
     - before_script:
-      - "bundle exec rake 'litmus:provision_list[travis_deb]'"
+      - "bundle exec rake 'litmus:provision[docker, litmusimage/debian:10]'"
       - "bundle exec rake 'litmus:install_agent[puppet6]'"
       - "bundle exec rake litmus:install_module"
       env:
-        PLATFORMS: travis_deb_puppet6
+        PLATFORMS: travis_deb10_puppet6
         BUNDLE_WITH: system_tests
       rvm: 2.5.7
-      script: ["travis_wait 45 bundle exec rake litmus:acceptance:parallel"]
+      script: "bundle exec rake litmus:acceptance:localhost:2222"
       services: docker
-      stage: acceptance
-    - before_script:
-      - "bundle exec rake 'litmus:provision_list[travis_el7]'"
-      - "bundle exec rake 'litmus:install_agent[puppet6]'"
-      - "bundle exec rake litmus:install_module"
-      env:
-        PLATFORMS: travis_el7_puppet6
-        BUNDLE_WITH: system_tests
-      rvm: 2.5.7
-      script: ["travis_wait 45 bundle exec rake litmus:acceptance:parallel"]
-      services: docker
-      stage: acceptance
-    -
-      env: CHECK="check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint"
-      stage: static
-    -
-      env: PUPPET_GEM_VERSION="~> 6.0" CHECK=parallel_spec
-      rvm: 2.5.7
-      stage: spec
+      stage: acceptance      
 branches:
   only:
     - main
