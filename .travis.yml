@@ -1,6 +1,6 @@
 ---
 os: linux
-dist: xenial
+dist: focal
 language: ruby
 cache: bundler
 before_install:
