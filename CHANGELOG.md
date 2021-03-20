@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.0.1](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v4.0.1) (2021-03-13)
+## [v4.0.1](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v4.0.1) (2021-03-15)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v4.0.0...v4.0.1)
 
@@ -60,10 +60,6 @@ All notable changes to this project will be documented in this file. The format 
 - pdksync - Add support on Debian10 [\#428](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/428) ([lionce](https://github.com/lionce))
 - feature\(git\): add keep local changes option [\#425](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/425) ([jfroche](https://github.com/jfroche))
 
-### Fixed
-
-- feat: do not chown excluded files [\#432](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/432) ([jfroche](https://github.com/jfroche))
-
 ## [v3.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v3.0.0) (2019-06-13)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.4.0...v3.0.0)
@@ -80,6 +76,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Fixed
 
+- feat: do not chown excluded files [\#432](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/432) ([jfroche](https://github.com/jfroche))
 - MODULES-8910 fix for failing git install using RepoForge instead of epel [\#414](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/414) ([Lavinia-Dan](https://github.com/Lavinia-Dan))
 - \(maint\) Add HTML anchor tag [\#404](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/404) ([clairecadman](https://github.com/clairecadman))
 - pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#401](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/401) ([tphoney](https://github.com/tphoney))
