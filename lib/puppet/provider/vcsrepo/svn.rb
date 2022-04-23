@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "shellwords"
+
 require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 
 Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
@@ -83,10 +85,30 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
   end
 
   def buildargs
+    auth_cache = true
     args = ['--non-interactive']
-    if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
-      args.push('--username', @resource.value(:basic_auth_username))
-      args.push('--password', @resource.value(:basic_auth_password))
+
+    if (username = @resource.value(:basic_auth_username))
+      auth_cache = false
+      args.push('--username')
+      if username.respond_to? :unwrap
+        args.push(@resource.value(:basic_auth_username).unwrap.shellescape)
+      else
+        args.push(@resource.value(:basic_auth_username).shellescape)
+      end
+    end
+
+    if (password = @resource.value(:basic_auth_password))
+      auth_cache = false
+      args.push('--password')
+      if password.respond_to? :unwrap
+        args.push(@resource.value(:basic_auth_password).unwrap.shellescape)
+      else
+        args.push(@resource.value(:basic_auth_password).shellescape)
+      end
+    end
+
+    unless auth_cache
       args.push('--no-auth-cache')
     end
 

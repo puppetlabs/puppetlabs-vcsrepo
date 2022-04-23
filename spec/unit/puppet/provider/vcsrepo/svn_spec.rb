@@ -280,7 +280,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
 
       it 'works' do
         expect(provider).to receive(:svn_wrapper).with('--non-interactive', '--username', resource.value(:basic_auth_username),
-                                                       '--password', resource.value(:basic_auth_password), '--no-auth-cache',
+                                                       '--password', resource.value(:basic_auth_password).unwrap, '--no-auth-cache',
                                                        'checkout', resource.value(:source), resource.value(:path))
         provider.create
       end
@@ -291,6 +291,17 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         resource[:basic_auth_username] = 'dummy_user'
         resource[:basic_auth_password] = 'ÙöØÓqÃ¾BÐh¦¹XH8«'
         expect { provider.create }.to raise_error RuntimeError, %r{The password can not contain non-ASCII characters}
+      end
+    end
+    context 'when basic_auth credentials contain shell characters' do
+      it 'works' do
+        resource[:source] = 'an-important-value'
+        resource[:basic_auth_username] = 'dummy user'
+        resource[:basic_auth_password] = 'dummy password (secret)'
+        expect(provider).to receive(:svn_wrapper).with('--non-interactive', '--username', "dummy\\ user",
+                                                       '--password', "dummy\\ password\\ \\(secret\\)", '--no-auth-cache',
+                                                       'checkout', resource.value(:source), resource.value(:path))
+        provider.create
       end
     end
     context 'when basic_auth_password contains only ASCII characters' do
