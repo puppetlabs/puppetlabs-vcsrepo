@@ -232,6 +232,20 @@ vcsrepo { '/path/to/repo':
 You can find more information about the proxy configuration [here](https://gist.github.com/evantoli/f8c23a37eb3558ab8765).
 It's also possible to configure it on a per-repository level.
 
+To use a specific umask, set `umask` to the desired value (expressed as a string of octal numbers); note that changes to umask do not retroactively affect repo files created earlier under a different umask. This is currently only implemented for the `git` provider. If unspecified, this will use the umask of the puppet process itself.
+
+Example to set shared group access:
+
+~~~ puppet
+vcsrepo { '/path/to/repo':
+  ensure   => present,
+  provider => git,
+  source   => 'git://example.com/repo.git',
+  revision => '0c466b8a5a45f6cd7de82c08df2fb4ce1e920a31',
+  umask    => '0002'
+}
+~~~
+
 #### Use multiple remotes with a repository
 
 In place of a single string, you can set `source` to a hash of one or more name => URL pairs:

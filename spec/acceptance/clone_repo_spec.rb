@@ -598,4 +598,25 @@ describe 'clones a remote repo' do
       end
     end
   end
+
+  context 'with umask' do
+    pp = <<-MANIFEST
+      vcsrepo { "#{tmpdir}/testrepo_branch":
+        ensure => present,
+        provider => git,
+        source => "file://#{tmpdir}/testrepo.git",
+        umask => '0002',
+      }
+    MANIFEST
+    it 'clones a repo' do
+      # Run it twice and test for idempotency
+      idempotent_apply(pp)
+    end
+
+    describe file("#{tmpdir}/testrepo_branch/.git/HEAD") do
+      # Note: '0664' is not supported by 'be_mode'; this must be three digits
+      # unless the first octet is non-zero.
+      it { is_expected.to be_mode '664' }
+    end
+  end
 end

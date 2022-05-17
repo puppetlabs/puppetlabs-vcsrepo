@@ -67,6 +67,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :hooks_allowed,
           'The provider supports managing hooks for the repository operations.'
 
+  feature :umask,
+          'The provider supports setting umask for repo operations'
+
   ensurable do
     desc 'Ensure the version control repository.'
     attr_accessor :latest
@@ -318,6 +321,17 @@ Puppet::Type.newtype(:vcsrepo) do
   newproperty :skip_hooks, required_features: [:hooks_allowed] do
     desc 'Explicitly skip any global hooks for this repository.'
     newvalues(:true, :false)
+  end
+
+  newparam :umask, required_features: [:umask] do
+    desc 'Sets the umask to be used for all repo operations'
+
+    # originally from puppet's built-in lib/puppet/type/exec.rb
+    # ...then modified to satisfy rubocop.
+    munge do |value|
+      raise Puppet::Error, _('The umask specification is invalid: %{value}') % { value: value.inspect } unless value.match?(%r{^0?[0-7]{1,4}$})
+      value.to_i(8)
+    end
   end
 
   autorequire(:package) do

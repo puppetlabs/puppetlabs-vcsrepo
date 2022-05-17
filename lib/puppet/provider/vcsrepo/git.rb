@@ -6,7 +6,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   desc 'Supports Git repositories'
 
   has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes,
-               :user, :depth, :branch, :submodules, :safe_directory, :hooks_allowed
+               :user, :depth, :branch, :submodules, :safe_directory, :hooks_allowed,
+               :umask
 
   def create
     check_force
@@ -699,6 +700,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       exec_args[:custom_environment] = { 'HOME' => Etc.getpwnam(@resource.value(:user)).dir }
       exec_args[:uid] = @resource.value(:user)
     end
-    Puppet::Util::Execution.execute([:git, args], **exec_args)
+    withumask do
+      Puppet::Util::Execution.execute([:git, args], **exec_args)
+    end
   end
 end
