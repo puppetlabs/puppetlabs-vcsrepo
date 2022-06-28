@@ -252,7 +252,7 @@ Puppet::Type.newtype(:vcsrepo) do
   end
 
   newparam :identity, required_features: [:ssh_identity] do
-    desc 'SSH identity file'
+    desc 'SSH identity file. Git version 2.10.0 or later is required when using the identity parameter.'
   end
 
   newproperty :module, required_features: [:modules] do

@@ -622,6 +622,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     end
 
     if @resource.value(:identity)
+      return raise 'Git version 2.10.0 or higher is required to use the identity parameter.' unless Gem::Version.new(git_version) >= Gem::Version.new('2.10.0')
+
       ssh_opts = {
         IgnoreUnknown: 'IdentityAgent',
         IdentitiesOnly: 'yes',
