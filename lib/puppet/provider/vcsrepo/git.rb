@@ -702,7 +702,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visiblity private
   def git_ssh_with_identity_ssh_file(*args)
-    Tempfile.open('git-helper', Puppet[:statedir]) do |f|
+    Tempfile.open('git-helper') do |f|
       f.puts '#!/bin/sh'
       f.puts 'SSH_AUTH_SOCKET='
       f.puts 'export SSH_AUTH_SOCKET'
