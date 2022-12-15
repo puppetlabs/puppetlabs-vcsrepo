@@ -666,26 +666,60 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     end
 
     if @resource.value(:identity)
-      ssh_opts = {
-        IgnoreUnknown: 'IdentityAgent',
-        IdentitiesOnly: 'yes',
-        IdentityAgent: 'none',
-        PasswordAuthentication: 'no',
-        KbdInteractiveAuthentication: 'no',
-      }
-      ssh_command = "ssh -i #{@resource.value(:identity)} "
-      ssh_command += ssh_opts.map { |option, value| "-o \"#{option} #{value}\"" }.join ' '
+      git_ver = git_version
+      if Gem::Version.new(git_ver) >= Gem::Version.new('2.3.0')
+        # GIT_SSH_COMMAND was introduced in version 2.3.0.
+        git_ssh_with_identity_ssh_command(*args)
+      else
+        git_ssh_with_identity_ssh_file(*args)
+      end
+    else
+      exec_git(*args)
+    end
+  end
 
-      env_git_ssh_command_save = ENV['GIT_SSH_COMMAND']
-      ENV['GIT_SSH_COMMAND'] = ssh_command
+  # @!visibility private
+  def git_ssh_with_identity_ssh_command(*args)
+    ssh_opts = {
+      IgnoreUnknown: 'IdentityAgent',
+      IdentitiesOnly: 'yes',
+      IdentityAgent: 'none',
+      PasswordAuthentication: 'no',
+      KbdInteractiveAuthentication: 'no',
+    }
+    ssh_command = "ssh -i #{@resource.value(:identity)} "
+    ssh_command += ssh_opts.map { |option, value| "-o \"#{option} #{value}\"" }.join ' '
+
+    env_git_ssh_command_save = ENV['GIT_SSH_COMMAND']
+    ENV['GIT_SSH_COMMAND'] = ssh_command
+
+    ret = exec_git(*args)
+
+    ENV['GIT_SSH_COMMAND'] = env_git_ssh_command_save
+
+    ret
+  end
+
+  # @!visiblity private
+  def git_ssh_with_identity_ssh_file(*args)
+    Tempfile.open('git-helper', Puppet[:statedir]) do |f|
+      f.puts '#!/bin/sh'
+      f.puts 'SSH_AUTH_SOCKET='
+      f.puts 'export SSH_AUTH_SOCKET'
+      f.puts 'exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no ' \
+        "-oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
+      f.close
+
+      FileUtils.chmod(0o755, f.path)
+
+      env_git_ssh_save = ENV['GIT_SSH']
+      ENV['GIT_SSH'] = f.path
 
       ret = exec_git(*args)
 
-      ENV['GIT_SSH_COMMAND'] = env_git_ssh_command_save
+      ENV['GIT_SSH'] = env_git_ssh_save
 
       ret
-    else
-      exec_git(*args)
     end
   end
 
