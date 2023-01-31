@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.4.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v5.4.0) (2023-01-31)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v5.3.0...v5.4.0)
+
+### Added
+
+- support per-repo HTTP proxy for the git provider [\#576](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/576) ([bugfood](https://github.com/bugfood))
+- support umask for git repos \(try 2\) [\#574](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/574) ([bugfood](https://github.com/bugfood))
+
+### Fixed
+
+- Bring back GIT\_SSH support for old git versions [\#582](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/582) ([vStone](https://github.com/vStone))
+- fix repeated acceptance tests on the same container [\#575](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/575) ([bugfood](https://github.com/bugfood))
+- pdksync - \(CONT-189\) Remove support for RedHat6 / OracleLinux6 / Scientific6 [\#573](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/573) ([david22swan](https://github.com/david22swan))
+- pdksync - \(CONT-130\) - Dropping Support for Debian 9 [\#570](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/570) ([jordanbreen28](https://github.com/jordanbreen28))
+
 ## [v5.3.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v5.3.0) (2022-09-13)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v5.2.0...v5.3.0)
@@ -49,10 +65,6 @@ All notable changes to this project will be documented in this file. The format 
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v4.0.0...v5.0.0)
 
-### Changed
-
-- Always run as given user, even if identity set [\#473](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/473) ([bigpresh](https://github.com/bigpresh))
-
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v4.0.0) (2021-03-03)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v3.2.1...v4.0.0)
@@ -96,6 +108,10 @@ All notable changes to this project will be documented in this file. The format 
 ## [v3.1.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v3.1.0) (2019-12-10)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v3.0.0...v3.1.0)
+
+### Changed
+
+- Always run as given user, even if identity set [\#473](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/473) ([bigpresh](https://github.com/bigpresh))
 
 ### Added
 
