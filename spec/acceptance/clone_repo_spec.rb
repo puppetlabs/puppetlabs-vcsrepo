@@ -636,4 +636,25 @@ describe 'clones a remote repo' do
       it { is_expected.to be_mode '664' }
     end
   end
+
+  context 'with mode' do
+    pp = <<-MANIFEST
+      vcsrepo { "#{tmpdir}/testrepo_mode":
+        ensure => present,
+        provider => git,
+        source => "file://#{tmpdir}/testrepo.git",
+        mode => 'u=rwX,g=rX,o=X',
+      }
+    MANIFEST
+    it 'clones a repo' do
+      # Run it twice and test for idempotency
+      idempotent_apply(pp)
+    end
+
+    describe file("#{tmpdir}/testrepo_mode") do
+      # NOTE: '0664' is not supported by 'be_mode'; this must be three digits
+      # unless the first octet is non-zero.
+      it { is_expected.to be_mode '751' }
+    end
+  end
 end

@@ -16,10 +16,25 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
 
   private
 
+  def set_ownership_and_permissions
+    set_ownership
+    set_permissions
+  end
+
   def set_ownership
+    mode = @resource.value(:mode) || nil
+    # Change the permission on the repo itself.
+    # The VCS should maintain permissions on files within the checkout.
+    FileUtils.chmod(mode, @resource.value(:path)) unless mode.nil?
+  end
+
+  def set_permissions
     owner = @resource.value(:owner) || nil
     group = @resource.value(:group) || nil
     excludes = @resource.value(:excludes) || nil
+    # We might have no work to do, and this makes it easier for the callers.
+    return if owner.nil? && group.nil?
+
     if excludes.nil? || excludes.empty?
       FileUtils.chown_R(owner, group, @resource.value(:path))
     else
@@ -28,6 +43,7 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
   end
 
   def files
+    # Expensive on large repos
     excludes = @resource.value(:excludes)
     path = @resource.value(:path)
     Dir["#{path}/**/*"].reject { |f| excludes.any? { |p| f.start_with?("#{path}/#{p}") } }
