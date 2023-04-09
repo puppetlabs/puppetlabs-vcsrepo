@@ -155,6 +155,7 @@ The following parameters are available in the `vcsrepo` type.
 * [`trust_server_cert`](#-vcsrepo--trust_server_cert)
 * [`umask`](#-vcsrepo--umask)
 * [`user`](#-vcsrepo--user)
+* [`mode`](#-vcsrepo--mode)
 
 ##### <a name="-vcsrepo--basic_auth_password"></a>`basic_auth_password`
 
@@ -285,3 +286,6 @@ Sets the umask to be used for all repo operations
 
 The user to run for repository operations
 
+##### <a name="-vcsrepo--mode"></a>`mode`
+
+Sets the mode for the repository directory (non-recursive).

@@ -29,7 +29,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       init_repository
       self.skip_hooks = @resource.value(:skip_hooks) unless @resource.value(:skip_hooks).nil?
     end
-    update_owner_and_excludes
+    update_owner_permission_and_excludes
   end
 
   def destroy
@@ -89,7 +89,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     end
     # TODO: Would this ever reach here if it is bare?
     update_submodules if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
-    update_owner_and_excludes
+    update_owner_permission_and_excludes
   end
 
   def includes
@@ -243,7 +243,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     at_path do
       git_remote_action('fetch', @resource.value(:remote))
       git_remote_action(*fetch_tags_args, @resource.value(:remote))
-      update_owner_and_excludes
+      update_owner_permission_and_excludes
     end
   end
 
@@ -261,6 +261,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     FileUtils.mv(File.join(@resource.value(:path), '.git'), tempdir)
     FileUtils.rm_rf(@resource.value(:path))
     FileUtils.mv(tempdir, @resource.value(:path))
+    FileUtils.chown(@resource.value(:user), @resource.value(:group), @resource.value(:path)) if @resource.value(:user) || @resource.value(:group)
+    FileUtils.chmod(@resource.value(:mode), @resource.value(:path)) if @resource.value(:mode)
     at_path do
       exec_git('config', '--local', '--bool', 'core.bare', 'true')
       return unless @resource.value(:ensure) == :mirror
@@ -281,13 +283,15 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     notice 'Converting bare repository to working copy repository'
     FileUtils.mv(@resource.value(:path), tempdir)
     FileUtils.mkdir(@resource.value(:path))
+    FileUtils.chown(@resource.value(:user), @resource.value(:group), @resource.value(:path)) if @resource.value(:user) || @resource.value(:group)
+    FileUtils.chmod(@resource.value(:mode), @resource.value(:path)) if @resource.value(:mode)
     FileUtils.mv(tempdir, File.join(@resource.value(:path), '.git'))
     if commits?
       at_path do
         exec_git('config', '--local', '--bool', 'core.bare', 'false')
         reset('HEAD')
         git_with_identity('checkout', '--force')
-        update_owner_and_excludes
+        update_owner_permission_and_excludes
       end
     end
     set_no_mirror if mirror?
@@ -413,7 +417,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     else
       # normal init
       FileUtils.mkdir(@resource.value(:path))
-      FileUtils.chown(@resource.value(:user), nil, @resource.value(:path)) if @resource.value(:user)
+      FileUtils.chown(@resource.value(:user), @resource.value(:group), @resource.value(:path)) if @resource.value(:user) || @resource.value(:group)
+      FileUtils.chmod(@resource.value(:mode), @resource.value(:path)) if @resource.value(:mode)
       args = ['init']
       args << '--bare' if @resource.value(:ensure) == :bare
       at_path do
@@ -622,8 +627,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   end
 
   # @!visibility private
-  def update_owner_and_excludes
-    set_ownership if @resource.value(:owner) || @resource.value(:group)
+  def update_owner_permission_and_excludes
+    set_ownership_and_permissions
     set_excludes if @resource.value(:excludes)
   end
 
