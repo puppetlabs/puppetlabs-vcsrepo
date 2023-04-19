@@ -11,34 +11,22 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   def create
     check_force
-    if @resource.value(:revision) && ensure_bare_or_mirror?
-      raise("Cannot set a revision (#{@resource.value(:revision)}) on a bare repository")
-    end
+    raise("Cannot set a revision (#{@resource.value(:revision)}) on a bare repository") if @resource.value(:revision) && ensure_bare_or_mirror?
 
-    if !@resource.value(:source)
-      if @resource.value(:ensure) == :mirror
-        raise('Cannot init repository with mirror option, try bare instead')
-      end
-
-      init_repository
-      unless @resource.value(:skip_hooks).nil?
-        self.skip_hooks = @resource.value(:skip_hooks)
-      end
-    else
+    if @resource.value(:source)
       clone_repository(default_url, @resource.value(:path))
       update_remotes(@resource.value(:source))
       set_mirror if @resource.value(:ensure) == :mirror && @resource.value(:source).is_a?(Hash)
-      unless @resource.value(:skip_hooks).nil?
-        self.skip_hooks = @resource.value(:skip_hooks)
-      end
+      self.skip_hooks = @resource.value(:skip_hooks) unless @resource.value(:skip_hooks).nil?
 
-      if @resource.value(:revision)
-        checkout
-      end
-      if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
-        update_submodules
-      end
+      checkout if @resource.value(:revision)
+      update_submodules if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
 
+    else
+      raise('Cannot init repository with mirror option, try bare instead') if @resource.value(:ensure) == :mirror
+
+      init_repository
+      self.skip_hooks = @resource.value(:skip_hooks) unless @resource.value(:skip_hooks).nil?
     end
     update_owner_and_excludes
   end
@@ -99,9 +87,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       end
     end
     # TODO: Would this ever reach here if it is bare?
-    if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
-      update_submodules
-    end
+    update_submodules if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
     update_owner_and_excludes
   end
 
@@ -238,9 +224,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def update_references
     fetch_tags_args = ['fetch', '--tags']
     git_ver = git_version
-    if Gem::Version.new(git_ver) >= Gem::Version.new('2.20.0')
-      fetch_tags_args.push('--force')
-    end
+    fetch_tags_args.push('--force') if Gem::Version.new(git_ver) >= Gem::Version.new('2.20.0')
     at_path do
       git_remote_action('fetch', @resource.value(:remote))
       git_remote_action(*fetch_tags_args, @resource.value(:remote))
@@ -336,9 +320,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def skip_hooks
     git_ver = git_version
     config_args = ['config']
-    if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.4')
-      config_args.push('--local')
-    end
+    config_args.push('--local') if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.4')
     at_path do
       begin
         d = git_with_identity(*config_args, '--get', 'core.hooksPath')
@@ -354,9 +336,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def skip_hooks=(desired)
     git_ver = git_version
     config_args = ['config']
-    if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.4')
-      config_args.push('--local')
-    end
+    config_args.push('--local') if Gem::Version.new(git_ver) >= Gem::Version.new('1.7.4')
     at_path do
       if desired == :true
         exec_git(*config_args, 'core.hooksPath', '/dev/null')
@@ -389,29 +369,23 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     args = ['clone']
     if @resource.value(:depth) && @resource.value(:depth).to_i > 0
       args.push('--depth', @resource.value(:depth).to_s)
-      if @resource.value(:revision) && !@resource.value(:branch)
-        args.push('--branch', @resource.value(:revision).to_s)
-      end
+      args.push('--branch', @resource.value(:revision).to_s) if @resource.value(:revision) && !@resource.value(:branch)
     end
-    if @resource.value(:branch)
-      args.push('--branch', @resource.value(:branch).to_s)
-    end
+    args.push('--branch', @resource.value(:branch).to_s) if @resource.value(:branch)
 
     case @resource.value(:ensure)
     when :bare then args << '--bare'
     when :mirror then args << '--mirror'
     end
 
-    if @resource.value(:remote) != 'origin'
-      args.push('--origin', @resource.value(:remote))
-    end
-    if !working_copy_exists?
+    args.push('--origin', @resource.value(:remote)) if @resource.value(:remote) != 'origin'
+    if working_copy_exists?
+      notice 'Repo has already been cloned'
+    else
       args.push(source, path)
       Dir.chdir('/') do
         git_remote_action(*args)
       end
-    else
-      notice 'Repo has already been cloned'
     end
   end
 
@@ -426,9 +400,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       FileUtils.mkdir(@resource.value(:path))
       FileUtils.chown(@resource.value(:user), nil, @resource.value(:path)) if @resource.value(:user)
       args = ['init']
-      if @resource.value(:ensure) == :bare
-        args << '--bare'
-      end
+      args << '--bare' if @resource.value(:ensure) == :bare
       at_path do
         git_with_identity(*args)
       end
@@ -585,9 +557,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       return current
     end
 
-    if @resource.value(:source)
-      update_references
-    end
+    update_references if @resource.value(:source)
     if @resource.value(:revision)
       canonical = if tag_revision?
                     # git-rev-parse will give you the hash of the tag object itself rather
@@ -611,9 +581,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def update_owner_and_excludes
-    if @resource.value(:owner) || @resource.value(:group)
-      set_ownership
-    end
+    set_ownership if @resource.value(:owner) || @resource.value(:group)
     set_excludes if @resource.value(:excludes)
   end
 
@@ -717,7 +685,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       IdentitiesOnly: 'yes',
       IdentityAgent: 'none',
       PasswordAuthentication: 'no',
-      KbdInteractiveAuthentication: 'no',
+      KbdInteractiveAuthentication: 'no'
     }
     ssh_command = "ssh -i #{@resource.value(:identity)} "
     ssh_command += ssh_opts.map { |option, value| "-o \"#{option} #{value}\"" }.join ' '
@@ -760,7 +728,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     exec_args = {
       failonfail: true,
       combine: true,
-      custom_environment: { 'HOME' => Etc.getpwuid(Process.uid).dir },
+      custom_environment: { 'HOME' => Etc.getpwuid(Process.uid).dir }
     }
 
     if @resource.value(:user) && @resource.value(:user) != Facter['id'].value

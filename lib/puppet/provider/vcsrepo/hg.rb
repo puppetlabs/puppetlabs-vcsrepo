@@ -11,10 +11,10 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
 
   def create
     check_force
-    if !@resource.value(:source)
-      create_repository(@resource.value(:path))
-    else
+    if @resource.value(:source)
       clone_repository(@resource.value(:revision))
+    else
+      create_repository(@resource.value(:path))
     end
     update_owner
   end
@@ -107,9 +107,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
 
   def clone_repository(revision)
     args = ['clone']
-    if revision
-      args.push('-u', revision)
-    end
+    args.push('-u', revision) if revision
     args.push(@resource.value(:source),
               @resource.value(:path))
     args.push(remote: true)
@@ -126,9 +124,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
 
   def hg_wrapper(*args)
     options = { remote: false }
-    if !args.empty? && args[-1].is_a?(Hash)
-      options.merge!(args.pop)
-    end
+    options.merge!(args.pop) if !args.empty? && args[-1].is_a?(Hash)
 
     if @resource.value(:basic_auth_username) && @resource.value(:basic_auth_password)
       args += [

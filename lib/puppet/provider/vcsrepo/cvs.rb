@@ -10,10 +10,10 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
 
   def create
     check_force
-    if !@resource.value(:source)
-      create_repository(@resource.value(:path))
-    else
+    if @resource.value(:source)
       checkout_repository
+    else
+      create_repository(@resource.value(:path))
     end
     update_owner
   end
@@ -55,7 +55,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
       # CVS would report those as "missing", regardless
       # if they have contents or updates.
       is_current = (runcvs('-nq', 'update', '-d').strip == '')
-      unless is_current then Puppet.debug "There are updates available on the checkout's current branch/tag." end
+      Puppet.debug "There are updates available on the checkout's current branch/tag." unless is_current
       return is_current
     end
   end
@@ -66,7 +66,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
     # requested one, if that differs) as the "latest" revision.
     should = @resource.value(:revision)
     current = revision
-    (should != current) ? should : current
+    (should == current) ? current : should
   end
 
   def revision
@@ -117,13 +117,9 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
     dirname, basename = File.split(@resource.value(:path))
     Dir.chdir(dirname) do
       args = ['-d', @resource.value(:source)]
-      if @resource.value(:compression)
-        args.push('-z', @resource.value(:compression))
-      end
+      args.push('-z', @resource.value(:compression)) if @resource.value(:compression)
       args.push('checkout')
-      if @resource.value(:revision)
-        args.push('-r', @resource.value(:revision))
-      end
+      args.push('-r', @resource.value(:revision)) if @resource.value(:revision)
       args.push('-d', basename, module_name)
       runcvs(*args)
     end

@@ -106,7 +106,7 @@ describe Puppet::Type.type(:vcsrepo) do
       owner: nil,
       group: nil,
       user: nil,
-      revision: nil,
+      revision: nil
     }
 
     defaults.each_pair do |param, value|
