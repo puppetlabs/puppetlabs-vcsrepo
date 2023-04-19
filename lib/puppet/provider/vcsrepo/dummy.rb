@@ -10,7 +10,7 @@ Puppet::Type.type(:vcsrepo).provide(:dummy, parent: Puppet::Provider::Vcsrepo) d
 
   def working_copy_exists?
     providers = begin
-      @resource.class.providers.map { |x| x.to_s }.sort.reject { |x| x == 'dummy' }.join(', ')
+      @resource.class.providers.map(&:to_s).sort.reject { |x| x == 'dummy' }.join(', ')
     rescue StandardError
       'none'
     end

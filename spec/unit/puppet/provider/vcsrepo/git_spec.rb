@@ -7,7 +7,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git) do
     <<BRANCHES
   end
   #{'*  main' unless include_branch.nil?}
-  #{'*  ' + include_branch if include_branch}
+  #{"*  #{include_branch}" if include_branch}
    remote/origin/main
    remote/origin/foo
 

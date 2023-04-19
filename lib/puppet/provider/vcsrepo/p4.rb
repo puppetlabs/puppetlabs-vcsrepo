@@ -28,7 +28,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
 
     # Check if workspace is setup
     args = ['where']
-    args.push(@resource.value(:path) + '/...')
+    args.push("#{@resource.value(:path)}/...")
     hash = p4(args, raise: false)
 
     (hash['code'] != 'error')
@@ -88,7 +88,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
 
   def source
     args = ['where']
-    args.push(@resource.value(:path) + '/...')
+    args.push("#{@resource.value(:path)}/...")
     hash = p4(args, raise: false)
 
     hash['depotFile']
@@ -126,7 +126,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     # default (generated) client name
     path = @resource.value(:path)
     host = Facter.value('hostname')
-    default = 'puppet-' + Digest::MD5.hexdigest(path + host)
+    default = "puppet-#{Digest::MD5.hexdigest(path + host)}"
 
     # check config for client name
     set_client = nil
@@ -159,11 +159,11 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     if source
       parts = source.split(%r{/})
       if parts && parts.length >= 4
-        source = '//' + parts[2] + '/' + parts[3]
+        source = "//#{parts[2]}/#{parts[3]}"
         streams = p4(['streams', source], raise: false)
         if streams['code'] == 'stat'
           hash['Stream'] = streams['Stream']
-          notice 'Streams' + streams['Stream'].inspect
+          notice "Streams#{streams['Stream'].inspect}"
         end
       end
     end
@@ -235,7 +235,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     Open3.popen3(config, cmd_str) do |i, o, e, t|
       # Send input stream if provided
       if opts[:input]
-        Puppet.debug "input:\n" + opts[:input]
+        Puppet.debug "input:\n#{opts[:input]}"
         i.write opts[:input]
         i.close
       end

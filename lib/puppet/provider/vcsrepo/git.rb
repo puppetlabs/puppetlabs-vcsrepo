@@ -471,7 +471,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def branches
-    at_path { git_with_identity('branch', '--no-color', '-a') }.tr('*', ' ').split(%r{\n}).map { |line| line.strip }
+    at_path { git_with_identity('branch', '--no-color', '-a') }.tr('*', ' ').split(%r{\n}).map(&:strip)
   end
 
   # git < 2.4 returns 'detached from'
@@ -486,7 +486,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def tags
-    at_path { git_with_identity('tag', '-l') }.split(%r{\n}).map { |line| line.strip }
+    at_path { git_with_identity('tag', '-l') }.split(%r{\n}).map(&:strip)
   end
 
   # @!visibility private
@@ -595,8 +595,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     begin
       d = git_with_identity(*args) || ''
       d.split('\n')
-       .reject { |v| v.empty? }
-       .map { |v| v.chomp }
+       .reject(&:empty?)
+       .map(&:chomp)
     rescue Puppet::ExecutionFailure
       []
     end

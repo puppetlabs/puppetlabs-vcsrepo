@@ -56,7 +56,7 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
   end
 
   def tempdir
-    @tempdir ||= File.join(Dir.tmpdir, 'vcsrepo-' + Digest::MD5.hexdigest(@resource.value(:path)))
+    @tempdir ||= File.join(Dir.tmpdir, "vcsrepo-#{Digest::MD5.hexdigest(@resource.value(:path))}")
   end
 
   # If the resource has a umask, then run the block with that umask; otherwise,

@@ -162,23 +162,3 @@ Style/MixinUsage:
 Style/OptionalBooleanParameter:
   Exclude:
     - 'spec/support/filesystem_helpers.rb'
-
-# Offense count: 14
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Mode.
-Style/StringConcatenation:
-  Exclude:
-    - 'lib/puppet/provider/vcsrepo.rb'
-    - 'lib/puppet/provider/vcsrepo/cvs.rb'
-    - 'lib/puppet/provider/vcsrepo/p4.rb'
-    - 'spec/unit/puppet/provider/vcsrepo/git_spec.rb'
-    - 'spec/unit/puppet/provider/vcsrepo/p4_spec.rb'
-
-# Offense count: 5
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: AllowMethodsWithArguments, AllowedMethods, AllowedPatterns, AllowComments.
-# AllowedMethods: define_method
-Style/SymbolProc:
-  Exclude:
-    - 'lib/puppet/provider/vcsrepo/dummy.rb'
-    - 'lib/puppet/provider/vcsrepo/git.rb'
