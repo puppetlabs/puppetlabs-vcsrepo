@@ -559,8 +559,6 @@ BRANCHES
     end
   end
 
-  # rubocop:enable RSpec/ExampleLength
-
   context 'when updating references' do
     it "uses 'git fetch --tags'" do
       resource.delete(:source)
