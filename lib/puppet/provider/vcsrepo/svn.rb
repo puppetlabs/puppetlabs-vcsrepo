@@ -172,7 +172,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
   def get_includes(directory)
     at_path do
       args = buildargs.push('info', directory)
-      return directory[2..-1].gsub(File::SEPARATOR, '/') if svn_wrapper(*args)[%r{^Depth:\s+(\w+)}m, 1] != 'empty'
+      return directory[2..].gsub(File::SEPARATOR, '/') if svn_wrapper(*args)[%r{^Depth:\s+(\w+)}m, 1] != 'empty'
 
       Dir.entries(directory).map { |entry|
         next if SKIP_DIRS.include?(entry)
@@ -181,7 +181,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
         if File.directory?(entry)
           get_includes(entry)
         elsif File.file?(entry)
-          entry[2..-1].gsub(File::SEPARATOR, '/')
+          entry[2..].gsub(File::SEPARATOR, '/')
         end
       }.flatten.compact!
     end

@@ -367,7 +367,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # @!visibility private
   def clone_repository(source, path)
     args = ['clone']
-    if @resource.value(:depth) && @resource.value(:depth).to_i > 0
+    if @resource.value(:depth)&.to_i&.positive?
       args.push('--depth', @resource.value(:depth).to_s)
       args.push('--branch', @resource.value(:revision).to_s) if @resource.value(:revision) && !@resource.value(:branch)
     end
@@ -415,7 +415,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       rescue Puppet::ExecutionFailure
         commits = 0
       end
-      return commits > 0
+      return commits.positive?
     end
   end
 
