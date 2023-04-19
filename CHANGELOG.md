@@ -65,6 +65,10 @@ All notable changes to this project will be documented in this file. The format 
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v4.0.0...v5.0.0)
 
+### Changed
+
+- Always run as given user, even if identity set [\#473](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/473) ([bigpresh](https://github.com/bigpresh))
+
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v4.0.0) (2021-03-03)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v3.2.1...v4.0.0)
@@ -108,10 +112,6 @@ All notable changes to this project will be documented in this file. The format 
 ## [v3.1.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v3.1.0) (2019-12-10)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v3.0.0...v3.1.0)
-
-### Changed
-
-- Always run as given user, even if identity set [\#473](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/473) ([bigpresh](https://github.com/bigpresh))
 
 ### Added
 
