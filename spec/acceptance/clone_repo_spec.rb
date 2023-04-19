@@ -300,6 +300,7 @@ describe 'clones a remote repo' do
       run_shell("mkdir -p #{tmpdir}/testrepo_force/folder")
       run_shell("touch #{tmpdir}/testrepo_force/temp.txt")
     end
+
     it 'applies the manifest' do
       pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_force":
@@ -332,6 +333,7 @@ describe 'clones a remote repo' do
         run_shell("cd #{tmpdir}/testrepo_already_exists && git init")
         run_shell("cd #{tmpdir}/testrepo_already_exists && touch a && git add a && git commit -m 'a'")
       end
+
       after(:all) do
         run_shell("rm -rf #{tmpdir}/testrepo_already_exists")
       end
@@ -375,6 +377,11 @@ describe 'clones a remote repo' do
         user => 'testuser',
       }
     MANIFEST
+    after(:all) do
+      pp = 'user { "testuser": ensure => absent }'
+      apply_manifest(pp, catch_failures: true)
+    end
+
     it 'applies the manifest' do
       # Run it twice and test for idempotency
       idempotent_apply(pp)
@@ -388,11 +395,6 @@ describe 'clones a remote repo' do
     describe file("#{tmpdir}/testrepo_user") do
       it { is_expected.to be_directory }
       it { is_expected.to be_grouped_into 'testuser' }
-    end
-
-    after(:all) do
-      pp = 'user { "testuser": ensure => absent }'
-      apply_manifest(pp, catch_failures: true)
     end
   end
 
@@ -458,11 +460,6 @@ describe 'clones a remote repo' do
         user => 'testuser-ssh',
       }
     MANIFEST
-    it 'applies the manifest' do
-      # Run it twice and test for idempotency
-      idempotent_apply(pp)
-    end
-
     after(:all) do
       pp = <<-MANIFEST
       user { 'testuser-ssh':
@@ -472,6 +469,11 @@ describe 'clones a remote repo' do
       MANIFEST
       sleep 10
       apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'applies the manifest' do
+      # Run it twice and test for idempotency
+      idempotent_apply(pp)
     end
   end
 
@@ -534,9 +536,11 @@ describe 'clones a remote repo' do
     describe file("#{tmpdir}/testrepo_bare_repo/config") do
       it { is_expected.to contain 'bare = true' }
     end
+
     describe file("#{tmpdir}/testrepo_bare_repo/.git") do
       it { is_expected.not_to be_directory }
     end
+
     describe file("#{tmpdir}/testrepo_bare_repo/HEAD") do
       it { is_expected.to contain 'ref: refs/heads/main' }
     end
@@ -559,9 +563,11 @@ describe 'clones a remote repo' do
       it { is_expected.to contain 'bare = true' }
       it { is_expected.to contain 'mirror = true' }
     end
+
     describe file("#{tmpdir}/testrepo_mirror_repo/.git") do
       it { is_expected.not_to be_directory }
     end
+
     describe file("#{tmpdir}/testrepo_mirror_repo/HEAD") do
       it { is_expected.to contain 'ref: refs/heads/main' }
     end

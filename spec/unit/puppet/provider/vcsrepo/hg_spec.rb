@@ -115,6 +115,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
         expect(provider.revision).to eq('34e6012c783a')
       end
     end
+
     context 'when given a SHA as the resource revision' do
       before(:each) do
         allow(Puppet::Util::Execution).to receive(:execute).with('hg parents', sensitive: false).and_return(fixture(:hg_parents))

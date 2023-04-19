@@ -104,6 +104,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
       before(:each) do
         allow(File).to receive(:exist?).with(tag_file).and_return(true)
       end
+
       it 'reads CVS/Tag' do
         expect(File).to receive(:read).with(tag_file).and_return("T#{tag}")
         expect(provider.revision).to eq(tag)
@@ -114,6 +115,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
       before(:each) do
         allow(File).to receive(:exist?).with(tag_file).and_return(false)
       end
+
       it 'assumes HEAD' do
         expect(provider.revision).to eq('HEAD')
       end
@@ -137,6 +139,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
       expect(provider.source).to eq(resource.value(:source))
     end
   end
+
   describe 'setting the source property' do
     it "calls 'create'" do
       expect(provider).to receive(:create)
@@ -148,12 +151,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
     before(:each) do
       resource[:module] = 'ccvs'
     end
+
     it "reads the contents of file 'CVS/Repository'" do
       expect(File).to receive(:read).with(File.join(resource.value(:path), 'CVS', 'Repository'))
                                     .and_return('ccvs')
       expect(provider.module).to eq(resource.value(:module))
     end
   end
+
   describe 'setting the module property' do
     it "calls 'create'" do
       expect(provider).to receive(:create)

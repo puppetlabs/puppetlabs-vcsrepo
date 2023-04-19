@@ -72,14 +72,17 @@ describe Puppet::Type.type(:vcsrepo) do
       sourceprop.should = 'http://example.com/repo/'
       expect(sourceprop.safe_insync?('http://example.com/repo/')).to eq(true)
     end
+
     it 'stays in sync when it adds a slash' do
       sourceprop.should = 'http://example.com/repo'
       expect(sourceprop.safe_insync?('http://example.com/repo/')).to eq(true)
     end
+
     it 'stays in sync when it removes a slash' do
       sourceprop.should = 'http://example.com/repo/'
       expect(sourceprop.safe_insync?('http://example.com/repo')).to eq(true)
     end
+
     it 'is out of sync with a different source' do
       sourceprop.should = 'http://example.com/repo/asdf'
       expect(sourceprop.safe_insync?('http://example.com/repo')).to eq(false)
