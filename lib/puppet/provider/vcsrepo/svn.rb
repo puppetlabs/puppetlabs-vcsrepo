@@ -2,6 +2,8 @@
 
 require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 
+SKIP_DIRS = ['.', '..', '.svn'].freeze
+
 Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
   desc 'Supports Subversion repositories'
 
@@ -166,8 +168,6 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
   def sensitive?
     (@resource.parameters.key?(:basic_auth_password) && @resource.parameters[:basic_auth_password].sensitive) ? true : false # Check if there is a sensitive parameter
   end
-
-  SKIP_DIRS = ['.', '..', '.svn'].freeze
 
   def get_includes(directory)
     at_path do

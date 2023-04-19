@@ -15,13 +15,6 @@ Lint/BooleanSymbol:
     - 'lib/puppet/type/vcsrepo.rb'
     - 'spec/acceptance/clone_repo_spec.rb'
 
-# Offense count: 1
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: enums
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - 'lib/puppet/provider/vcsrepo/svn.rb'
-
 # Offense count: 14
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
