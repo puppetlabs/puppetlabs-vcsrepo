@@ -739,7 +739,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       f.puts 'SSH_AUTH_SOCKET='
       f.puts 'export SSH_AUTH_SOCKET'
       f.puts 'exec ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no ' \
-        "-oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
+             "-oChallengeResponseAuthentication=no -oConnectTimeout=120 -i #{@resource.value(:identity)} $*"
       f.close
 
       FileUtils.chmod(0o755, f.path)
