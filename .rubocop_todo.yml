@@ -53,20 +53,6 @@ Naming/AccessorMethodName:
   Exclude:
     - 'lib/puppet/type/vcsrepo.rb'
 
-# Offense count: 3
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/StringInclude:
-  Exclude:
-    - 'lib/puppet/provider/vcsrepo/p4.rb'
-    - 'lib/puppet/provider/vcsrepo/svn.rb'
-    - 'spec/spec_helper_acceptance_local.rb'
-
-# Offense count: 8
-# This cop supports unsafe autocorrection (--autocorrect-all).
-RSpec/BeEq:
-  Exclude:
-    - 'spec/unit/puppet/type/vcsrepo_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: Prefixes, AllowedPatterns.
 # Prefixes: when, with, without
@@ -164,12 +150,6 @@ RSpec/StubbedMock:
 Security/Open:
   Exclude:
     - 'lib/puppet/provider/vcsrepo/p4.rb'
-
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/MapToHash:
-  Exclude:
-    - 'lib/puppet/provider/vcsrepo/git.rb'
 
 # Offense count: 1
 Style/MixinUsage:

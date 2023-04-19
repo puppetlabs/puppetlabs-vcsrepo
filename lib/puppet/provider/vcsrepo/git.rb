@@ -173,9 +173,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
       return git_with_identity('config', '--get', "remote.#{remotes[0]}.url").chomp if remotes.size == 1
 
-      remotes.map { |remote|
+      remotes.to_h do |remote|
         [remote, git_with_identity('config', '--get', "remote.#{remote}.url").chomp]
-      }.to_h
+      end
     end
   end
 

@@ -30,7 +30,7 @@ RSpec.configure do |c|
   c.before :suite do
     case os[:family]
     when 'redhat'
-      if %r{5}.match?(os[:release][0])
+      if os[:release][0].include?('5')
         LitmusHelper.instance.run_shell('which git', expect_failures: true)
         LitmusHelper.instance.run_shell('rpm -ivh http://repository.it4i.cz/mirrors/repoforge/redhat/el5/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el5.rf.x86_64.rpm', expect_failures: true)
         LitmusHelper.instance.run_shell('yum install -y git')

@@ -192,7 +192,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
       v = hash[k]
       next if k == 'code'
 
-      if %r{View}.match?(k.to_s)
+      if k.to_s.include?('View')
         view += "\t#{v}\n"
       else
         spec += "#{k}: #{v}\n"
