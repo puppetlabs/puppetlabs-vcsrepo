@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v6.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v6.0.0) (2023-04-19)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v5.5.0...v6.0.0)
+
+### Changed
+
+- \(CONT-803\) Add Support for Puppet 8 / Drop Support for Puppet 6 [\#601](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/601) ([david22swan](https://github.com/david22swan))
+
+## [v5.5.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v5.5.0) (2023-04-19)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v5.4.0...v5.5.0)
+
 ## [v5.4.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v5.4.0) (2023-01-31)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v5.3.0...v5.4.0)
