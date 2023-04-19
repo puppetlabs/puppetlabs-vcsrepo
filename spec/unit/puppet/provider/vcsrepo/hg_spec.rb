@@ -47,9 +47,9 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
         resource[:basic_auth_username] = 'user'
         resource[:basic_auth_password] = 'pass'
 
-        command = "hg clone #{resource.value(:source)} #{resource.value(:path)} --config auth.x.prefix=#{resource.value(:source)} "\
-        "--config auth.x.username=#{resource.value(:basic_auth_username)} --config auth.x.password=#{resource.value(:basic_auth_password)} "\
-        "--config 'auth.x.schemes=http https'"\
+        command = "hg clone #{resource.value(:source)} #{resource.value(:path)} --config auth.x.prefix=#{resource.value(:source)} " \
+        "--config auth.x.username=#{resource.value(:basic_auth_username)} --config auth.x.password=#{resource.value(:basic_auth_password)} " \
+        "--config 'auth.x.schemes=http https'" \
 
         expect(Puppet::Util::Execution).to receive(:execute).with(command, sensitive: false)
         provider.create
@@ -69,9 +69,9 @@ describe Puppet::Type.type(:vcsrepo).provider(:hg) do
       end
 
       it "executes 'hg clone'" do
-        command = "hg clone #{resource.value(:source)} #{resource.value(:path)} --config auth.x.prefix=#{resource.value(:source)} "\
-        "--config auth.x.username=#{resource.value(:basic_auth_username)} --config auth.x.password=#{resource.value(:basic_auth_password).unwrap} "\
-        "--config 'auth.x.schemes=http https'"\
+        command = "hg clone #{resource.value(:source)} #{resource.value(:path)} --config auth.x.prefix=#{resource.value(:source)} " \
+        "--config auth.x.username=#{resource.value(:basic_auth_username)} --config auth.x.password=#{resource.value(:basic_auth_password).unwrap} " \
+        "--config 'auth.x.schemes=http https'" \
 
         expect(Puppet::Util::Execution).to receive(:execute).with(command, sensitive: true)
         provider.create

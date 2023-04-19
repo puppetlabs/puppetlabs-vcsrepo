@@ -85,6 +85,7 @@ Puppet::Type.newtype(:vcsrepo) do
         return true unless [:absent, :purged, :held].include?(is)
       when :latest
         return true if is == :latest
+
         false
       when :bare
         is == :bare
@@ -153,6 +154,7 @@ Puppet::Type.newtype(:vcsrepo) do
     def retrieve
       prov = @resource.provider
       raise Puppet::Error, 'Could not find provider' unless prov
+
       if prov.working_copy_exists?
         (@should.include?(:latest) && prov.latest?) ? :latest : :present
       elsif prov.class.feature?(:bare_repositories) && prov.bare_exists?
@@ -185,6 +187,7 @@ Puppet::Type.newtype(:vcsrepo) do
       # unwrap @should
       should = @should[0]
       return true if is == should
+
       begin
         if should[-1] == '/'
           return true if is == should[0..-2]
@@ -234,6 +237,7 @@ Puppet::Type.newtype(:vcsrepo) do
     end
     validate do |path|
       raise Puppet::Error, "Include path '#{path}' starts with a '/'; remove it" if path[0..0] == '/'
+
       super(path)
     end
   end
@@ -333,6 +337,7 @@ Puppet::Type.newtype(:vcsrepo) do
     # ...then modified to satisfy rubocop.
     munge do |value|
       raise Puppet::Error, _('The umask specification is invalid: %{value}') % { value: value.inspect } unless value.match?(%r{^0?[0-7]{1,4}$})
+
       value.to_i(8)
     end
   end

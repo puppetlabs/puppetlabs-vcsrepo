@@ -19,6 +19,7 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, parent: Puppet::Provider::Vcsrepo) do
 
   def working_copy_exists?
     return false unless File.directory?(@resource.value(:path))
+
     begin
       bzr('status', @resource.value(:path))
       true

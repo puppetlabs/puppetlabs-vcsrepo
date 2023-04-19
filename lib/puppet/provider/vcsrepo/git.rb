@@ -14,6 +14,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     if @resource.value(:revision) && ensure_bare_or_mirror?
       raise("Cannot set a revision (#{@resource.value(:revision)}) on a bare repository")
     end
+
     if !@resource.value(:source)
       if @resource.value(:ensure) == :mirror
         raise('Cannot init repository with mirror option, try bare instead')
@@ -119,6 +120,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def default_url
     return @resource.value(:source) unless @resource.value(:source).is_a?(Hash)
     return @resource.value(:source)[@resource.value(:remote)] if @resource.value(:source).key?(@resource.value(:remote))
+
     raise("You must specify the URL for remote '#{@resource.value(:remote)}' in the :source hash")
   end
 
@@ -129,6 +131,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     # changes the origin url), or if the @resource.value(:remote)'s url is
     # changed, the provider will require force.
     return false unless File.directory?(File.join(@resource.value(:path), '.git'))
+
     at_path do
       if @resource.value(:source)
         begin
@@ -162,6 +165,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     current = git_with_identity('config', '-l')
 
     return if remote_url.nil?
+
     # Check if remote exists at all, regardless of URL.
     # If remote doesn't exist, add it
     if !current.include? "remote.#{remote_name}.url"
@@ -182,6 +186,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       remotes = git_with_identity('remote').split("\n")
 
       return git_with_identity('config', '--get', "remote.#{remotes[0]}.url").chomp if remotes.size == 1
+
       Hash[remotes.map do |remote|
         [remote, git_with_identity('config', '--get', "remote.#{remote}.url").chomp]
       end]
@@ -252,6 +257,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # and sets core.bare=true, and calls `set_mirror` if appropriate
   def convert_working_copy_to_bare
     return unless working_copy_exists? && !bare_exists?
+
     notice 'Converting working copy repository to bare repository'
     FileUtils.mv(File.join(@resource.value(:path), '.git'), tempdir)
     FileUtils.rm_rf(@resource.value(:path))
@@ -260,6 +266,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       exec_git('config', '--local', '--bool', 'core.bare', 'true')
       return unless @resource.value(:ensure) == :mirror
       raise('Cannot have empty repository that is also a mirror.') unless @resource.value(:source)
+
       set_mirror
     end
   end
@@ -339,6 +346,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
         return :false
       end
       return :true if d.chomp == '/dev/null'
+
       :false
     end
   end
@@ -367,6 +375,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # @!visibility private
   def bare_git_config_exists?
     return false unless File.exist?(File.join(@resource.value(:path), 'config'))
+
     begin
       at_path { git_with_identity('config', '--list', '--file', 'config') }
       true
@@ -547,6 +556,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
     branch = on_branch?
     return get_revision("#{@resource.value(:remote)}/#{branch}") if branch
+
     get_revision
   end
 
@@ -574,6 +584,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       # if already pointed at desired revision, it must be a SHA, so just return it
       return current
     end
+
     if @resource.value(:source)
       update_references
     end
@@ -592,6 +603,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
                     at_path { git_with_identity('rev-parse', '--revs-only', @resource.value(:revision)).strip }
                   end
       raise("#{@resource.value(:revision)} is not a local or remote ref") if canonical.nil? || canonical.empty?
+
       current = @resource.value(:revision) if current == canonical
     end
     current
@@ -681,6 +693,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       git_ver = git_version
       git_ver_err = "Can't set sslVerify to false, the -c parameter is not supported in Git #{git_ver}. Please install Git 1.7.2 or higher."
       return raise(git_ver_err) unless Gem::Version.new(git_ver) >= Gem::Version.new('1.7.2')
+
       args.unshift('-c', 'http.sslVerify=false')
     end
 

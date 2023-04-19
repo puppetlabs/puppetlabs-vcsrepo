@@ -18,6 +18,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
       if @resource.value(:includes)
         raise Puppet::Error, 'Specifying include paths on a nonexistent repo.'
       end
+
       create_repository(@resource.value(:path))
     else
       if @resource.value(:basic_auth_username) && !@resource.value(:basic_auth_password)
@@ -48,6 +49,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
 
   def working_copy_exists?
     return false unless File.directory?(@resource.value(:path))
+
     if @resource.value(:source)
       begin
         svn_wrapper('info', @resource.value(:path))
@@ -56,6 +58,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
         if %r{This client is too old}.match?(detail.message)
           raise Puppet::Error, detail.message
         end
+
         false
       end
     else
@@ -162,6 +165,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
 
   def includes
     return nil if Gem::Version.new(return_svn_client_version) < Gem::Version.new('1.6.0')
+
     get_includes('.')
   end
 
@@ -193,8 +197,10 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
       if svn_wrapper(*args)[%r{^Depth:\s+(\w+)}m, 1] != 'empty'
         return directory[2..-1].gsub(File::SEPARATOR, '/')
       end
+
       Dir.entries(directory).map { |entry|
         next if SKIP_DIRS.include?(entry)
+
         entry = File.join(directory, entry)
         if File.directory?(entry)
           get_includes(entry)
@@ -234,6 +240,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, parent: Puppet::Provider::Vcsrepo) do
       while (path = path.rpartition(File::SEPARATOR)[0]) != ''
         entries = Dir.entries(path).sort
         break if entries != ['.', '..'] && entries != SKIP_DIRS
+
         args = buildargs.push('update', '--set-depth', 'exclude', path)
         svn_wrapper(*args)
       end

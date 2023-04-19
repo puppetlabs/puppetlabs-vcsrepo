@@ -193,6 +193,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     hash.keys.sort.each do |k|
       v = hash[k]
       next if k == 'code'
+
       if %r{View}.match?(k.to_s)
         view += "\t#{v}\n"
       else
@@ -271,8 +272,10 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
       p = %r{^\.\.\. (.*) (.*)$}
       m = p.match(l)
       next unless m
+
       change[m[1]] = m[2]
       next unless m[1] == 'status'
+
       code = 'stat'
       list.push change
       change = {}

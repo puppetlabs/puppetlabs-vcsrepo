@@ -11,6 +11,7 @@ describe Puppet::Type.type(:vcsrepo) do
   let(:providerclass) do
     described_class.provide(:fake_vcsrepo_provider) do
       attr_accessor :property_hash
+
       def create; end
 
       def destroy; end

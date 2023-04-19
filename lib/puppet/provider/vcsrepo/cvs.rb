@@ -26,6 +26,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
     if @resource.value(:source)
       directory = File.join(@resource.value(:path), 'CVS')
       return false unless File.directory?(directory)
+
       begin
         at_path { runcvs('-nq', 'status', '-l') }
         true
@@ -35,8 +36,10 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
     else
       directory = File.join(@resource.value(:path), 'CVSROOT')
       return false unless File.directory?(directory)
+
       config = File.join(@resource.value(:path), 'CVSROOT', 'config,v')
       return false unless File.exist?(config)
+
       true
     end
   end
