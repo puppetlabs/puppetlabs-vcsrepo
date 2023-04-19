@@ -9,6 +9,7 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
   def check_force
     return unless path_exists? && !path_empty?
     raise Puppet::Error, 'Path %s exists and is not the desired repository.' % @resource.value(:path) unless @resource.value(:force)
+
     notice 'Removing %s to replace with desired repository.' % @resource.value(:path)
     destroy
   end
@@ -46,7 +47,7 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
 
   # NOTE: We don't rely on Dir.chdir's behavior of automatically returning the
   # value of the last statement -- for easier stubbing.
-  def at_path #:nodoc:
+  def at_path # :nodoc:
     value = nil
     Dir.chdir(@resource.value(:path)) do
       value = yield
@@ -55,16 +56,14 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
   end
 
   def tempdir
-    @tempdir ||= File.join(Dir.tmpdir, 'vcsrepo-' + Digest::MD5.hexdigest(@resource.value(:path)))
+    @tempdir ||= File.join(Dir.tmpdir, "vcsrepo-#{Digest::MD5.hexdigest(@resource.value(:path))}")
   end
 
   # If the resource has a umask, then run the block with that umask; otherwise,
   # run the block directly.
-  def withumask
+  def withumask(&block)
     if @resource.value(:umask)
-      Puppet::Util.withumask(@resource.value(:umask)) do
-        yield
-      end
+      Puppet::Util.withumask(@resource.value(:umask), &block)
     else
       yield
     end

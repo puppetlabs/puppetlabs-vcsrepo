@@ -20,6 +20,10 @@ describe 'clones a remote repo', unless: only_supports_weak_encryption do
           source   => "https://github.com/puppetlabs/puppetlabs-vcsrepo.git",
       }
     MANIFEST
+    after(:all) do
+      run_shell("rm -rf #{tmpdir}/vcsrepo")
+    end
+
     it 'clones from default remote' do
       apply_manifest(pp, catch_failures: true)
     end
@@ -28,10 +32,6 @@ describe 'clones a remote repo', unless: only_supports_weak_encryption do
       run_shell("/usr/bin/git config -l -f #{tmpdir}/vcsrepo/.git/config") do |r|
         expect(r.stdout).to match(%r{remote.origin.url=https://github.com/puppetlabs/puppetlabs-vcsrepo.git})
       end
-    end
-
-    after(:all) do
-      run_shell("rm -rf #{tmpdir}/vcsrepo")
     end
   end
 
@@ -43,6 +43,10 @@ describe 'clones a remote repo', unless: only_supports_weak_encryption do
           source   => {"origin" => "https://github.com/puppetlabs/puppetlabs-vcsrepo.git", "test1" => "https://github.com/puppetlabs/puppetlabs-vcsrepo.git"},
       }
     MANIFEST
+    after(:all) do
+      run_shell("rm -rf #{tmpdir}/vcsrepo")
+    end
+
     it 'clones from default remote and adds 2 remotes to config file' do
       idempotent_apply(pp)
     end
@@ -52,14 +56,11 @@ describe 'clones a remote repo', unless: only_supports_weak_encryption do
         expect(r.stdout).to match(%r{remote.origin.url=https://github.com/puppetlabs/puppetlabs-vcsrepo.git})
       end
     end
+
     it 'git config output should contain the remotes - test1' do
       run_shell("/usr/bin/git config -l -f #{tmpdir}/vcsrepo/.git/config") do |r|
         expect(r.stdout).to match(%r{remote.test1.url=https://github.com/puppetlabs/puppetlabs-vcsrepo.git})
       end
-    end
-
-    after(:all) do
-      run_shell("rm -rf #{tmpdir}/vcsrepo")
     end
   end
 end

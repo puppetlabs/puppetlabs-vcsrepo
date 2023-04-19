@@ -66,19 +66,24 @@ describe 'changing revision' do
       run_shell("cd #{tmpdir}/testrepo && git checkout a_branch")
       run_shell("cd #{tmpdir}/testrepo && git reset --hard 0.0.2")
     end
+
     it_behaves_like 'switch to branch/tag/sha'
   end
+
   context 'when on tag' do
     before :each do
       run_shell("cd #{tmpdir}/testrepo && git checkout 0.0.1")
     end
+
     it_behaves_like 'switch to branch/tag/sha'
   end
+
   context 'when on detached head' do
     before :each do
       run_shell("cd #{tmpdir}/testrepo && git checkout 0.0.2")
       run_shell("cd #{tmpdir}/testrepo && git checkout HEAD~1")
     end
+
     it_behaves_like 'switch to branch/tag/sha'
   end
 end

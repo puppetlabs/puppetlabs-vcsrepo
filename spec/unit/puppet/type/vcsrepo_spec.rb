@@ -11,6 +11,7 @@ describe Puppet::Type.type(:vcsrepo) do
   let(:providerclass) do
     described_class.provide(:fake_vcsrepo_provider) do
       attr_accessor :property_hash
+
       def create; end
 
       def destroy; end
@@ -69,19 +70,22 @@ describe Puppet::Type.type(:vcsrepo) do
   describe 'when using a provider that adds/removes a trailing / to the source' do
     it 'stays in sync when it leaves it as-is' do
       sourceprop.should = 'http://example.com/repo/'
-      expect(sourceprop.safe_insync?('http://example.com/repo/')).to eq(true)
+      expect(sourceprop.safe_insync?('http://example.com/repo/')).to be(true)
     end
+
     it 'stays in sync when it adds a slash' do
       sourceprop.should = 'http://example.com/repo'
-      expect(sourceprop.safe_insync?('http://example.com/repo/')).to eq(true)
+      expect(sourceprop.safe_insync?('http://example.com/repo/')).to be(true)
     end
+
     it 'stays in sync when it removes a slash' do
       sourceprop.should = 'http://example.com/repo/'
-      expect(sourceprop.safe_insync?('http://example.com/repo')).to eq(true)
+      expect(sourceprop.safe_insync?('http://example.com/repo')).to be(true)
     end
+
     it 'is out of sync with a different source' do
       sourceprop.should = 'http://example.com/repo/asdf'
-      expect(sourceprop.safe_insync?('http://example.com/repo')).to eq(false)
+      expect(sourceprop.safe_insync?('http://example.com/repo')).to be(false)
     end
   end
 
@@ -102,7 +106,7 @@ describe Puppet::Type.type(:vcsrepo) do
       owner: nil,
       group: nil,
       user: nil,
-      revision: nil,
+      revision: nil
     }
 
     defaults.each_pair do |param, value|
@@ -115,22 +119,22 @@ describe Puppet::Type.type(:vcsrepo) do
   describe 'when changing the ensure' do
     it 'is in sync if it is :absent and should be :absent' do
       ensureprop.should = :absent
-      expect(ensureprop.safe_insync?(:absent)).to eq(true)
+      expect(ensureprop.safe_insync?(:absent)).to be(true)
     end
 
     it 'is in sync if it is :present and should be :present' do
       ensureprop.should = :present
-      expect(ensureprop.safe_insync?(:present)).to eq(true)
+      expect(ensureprop.safe_insync?(:present)).to be(true)
     end
 
     it 'is out of sync if it is :absent and should be :present' do
       ensureprop.should = :present
-      expect(ensureprop.safe_insync?(:absent)).not_to eq(true)
+      expect(ensureprop.safe_insync?(:absent)).not_to be(true)
     end
 
     it 'is out of sync if it is :present and should be :absent' do
       ensureprop.should = :absent
-      expect(ensureprop.safe_insync?(:present)).not_to eq(true)
+      expect(ensureprop.safe_insync?(:present)).not_to be(true)
     end
   end
 

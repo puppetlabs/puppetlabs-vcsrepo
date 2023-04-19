@@ -85,6 +85,7 @@ Puppet::Type.newtype(:vcsrepo) do
         return true unless [:absent, :purged, :held].include?(is)
       when :latest
         return true if is == :latest
+
         false
       when :bare
         is == :bare
@@ -124,19 +125,13 @@ Puppet::Type.newtype(:vcsrepo) do
     end
 
     newvalue :absent do
-      if provider.exists?
-        provider.destroy
-      end
+      provider.destroy if provider.exists?
     end
 
     newvalue :latest, required_features: [:reference_tracking] do
       if provider.exists? && !@resource.value(:force)
-        if provider.class.feature?(:bare_repositories) && provider.bare_exists?
-          provider.convert_bare_to_working_copy
-        end
-        if provider.respond_to?(:update_references)
-          provider.update_references
-        end
+        provider.convert_bare_to_working_copy if provider.class.feature?(:bare_repositories) && provider.bare_exists?
+        provider.update_references if provider.respond_to?(:update_references)
         reference = if provider.respond_to?(:latest?)
                       provider.latest || provider.revision
                     else
@@ -153,6 +148,7 @@ Puppet::Type.newtype(:vcsrepo) do
     def retrieve
       prov = @resource.provider
       raise Puppet::Error, 'Could not find provider' unless prov
+
       if prov.working_copy_exists?
         (@should.include?(:latest) && prov.latest?) ? :latest : :present
       elsif prov.class.feature?(:bare_repositories) && prov.bare_exists?
@@ -172,9 +168,7 @@ Puppet::Type.newtype(:vcsrepo) do
     isnamevar
     validate do |value|
       path = Pathname.new(value)
-      unless path.absolute?
-        raise ArgumentError, "Path must be absolute: #{path}"
-      end
+      raise ArgumentError, "Path must be absolute: #{path}" unless path.absolute?
     end
   end
 
@@ -185,6 +179,7 @@ Puppet::Type.newtype(:vcsrepo) do
       # unwrap @should
       should = @should[0]
       return true if is == should
+
       begin
         if should[-1] == '/'
           return true if is == should[0..-2]
@@ -234,6 +229,7 @@ Puppet::Type.newtype(:vcsrepo) do
     end
     validate do |path|
       raise Puppet::Error, "Include path '#{path}' starts with a '/'; remove it" if path[0..0] == '/'
+
       super(path)
     end
   end
@@ -246,9 +242,7 @@ Puppet::Type.newtype(:vcsrepo) do
   newparam :compression, required_features: [:gzip_compression] do
     desc 'Compression level'
     validate do |amount|
-      unless Integer(amount).between?(0, 6)
-        raise ArgumentError, "Unsupported compression level: #{amount} (expected 0-6)"
-      end
+      raise ArgumentError, "Unsupported compression level: #{amount} (expected 0-6)" unless Integer(amount).between?(0, 6)
     end
   end
 
@@ -333,6 +327,7 @@ Puppet::Type.newtype(:vcsrepo) do
     # ...then modified to satisfy rubocop.
     munge do |value|
       raise Puppet::Error, _('The umask specification is invalid: %{value}') % { value: value.inspect } unless value.match?(%r{^0?[0-7]{1,4}$})
+
       value.to_i(8)
     end
   end
@@ -343,14 +338,10 @@ Puppet::Type.newtype(:vcsrepo) do
     validate do |value|
       if value.is_a?(Hash)
         value.each do |k, v|
-          unless v.match?(regex)
-            raise ArgumentError, "HTTP Proxy for #{k} must be an HTTP/HTTPS URL: #{v}"
-          end
+          raise ArgumentError, "HTTP Proxy for #{k} must be an HTTP/HTTPS URL: #{v}" unless v.match?(regex)
         end
       else
-        unless value.match?(regex)
-          raise ArgumentError, "HTTP Proxy must be an HTTP/HTTPS URL: #{value}"
-        end
+        raise ArgumentError, "HTTP Proxy must be an HTTP/HTTPS URL: #{value}" unless value.match?(regex)
       end
       # Validation passed.
       super(value)

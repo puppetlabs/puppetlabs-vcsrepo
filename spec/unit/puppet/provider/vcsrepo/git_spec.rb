@@ -7,7 +7,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:git) do
     <<BRANCHES
   end
   #{'*  main' unless include_branch.nil?}
-  #{'*  ' + include_branch if include_branch}
+  #{"*  #{include_branch}" if include_branch}
    remote/origin/main
    remote/origin/foo
 
@@ -133,11 +133,11 @@ BRANCHES
       it 'specifies the proxy parameter' do
         resource[:source] = {
           'origin' => 'https://foo.example.com/repo.git',
-          'alternate' => 'https://bar.example.com/repo.git',
+          'alternate' => 'https://bar.example.com/repo.git'
         }
         resource[:http_proxy] = {
           'origin' => 'https://proxy1.example.com',
-          'alternate' => 'https://proxy2.example.com',
+          'alternate' => 'https://proxy2.example.com'
         }
         expect(Dir).to receive(:chdir).with('/').once.and_yield
         expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
@@ -155,10 +155,10 @@ BRANCHES
       it 'specifies the proxy parameter' do
         resource[:source] = {
           'origin' => 'https://foo.example.com/repo.git',
-          'alternate' => 'https://bar.example.com/repo.git',
+          'alternate' => 'https://bar.example.com/repo.git'
         }
         resource[:http_proxy] = {
-          'alternate' => 'https://proxy2.example.com',
+          'alternate' => 'https://proxy2.example.com'
         }
         expect(Dir).to receive(:chdir).with('/').once.and_yield
         expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
@@ -178,6 +178,7 @@ BRANCHES
         expect { provider.create }.to raise_error(RuntimeError, %r{cannot set a revision.+bare}i)
       end
     end
+
     context 'when with an ensure of bare - without revision' do
       it "justs execute 'git clone --bare'" do
         resource[:ensure] = :bare
@@ -187,6 +188,7 @@ BRANCHES
         provider.create
       end
     end
+
     context 'when with an ensure of bare - without a source' do
       it "executes 'git init --bare'" do
         resource[:ensure] = :bare
@@ -207,6 +209,7 @@ BRANCHES
         expect { provider.create }.to raise_error(RuntimeError, %r{cannot set a revision.+bare}i)
       end
     end
+
     context 'when with an ensure of mirror - without revision' do
       it "justs execute 'git clone --mirror'" do
         resource[:ensure] = :mirror
@@ -357,8 +360,8 @@ BRANCHES
       it 'and_return the current SHA' do
         resource[:revision] = 'currentsha'
         allow(provider).to receive(:exec_git).with('branch', '--no-color', '-a').and_return(branch_a_list)
-        expect(provider).to receive(:exec_git).with('rev-parse', '--revs-only', resource.value(:revision)).never
-        expect(provider).to receive(:update_references).never
+        expect(provider).not_to receive(:exec_git).with('rev-parse', '--revs-only', resource.value(:revision))
+        expect(provider).not_to receive(:update_references)
         expect(provider.revision).to eq(resource.value(:revision))
       end
     end
@@ -418,7 +421,7 @@ BRANCHES
         resource[:revision] = 'localbranch'
         resource.delete(:source)
         allow(provider).to receive(:exec_git).with('branch', '--no-color', '-a').and_return(branch_a_list('localbranch'))
-        expect(provider).to receive(:update_references).never
+        expect(provider).not_to receive(:update_references)
         expect(provider).to receive(:exec_git).with('status')
         expect(provider).to receive(:exec_git).with('rev-parse', resource.value(:revision)).and_return('currentsha')
         expect(provider.revision).to eq(resource.value(:revision))
@@ -430,6 +433,7 @@ BRANCHES
     before(:each) do
       expect_chdir
     end
+
     context "when it's an existing local branch" do
       it "uses 'git fetch' and 'git reset'" do
         resource[:revision] = 'feature/foo'
@@ -440,6 +444,7 @@ BRANCHES
         provider.revision = resource.value(:revision)
       end
     end
+
     context "when it's a remote branch" do
       it "uses 'git fetch' and 'git reset'" do
         resource[:revision] = 'only/remote'
@@ -450,6 +455,7 @@ BRANCHES
         provider.revision = resource.value(:revision)
       end
     end
+
     context "when it's a commit or tag" do
       it "uses 'git fetch' and 'git reset'" do
         resource[:revision] = 'a-commit-or-tag'
@@ -461,6 +467,7 @@ BRANCHES
         provider.revision = resource.value(:revision)
       end
     end
+
     context 'when ignoring local changes' do
       it "uses 'git stash'" do
         resource[:revision] = 'a-commit-or-tag'
@@ -559,8 +566,6 @@ BRANCHES
     end
   end
 
-  # rubocop:enable RSpec/ExampleLength
-
   context 'when updating references' do
     it "uses 'git fetch --tags'" do
       resource.delete(:source)
@@ -580,6 +585,7 @@ BRANCHES
         expect(provider).to be_latest
       end
     end
+
     context 'when false' do
       it do
         expect(provider).to receive(:revision).and_return('main')
@@ -599,6 +605,7 @@ BRANCHES
         allow(provider).to receive(:exec_git).with('--version').and_return '1.7.0'
         expect { provider.create }.to raise_error RuntimeError, %r{Can't set sslVerify to false}
       end
+
       it 'compiles with git 2.13.0' do
         resource[:revision] = 'only/remote'
         expect(Dir).to receive(:chdir).with('/').once.and_yield
@@ -614,6 +621,7 @@ BRANCHES
       end
     end
   end
+
   context 'owner' do
     it 'without excludes run FileUtils.chown_R' do
       resource[:owner] = 'john'
@@ -625,6 +633,7 @@ BRANCHES
       allow(provider).to receive(:exec_git).with('--version').and_return('2.13.0')
       provider.update_references
     end
+
     it 'with excludes run filtered chown_R' do
       resource[:owner] = 'john'
       resource[:excludes] = ['bzr', 'cvs', 'hg', 'p4', 'svn']
@@ -658,6 +667,7 @@ BRANCHES
           provider.skip_hooks = resource.value(:skip_hooks)
         end
       end
+
       context 'when core.hooksPath defined not null' do
         it 'defines core.hooksPath null' do
           expect(provider).to receive(:exec_git).with('config', '--local', 'core.hooksPath', '/dev/null')

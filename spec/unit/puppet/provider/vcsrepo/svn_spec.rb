@@ -29,6 +29,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         provider.create
       end
     end
+
     context 'with source' do
       it "justs execute 'svn checkout' without a revision" do
         resource[:source] = 'exists'
@@ -48,6 +49,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         provider.create
       end
     end
+
     context 'without fstype' do
       it "executes 'svnadmin create' without an '--fs-type' option" do
         expect(provider).to receive(:svnadmin).with('create', resource.value(:path))
@@ -73,6 +75,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
                                                        resource.value(:source), resource.value(:path))
         provider.create
       end
+
       it "executes 'svn checkout' with a trust-server-cert" do
         resource[:source] = 'exists'
         resource[:trust_server_cert] = true
@@ -103,6 +106,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         allow(provider).to receive(:return_svn_client_version).and_return('1.8.0')
         provider.create
       end
+
       it 'performs a sparse checkout at a specific revision' do
         resource[:source] = 'exists'
         resource[:revision] = 1
@@ -124,6 +128,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         allow(provider).to receive(:return_svn_client_version).and_return('1.8.0')
         provider.create
       end
+
       it 'performs a sparse checkout with a specific depth' do
         resource[:source] = 'exists'
         resource[:depth] = 'files'
@@ -142,6 +147,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         allow(provider).to receive(:return_svn_client_version).and_return('1.8.0')
         provider.create
       end
+
       it 'performs a sparse checkout at a specific depth and revision' do
         resource[:source] = 'exists'
         resource[:revision] = 1
@@ -182,6 +188,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
       expect(provider).to receive(:svn_wrapper).with('info', resource[:path])
       provider.exists?
     end
+
     it "runs `svnlook uuid` on the path when there's no source" do
       expect_directory?(true, resource.value(:path))
       expect(provider).to receive(:svnlook).with('uuid', resource[:path])
@@ -193,6 +200,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     before(:each) do
       allow(provider).to receive(:svn_wrapper).with('--non-interactive', 'info').and_return(fixture(:svn_info))
     end
+
     it "uses 'svn info'" do
       expect_chdir
       expect(provider.revision).to eq('4') # From 'Revision', not 'Last Changed Rev'
@@ -211,6 +219,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         provider.revision = revision
       end
     end
+
     context 'without conflict' do
       it "uses 'svn update'" do
         expect_chdir
@@ -232,6 +241,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         provider.revision = revision
       end
     end
+
     context 'without conflict' do
       it "uses 'svn switch' - variation one" do
         resource[:source] = 'an-unimportant-value'
@@ -239,6 +249,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         expect(provider).to receive(:svn_wrapper).with('--non-interactive', 'switch', '-r', revision, 'an-unimportant-value')
         provider.revision = revision
       end
+
       it "uses 'svn switch' - variation two" do
         resource[:source] = 'an-unimportant-value'
         resource[:revision] = '30'
@@ -253,6 +264,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     before(:each) do
       allow(provider).to receive(:svn_wrapper).with('--non-interactive', 'info').and_return(fixture(:svn_info))
     end
+
     it "uses 'svn info'" do
       expect_chdir
       expect(provider.source).to eq('http://example.com/svn/trunk') # From URL
@@ -267,6 +279,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         expect { provider.create }.to raise_error RuntimeError, %r{you must specify the HTTP basic authentication password.+}i
       end
     end
+
     context 'when basic_auth_username is not set and basic_auth_password is set' do
       it 'fails' do
         resource[:source] = 'an-unimportant-value'
@@ -274,6 +287,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         expect { provider.create }.to raise_error RuntimeError, %r{you must specify the HTTP .+username.*}i
       end
     end
+
     context 'when basic_auth_password is Sensitive' do
       let(:resource) do
         Puppet::Type.type(:vcsrepo).new(name: 'test',
@@ -286,13 +300,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
                                         basic_auth_password: Puppet::Pops::Types::PSensitiveType::Sensitive.new('dummy_pass'))
       end
 
-      it 'works' do
+      it 'runs without error' do
         expect(provider).to receive(:svn_wrapper).with('--non-interactive', '--username', resource.value(:basic_auth_username),
                                                        '--password', resource.value(:basic_auth_password), '--no-auth-cache',
                                                        'checkout', resource.value(:source), resource.value(:path))
         provider.create
       end
     end
+
     context 'when basic_auth_password contains non-ASCII characters' do
       it 'fails' do
         resource[:source] = 'an-important-value'
@@ -301,8 +316,9 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         expect { provider.create }.to raise_error RuntimeError, %r{The password can not contain non-ASCII characters}
       end
     end
+
     context 'when basic_auth_password contains only ASCII characters' do
-      it 'works' do
+      it 'runs without error' do
         resource[:source] = 'an-important-value'
         resource[:basic_auth_username] = 'dummy_user'
         resource[:basic_auth_password] = 'dummy_pass'
@@ -321,6 +337,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         provider.source = resource.value(:source)
       end
     end
+
     context 'without conflict' do
       it "uses 'svn switch'" do
         resource[:source] = 'http://example.com/svn/tags/1.0'

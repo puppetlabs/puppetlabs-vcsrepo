@@ -62,6 +62,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:bzr) do
       expect_chdir
       allow(provider).to receive(:bzr).with('version-info').and_return(File.read(fixtures('bzr_version_info.txt')))
     end
+
     let(:current_revid) { 'menesis@pov.lt-20100309191856-4wmfqzc803fj300x' }
 
     context 'when given a non-revid as the resource revision and its revid is not different than the current revid' do
@@ -113,6 +114,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:bzr) do
       expect(provider.source).to eq(resource.value(:source))
     end
   end
+
   describe 'setting the source property' do
     it "calls 'create'" do
       resource[:source] = 'http://bazaar.launchpad.net/~bzr-pqm/bzr/bzr.dev/'

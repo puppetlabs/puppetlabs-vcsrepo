@@ -15,6 +15,7 @@ describe Facter::Util::Fact do # rubocop:disable RSpec/FilePath
           .with('svn --version --quiet')
           .and_return('1.7.23')
       end
+
       it {
         expect(Facter.fact(:vcsrepo_svn_ver).value).to eq('1.7.23')
       }

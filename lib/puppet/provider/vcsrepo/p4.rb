@@ -28,7 +28,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
 
     # Check if workspace is setup
     args = ['where']
-    args.push(@resource.value(:path) + '/...')
+    args.push("#{@resource.value(:path)}/...")
     hash = p4(args, raise: false)
 
     (hash['code'] != 'error')
@@ -88,7 +88,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
 
   def source
     args = ['where']
-    args.push(@resource.value(:path) + '/...')
+    args.push("#{@resource.value(:path)}/...")
     hash = p4(args, raise: false)
 
     hash['depotFile']
@@ -126,7 +126,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     # default (generated) client name
     path = @resource.value(:path)
     host = Facter.value('hostname')
-    default = 'puppet-' + Digest::MD5.hexdigest(path + host)
+    default = "puppet-#{Digest::MD5.hexdigest(path + host)}"
 
     # check config for client name
     set_client = nil
@@ -159,11 +159,11 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     if source
       parts = source.split(%r{/})
       if parts && parts.length >= 4
-        source = '//' + parts[2] + '/' + parts[3]
+        source = "//#{parts[2]}/#{parts[3]}"
         streams = p4(['streams', source], raise: false)
         if streams['code'] == 'stat'
           hash['Stream'] = streams['Stream']
-          notice 'Streams' + streams['Stream'].inspect
+          notice "Streams#{streams['Stream'].inspect}"
         end
       end
     end
@@ -178,9 +178,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
   def parse_client(client)
     args = ['client']
     args.push('-o', client)
-    hash = p4(args)
-
-    hash
+    p4(args)
   end
 
   # Saves the client workspace spec from the given hash
@@ -193,7 +191,8 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     hash.keys.sort.each do |k|
       v = hash[k]
       next if k == 'code'
-      if %r{View}.match?(k.to_s)
+
+      if k.to_s.include?('View')
         view += "\t#{v}\n"
       else
         spec += "#{k}: #{v}\n"
@@ -221,7 +220,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     # Merge custom options with defaults
     opts = {
       raise: true, # Raise errors
-      marshal: true, # Marshal output
+      marshal: true # Marshal output
     }.merge(options)
 
     cmd = ['p4']
@@ -236,7 +235,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     Open3.popen3(config, cmd_str) do |i, o, e, t|
       # Send input stream if provided
       if opts[:input]
-        Puppet.debug "input:\n" + opts[:input]
+        Puppet.debug "input:\n#{opts[:input]}"
         i.write opts[:input]
         i.close
       end
@@ -248,12 +247,8 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
       end
 
       # Raise errors, Perforce or Exec
-      if opts[:raise] && !e.eof && t.value != 0
-        raise Puppet::Error, "\nP4: #{e.read}"
-      end
-      if opts[:raise] && hash['code'] == 'error' && t.value != 0
-        raise Puppet::Error, "\nP4: #{hash['data']}"
-      end
+      raise Puppet::Error, "\nP4: #{e.read}" if opts[:raise] && !e.eof && t.value != 0
+      raise Puppet::Error, "\nP4: #{hash['data']}" if opts[:raise] && hash['code'] == 'error' && t.value != 0
     end
 
     Puppet.debug "hash: #{hash}\n"
@@ -271,8 +266,10 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
       p = %r{^\.\.\. (.*) (.*)$}
       m = p.match(l)
       next unless m
+
       change[m[1]] = m[2]
       next unless m[1] == 'status'
+
       code = 'stat'
       list.push change
       change = {}

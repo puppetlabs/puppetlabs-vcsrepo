@@ -10,15 +10,16 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, parent: Puppet::Provider::Vcsrepo) do
 
   def create
     check_force
-    if !@resource.value(:source)
-      create_repository(@resource.value(:path))
-    else
+    if @resource.value(:source)
       clone_repository(@resource.value(:revision))
+    else
+      create_repository(@resource.value(:path))
     end
   end
 
   def working_copy_exists?
     return false unless File.directory?(@resource.value(:path))
+
     begin
       bzr('status', @resource.value(:path))
       true
@@ -93,9 +94,7 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, parent: Puppet::Provider::Vcsrepo) do
 
   def clone_repository(revision)
     args = ['branch']
-    if revision
-      args.push('-r', revision)
-    end
+    args.push('-r', revision) if revision
     args.push(@resource.value(:source),
               @resource.value(:path))
     bzr(*args)

@@ -35,21 +35,27 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     describe file("#{tmpdir}/svnrepo/difftools") do
       it { is_expected.to be_directory }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/README") do
       its(:md5sum) { is_expected.to eq '540241e9d5d4740d0ef3d27c3074cf93' }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/pics") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/obsolete-notes") do
       it { is_expected.to be_directory }
     end
+
     describe file("#{tmpdir}/svnrepo/obsolete-notes/draft-korn-vcdiff-01.txt") do
       its(:md5sum) { is_expected.to eq '37019f808e1af64864853a67526cfe19' }
     end
+
     describe file("#{tmpdir}/svnrepo/obsolete-notes/vcdiff-karlnotes") do
       its(:md5sum) { is_expected.to eq '26e23ff6a156de14aebd1099e23ac2d8' }
     end
+
     describe file("#{tmpdir}/svnrepo/guis") do
       it { is_expected.not_to exist }
     end
@@ -73,6 +79,7 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
       its(:md5sum) { is_expected.to eq '62bdc9180684042fe764d89c9beda40f' }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/pics/README") do
       its(:md5sum) { is_expected.to eq 'bad02dfc3cb96bf5cadd59bf4fe3e00e' }
     end
@@ -96,15 +103,19 @@ describe 'subversion :includes tests on SVN version >= 1.7', unless: ( # rubocop
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/guis/pics") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/guis") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/pics/README") do
       its(:md5sum) { is_expected.to eq 'bad02dfc3cb96bf5cadd59bf4fe3e00e' }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/README") do
       it { is_expected.not_to exist }
     end
@@ -164,21 +175,27 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     describe file("#{tmpdir}/svnrepo/difftools") do
       it { is_expected.to be_directory }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/README") do
       its(:md5sum) { is_expected.to eq '540241e9d5d4740d0ef3d27c3074cf93' }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/pics") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/obsolete-notes") do
       it { is_expected.to be_directory }
     end
+
     describe file("#{tmpdir}/svnrepo/obsolete-notes/draft-korn-vcdiff-01.txt") do
       its(:md5sum) { is_expected.to eq '37019f808e1af64864853a67526cfe19' }
     end
+
     describe file("#{tmpdir}/svnrepo/obsolete-notes/vcdiff-karlnotes") do
       its(:md5sum) { is_expected.to eq '26e23ff6a156de14aebd1099e23ac2d8' }
     end
+
     describe file("#{tmpdir}/svnrepo/guis") do
       it { is_expected.not_to exist }
     end
@@ -202,6 +219,7 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
       its(:md5sum) { is_expected.to eq '62bdc9180684042fe764d89c9beda40f' }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/pics/README") do
       its(:md5sum) { is_expected.to eq 'bad02dfc3cb96bf5cadd59bf4fe3e00e' }
     end
@@ -224,15 +242,19 @@ describe 'subversion :includes tests on SVN version == 1.6', if: (
     describe file("#{tmpdir}/svnrepo/guis/pics/README") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/guis/pics") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/guis") do
       it { is_expected.not_to exist }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/pics/README") do
       its(:md5sum) { is_expected.to eq 'bad02dfc3cb96bf5cadd59bf4fe3e00e' }
     end
+
     describe file("#{tmpdir}/svnrepo/difftools/README") do
       its(:md5sum) { is_expected.to eq '540241e9d5d4740d0ef3d27c3074cf93' }
     end
