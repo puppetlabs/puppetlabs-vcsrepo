@@ -300,7 +300,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
                                         basic_auth_password: Puppet::Pops::Types::PSensitiveType::Sensitive.new('dummy_pass'))
       end
 
-      it 'works' do
+      it 'runs without error' do
         expect(provider).to receive(:svn_wrapper).with('--non-interactive', '--username', resource.value(:basic_auth_username),
                                                        '--password', resource.value(:basic_auth_password), '--no-auth-cache',
                                                        'checkout', resource.value(:source), resource.value(:path))
@@ -318,7 +318,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
     end
 
     context 'when basic_auth_password contains only ASCII characters' do
-      it 'works' do
+      it 'runs without error' do
         resource[:source] = 'an-important-value'
         resource[:basic_auth_username] = 'dummy_user'
         resource[:basic_auth_password] = 'dummy_pass'

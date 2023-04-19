@@ -187,9 +187,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
       return git_with_identity('config', '--get', "remote.#{remotes[0]}.url").chomp if remotes.size == 1
 
-      Hash[remotes.map do |remote|
+      remotes.map { |remote|
         [remote, git_with_identity('config', '--get', "remote.#{remote}.url").chomp]
-      end]
+      }.to_h
     end
   end
 
@@ -722,7 +722,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     ssh_command = "ssh -i #{@resource.value(:identity)} "
     ssh_command += ssh_opts.map { |option, value| "-o \"#{option} #{value}\"" }.join ' '
 
-    env_git_ssh_command_save = ENV['GIT_SSH_COMMAND']
+    env_git_ssh_command_save = ENV.fetch('GIT_SSH_COMMAND', nil)
     ENV['GIT_SSH_COMMAND'] = ssh_command
 
     ret = exec_git(*args)
@@ -744,7 +744,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
       FileUtils.chmod(0o755, f.path)
 
-      env_git_ssh_save = ENV['GIT_SSH']
+      env_git_ssh_save = ENV.fetch('GIT_SSH', nil)
       ENV['GIT_SSH'] = f.path
 
       ret = exec_git(*args)

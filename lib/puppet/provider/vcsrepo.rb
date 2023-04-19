@@ -61,11 +61,9 @@ class Puppet::Provider::Vcsrepo < Puppet::Provider
 
   # If the resource has a umask, then run the block with that umask; otherwise,
   # run the block directly.
-  def withumask
+  def withumask(&block)
     if @resource.value(:umask)
-      Puppet::Util.withumask(@resource.value(:umask)) do
-        yield
-      end
+      Puppet::Util.withumask(@resource.value(:umask), &block)
     else
       yield
     end
