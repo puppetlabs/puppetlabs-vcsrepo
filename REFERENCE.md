@@ -4,9 +4,86 @@
 
 ## Table of Contents
 
+### Classes
+
+* [`vcsrepo::manage::git`](#vcsrepomanagegit): Manage the Git source code manager package
+* [`vcsrepo::manage::svn`](#vcsrepomanagesvn): Manage the Subversion source code manager package
+
 ### Resource types
 
 * [`vcsrepo`](#vcsrepo): A local version control repository
+
+## Classes
+
+### <a name="vcsrepomanagegit"></a>`vcsrepo::manage::git`
+
+Manage the Git source code manager package
+
+#### Examples
+
+##### simple include
+
+```puppet
+include vcsrepo::manage::git
+```
+
+#### Parameters
+
+The following parameters are available in the `vcsrepo::manage::git` class:
+
+* [`package_name`](#package_name)
+* [`package_ensure`](#package_ensure)
+
+##### <a name="package_name"></a>`package_name`
+
+Data type: `Variant[String[1], Array[String[1]]]`
+
+name of package to manage
+
+Default value: `'git'`
+
+##### <a name="package_ensure"></a>`package_ensure`
+
+Data type: `String[1]`
+
+ensure state of the package resource
+
+Default value: `'installed'`
+
+### <a name="vcsrepomanagesvn"></a>`vcsrepo::manage::svn`
+
+Manage the Subversion source code manager package
+
+#### Examples
+
+##### simple include
+
+```puppet
+include vcsrepo::manage::svn
+```
+
+#### Parameters
+
+The following parameters are available in the `vcsrepo::manage::svn` class:
+
+* [`package_name`](#package_name)
+* [`package_ensure`](#package_ensure)
+
+##### <a name="package_name"></a>`package_name`
+
+Data type: `Variant[String[1], Array[String[1]]]`
+
+name of package to manage
+
+Default value: `'subversion'`
+
+##### <a name="package_ensure"></a>`package_ensure`
+
+Data type: `String[1]`
+
+ensure state of the package resource
+
+Default value: `'installed'`
 
 ## Resource types
 
@@ -40,7 +117,7 @@ The revision of the repository
 
 ##### `skip_hooks`
 
-Valid values: `true`, `false`
+Valid values: ``true``, ``false``
 
 Explicitly skip any global hooks for this repository.
 
@@ -52,154 +129,154 @@ The source URI for the repository
 
 The following parameters are available in the `vcsrepo` type.
 
-* [`basic_auth_password`](#-vcsrepo--basic_auth_password)
-* [`basic_auth_username`](#-vcsrepo--basic_auth_username)
-* [`branch`](#-vcsrepo--branch)
-* [`compression`](#-vcsrepo--compression)
-* [`configuration`](#-vcsrepo--configuration)
-* [`conflict`](#-vcsrepo--conflict)
-* [`cvs_rsh`](#-vcsrepo--cvs_rsh)
-* [`depth`](#-vcsrepo--depth)
-* [`excludes`](#-vcsrepo--excludes)
-* [`force`](#-vcsrepo--force)
-* [`fstype`](#-vcsrepo--fstype)
-* [`group`](#-vcsrepo--group)
-* [`http_proxy`](#-vcsrepo--http_proxy)
-* [`identity`](#-vcsrepo--identity)
-* [`keep_local_changes`](#-vcsrepo--keep_local_changes)
-* [`owner`](#-vcsrepo--owner)
-* [`p4config`](#-vcsrepo--p4config)
-* [`path`](#-vcsrepo--path)
-* [`provider`](#-vcsrepo--provider)
-* [`remote`](#-vcsrepo--remote)
-* [`safe_directory`](#-vcsrepo--safe_directory)
-* [`submodules`](#-vcsrepo--submodules)
-* [`trust_server_cert`](#-vcsrepo--trust_server_cert)
-* [`umask`](#-vcsrepo--umask)
-* [`user`](#-vcsrepo--user)
+* [`basic_auth_password`](#basic_auth_password)
+* [`basic_auth_username`](#basic_auth_username)
+* [`branch`](#branch)
+* [`compression`](#compression)
+* [`configuration`](#configuration)
+* [`conflict`](#conflict)
+* [`cvs_rsh`](#cvs_rsh)
+* [`depth`](#depth)
+* [`excludes`](#excludes)
+* [`force`](#force)
+* [`fstype`](#fstype)
+* [`group`](#group)
+* [`http_proxy`](#http_proxy)
+* [`identity`](#identity)
+* [`keep_local_changes`](#keep_local_changes)
+* [`owner`](#owner)
+* [`p4config`](#p4config)
+* [`path`](#path)
+* [`provider`](#provider)
+* [`remote`](#remote)
+* [`safe_directory`](#safe_directory)
+* [`submodules`](#submodules)
+* [`trust_server_cert`](#trust_server_cert)
+* [`umask`](#umask)
+* [`user`](#user)
 
-##### <a name="-vcsrepo--basic_auth_password"></a>`basic_auth_password`
+##### <a name="basic_auth_password"></a>`basic_auth_password`
 
 HTTP Basic Auth password
 
-##### <a name="-vcsrepo--basic_auth_username"></a>`basic_auth_username`
+##### <a name="basic_auth_username"></a>`basic_auth_username`
 
 HTTP Basic Auth username
 
-##### <a name="-vcsrepo--branch"></a>`branch`
+##### <a name="branch"></a>`branch`
 
 The name of the branch to clone.
 
-##### <a name="-vcsrepo--compression"></a>`compression`
+##### <a name="compression"></a>`compression`
 
 Compression level
 
-##### <a name="-vcsrepo--configuration"></a>`configuration`
+##### <a name="configuration"></a>`configuration`
 
 The configuration directory to use
 
-##### <a name="-vcsrepo--conflict"></a>`conflict`
+##### <a name="conflict"></a>`conflict`
 
 The action to take if conflicts exist between repository and working copy
 
-##### <a name="-vcsrepo--cvs_rsh"></a>`cvs_rsh`
+##### <a name="cvs_rsh"></a>`cvs_rsh`
 
 The value to be used for the CVS_RSH environment variable.
 
-##### <a name="-vcsrepo--depth"></a>`depth`
+##### <a name="depth"></a>`depth`
 
 The value to be used to do a shallow clone.
 
-##### <a name="-vcsrepo--excludes"></a>`excludes`
+##### <a name="excludes"></a>`excludes`
 
 Local paths which shouldn't be tracked by the repository
 
-##### <a name="-vcsrepo--force"></a>`force`
+##### <a name="force"></a>`force`
 
-Valid values: `true`, `false`, `yes`, `no`
+Valid values: ``true``, ``false``, `yes`, `no`
 
 Force repository creation, destroying any files on the path in the process.
 
-Default value: `false`
+Default value: ``false``
 
-##### <a name="-vcsrepo--fstype"></a>`fstype`
+##### <a name="fstype"></a>`fstype`
 
 Filesystem type
 
-##### <a name="-vcsrepo--group"></a>`group`
+##### <a name="group"></a>`group`
 
 The group/gid that owns the repository files
 
-##### <a name="-vcsrepo--http_proxy"></a>`http_proxy`
+##### <a name="http_proxy"></a>`http_proxy`
 
 Sets the HTTP/HTTPS proxy for remote repo access
 
-##### <a name="-vcsrepo--identity"></a>`identity`
+##### <a name="identity"></a>`identity`
 
 SSH identity file
 
-##### <a name="-vcsrepo--keep_local_changes"></a>`keep_local_changes`
+##### <a name="keep_local_changes"></a>`keep_local_changes`
 
-Valid values: `true`, `false`
+Valid values: ``true``, ``false``
 
 Keep local changes on files tracked by the repository when changing revision
 
-Default value: `false`
+Default value: ``false``
 
-##### <a name="-vcsrepo--owner"></a>`owner`
+##### <a name="owner"></a>`owner`
 
 The user/uid that owns the repository files
 
-##### <a name="-vcsrepo--p4config"></a>`p4config`
+##### <a name="p4config"></a>`p4config`
 
 The Perforce P4CONFIG environment.
 
-##### <a name="-vcsrepo--path"></a>`path`
+##### <a name="path"></a>`path`
 
 namevar
 
 Absolute path to repository
 
-##### <a name="-vcsrepo--provider"></a>`provider`
+##### <a name="provider"></a>`provider`
 
 The specific backend to use for this `vcsrepo` resource. You will seldom need to specify this --- Puppet will usually
 discover the appropriate provider for your platform.
 
-##### <a name="-vcsrepo--remote"></a>`remote`
+##### <a name="remote"></a>`remote`
 
 The remote repository to track
 
 Default value: `origin`
 
-##### <a name="-vcsrepo--safe_directory"></a>`safe_directory`
+##### <a name="safe_directory"></a>`safe_directory`
 
-Valid values: `true`, `false`
+Valid values: ``true``, ``false``
 
 Marks the current directory specified by the path parameter as a safe directory.
 
-Default value: `false`
+Default value: ``false``
 
-##### <a name="-vcsrepo--submodules"></a>`submodules`
+##### <a name="submodules"></a>`submodules`
 
-Valid values: `true`, `false`
+Valid values: ``true``, ``false``
 
 Initialize and update each submodule in the repository.
 
-Default value: `true`
+Default value: ``true``
 
-##### <a name="-vcsrepo--trust_server_cert"></a>`trust_server_cert`
+##### <a name="trust_server_cert"></a>`trust_server_cert`
 
-Valid values: `true`, `false`
+Valid values: ``true``, ``false``
 
 Trust server certificate
 
-Default value: `false`
+Default value: ``false``
 
-##### <a name="-vcsrepo--umask"></a>`umask`
+##### <a name="umask"></a>`umask`
 
 Sets the umask to be used for all repo operations
 
-##### <a name="-vcsrepo--user"></a>`user`
+##### <a name="user"></a>`user`
 
 The user to run for repository operations
 
