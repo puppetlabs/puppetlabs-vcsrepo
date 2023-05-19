@@ -253,7 +253,7 @@ BRANCHES
       expect(provider).to receive(:path_exists?).and_return(true)
       expect(provider).to receive(:path_empty?).and_return(false)
       provider.destroy
-      expect(provider).to receive(:exec_git).with('config', '--global', '--get-all', 'safe.directory')
+      expect(provider).to receive(:exec_git).with('config', '--system', '--get-all', 'safe.directory')
       expect(provider).to receive(:exec_git).with('clone', resource.value(:source), resource.value(:path))
       expect(provider).to receive(:update_submodules)
       expect(provider).to receive(:update_remote_url).with('origin', resource.value(:source)).and_return false

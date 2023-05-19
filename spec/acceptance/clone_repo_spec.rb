@@ -239,7 +239,7 @@ describe 'clones a remote repo' do
       it { is_expected.to be_owned_by 'vagrant' }
     end
 
-    describe file('~/.gitconfig') do
+    describe file('/etc/gitconfig') do
       subject { super().content }
 
       it { is_expected.to match %r{directory = /tmp/vcsrepo/testrepo_owner} }
