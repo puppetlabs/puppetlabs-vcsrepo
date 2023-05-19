@@ -591,7 +591,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def safe_directories
-    args = ['config', '--global', '--get-all', 'safe.directory']
+    args = ['config', '--system', '--get-all', 'safe.directory']
     begin
       d = git_with_identity(*args) || ''
       d.split('\n')
@@ -609,7 +609,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
     if should_add_safe_directory?
       add_safe_directory
-    else
+    elsif should_remove_safe_directory?
       remove_safe_directory
     end
   end
@@ -617,7 +617,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # @!visibility private
   def add_safe_directory
     notice("Adding '#{@resource.value(:path)}' to safe directory list")
-    args = ['config', '--global', '--add', 'safe.directory', @resource.value(:path)]
+    args = ['config', '--system', '--add', 'safe.directory', @resource.value(:path)]
     git_with_identity(*args)
   end
 
@@ -626,7 +626,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     return unless safe_directories.include?(@resource.value(:path))
 
     notice("Removing '#{@resource.value(:path)}' from safe directory list")
-    args = ['config', '--global', '--unset', 'safe.directory', @resource.value(:path)]
+    args = ['config', '--system', '--unset', 'safe.directory', @resource.value(:path)]
     git_with_identity(*args)
   end
 
@@ -635,6 +635,12 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     (@resource.value(:owner) != @resource.value(:user)) && # user and owner should be different
       @resource.value(:safe_directory) && # safe_directory should be true
       !safe_directories.include?(@resource.value(:path)) # directory should not already be in the list
+  end
+
+  # @!visibility private
+  def should_remove_safe_directory?
+    !@resource.value(:safe_directory) && # safe_directory should be false
+      safe_directories.include?(@resource.value(:path)) # directory should be in the list
   end
 
   # @!visibility private

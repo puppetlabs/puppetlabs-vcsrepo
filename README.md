@@ -864,6 +864,8 @@ For example, setting the `owner` parameter on a resource would cause Puppet runs
 Impacted users are now advised to use the new `safe_directory` parameter on Git resources.
 Explicitily setting the value to `true` will add the current path specified on the resource to the `safe.directory` git configuration for the current user (global scope) allowing the Puppet run to continue without error.
 
+Safe directory configuration will be stored within the system wide configuration file `/etc/gitconfig`.
+
 <a id="development"></a> 
 ## Development
 
