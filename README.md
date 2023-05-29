@@ -550,6 +550,18 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+**NOTE:** The sensitive `basic_auth_password` can be deferred using the [Deferred](https://www.puppet.com/docs/puppet/7/template_with_deferred_values.html) function on Puppet Master and enable to execute on agent.
+
+~~~ puppet
+vcsrepo { '/path/to/repo':
+  ensure              => latest,
+  provider            => hg,
+  source              => 'http://hg.example.com/myrepo',
+  basic_auth_username => 'hgusername',
+  basic_auth_password => Deferred('sprintf', ['hgpassword']),
+}
+~~~
+
 #### Connect via SSH
 
 To connect to your source repository via SSH (such as `'ssh://...'`), we recommend using the [`require` metaparameter](http://docs.puppet.com/references/stable/metaparameter.html#require) to make sure your SSH keys are present before the `vcsrepo` resource is applied:
