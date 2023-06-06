@@ -30,11 +30,7 @@ RSpec.configure do |c|
   c.before :suite do
     case os[:family]
     when 'redhat'
-      if os[:release][0].include?('5')
-        LitmusHelper.instance.run_shell('which git', expect_failures: true)
-        LitmusHelper.instance.run_shell('rpm -ivh http://repository.it4i.cz/mirrors/repoforge/redhat/el5/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el5.rf.x86_64.rpm', expect_failures: true)
-        LitmusHelper.instance.run_shell('yum install -y git')
-      end
+      LitmusHelper.instance.apply_manifest("package { 'epel-release': ensure => present, }") if os[:name] != 'Fedora'
       pp = <<-PP
       package { 'git': ensure => present, }
       package { 'subversion': ensure => present, }
