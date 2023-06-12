@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes,
                :user, :depth, :branch, :submodules, :safe_directory, :hooks_allowed,
-               :umask, :http_proxy
+               :umask, :http_proxy, :tmpdir
 
   def create
     check_force
@@ -708,7 +708,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visiblity private
   def git_ssh_with_identity_ssh_file(*args)
-    Tempfile.open('git-helper') do |f|
+    Tempfile.open('git-helper', @resource.value(:tmpdir)) do |f|
       f.puts '#!/bin/sh'
       f.puts 'SSH_AUTH_SOCKET='
       f.puts 'export SSH_AUTH_SOCKET'
