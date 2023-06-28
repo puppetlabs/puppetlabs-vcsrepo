@@ -73,6 +73,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :http_proxy,
           'The provider supports retrieving repos via HTTP/HTTPS over an HTTP/HTTPS proxy'
 
+  feature :tmpdir,
+          'The provider supports setting the temp directory used for wrapper scripts.'
+
   ensurable do
     desc 'Ensure the version control repository.'
     attr_accessor :latest
@@ -346,6 +349,10 @@ Puppet::Type.newtype(:vcsrepo) do
       # Validation passed.
       super(value)
     end
+  end
+
+  newparam :tmpdir, required_features: [:tmpdir] do
+    desc 'The temp directory used for wrapper scripts.'
   end
 
   autorequire(:package) do

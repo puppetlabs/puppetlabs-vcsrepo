@@ -689,4 +689,28 @@ BRANCHES
       end
     end
   end
+
+  describe 'tmpdir' do
+    before(:each) do
+      resource[:source] = '/path/to/source'
+      resource[:identity] = '/path/to/identity'
+      expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+      expect(provider).to receive(:exec_git).with('--version').and_return('1.8.3.1')
+    end
+
+    context 'when set' do
+      it 'uses tmpdir' do
+        resource[:tmpdir] = '/custom_tmp'
+        expect(Tempfile).to receive(:open).with('git-helper', '/custom_tmp')
+        expect { provider.set_mirror }.not_to raise_error
+      end
+    end
+
+    context 'when unset' do
+      it 'uses default' do
+        expect(Tempfile).to receive(:open).with('git-helper', nil)
+        expect { provider.set_mirror }.not_to raise_error
+      end
+    end
+  end
 end
