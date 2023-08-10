@@ -74,7 +74,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
       if File.exist?(tag_file)
         contents = File.read(tag_file).strip
         # NOTE: Doesn't differentiate between N and T entries
-        @rev = contents[1..]
+        @rev = contents[1..-1]
       else
         @rev = 'HEAD'
       end
