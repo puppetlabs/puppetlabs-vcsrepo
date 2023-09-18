@@ -505,7 +505,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   # @!visibility private
   def stash
-    at_path { git_with_identity('stash', 'save') }
+    at_path { git_with_identity('stash', 'push') }
   end
 
   # @!visibility private
