@@ -6,6 +6,8 @@
     - "--output-dir docs/"
 appveyor.yml:
   delete: true
+.rubocop.yml:
+  include_todos: true
 Gemfile:
   optional:
     ":development":
