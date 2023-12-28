@@ -76,6 +76,9 @@ Puppet::Type.newtype(:vcsrepo) do
   feature :tmpdir,
           'The provider supports setting the temp directory used for wrapper scripts.'
 
+  feature :repository_status,
+          'The provider supports setting the local repository status (to remove uncommitted local changes).'
+
   ensurable do
     desc 'Ensure the version control repository.'
     attr_accessor :latest
@@ -353,6 +356,20 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :tmpdir, required_features: [:tmpdir] do
     desc 'The temp directory used for wrapper scripts.'
+  end
+
+  newproperty :repository_status, required_features: [:repository_status] do
+    newvalue :default_clean
+    newvalue :ignore
+    defaultto :ignore
+
+    def insync?(is)
+      # unwrap @should
+      should = @should[0]
+      return true if should == :ignore
+      return true if is == should
+      false
+    end
   end
 
   autorequire(:package) do

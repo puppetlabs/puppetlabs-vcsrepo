@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes,
                :user, :depth, :branch, :submodules, :safe_directory, :hooks_allowed,
-               :umask, :http_proxy, :tmpdir
+               :umask, :http_proxy, :tmpdir, :repository_status
 
   def create
     check_force
@@ -72,6 +72,8 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # @param [String] desired The desired revision to which the repo should be
   #                         set.
   def revision=(desired)
+    # Set the working copy status first
+    set_repository_status(@resource.value(:repository_status))
     # just checkout tags and shas; fetch has already happened so they should be updated.
     checkout(desired)
     # branches require more work.
@@ -229,6 +231,52 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       git_remote_action('fetch', @resource.value(:remote))
       git_remote_action(*fetch_tags_args, @resource.value(:remote))
       update_owner_and_excludes
+    end
+  end
+
+  # Return the status of the working copy.
+  def repository_status
+    # Optimization: if we don't care about the status, then return right away.
+    # This avoids running 'git status', which may be costly on very large repos
+    # on slow, uncached filesystems.
+    if @resource.value(:repository_status) == :ignore
+      return :ignore
+    end
+
+    at_path do
+      # 'git status' ignores files specified in .gitignore.
+      status = if @resource.value(:submodules) == :true
+                 exec_git('status', '--porcelain')
+               else
+                 exec_git('status', '--porcelain', '--ignore-submodules')
+               end
+
+      return :default_clean if status.empty?
+      return :default_dirty
+    end
+  end
+
+  def repository_status=(desired)
+    set_repository_status(desired)
+  end
+
+  def set_repository_status(desired)
+    case desired
+    when :default_clean
+      at_path do
+        exec_git('clean', '-fd')
+        exec_git('reset', '--hard', 'HEAD')
+        if @resource.value(:submodules) == :true
+          exec_git('submodule', 'foreach', '--recursive', 'git', 'clean', '-fd')
+          exec_git('submodule', 'foreach', '--recursive', 'git', 'reset', '--hard', 'HEAD')
+          # Ensure that submodules are on the revision specified by the containing repo.
+          update_submodules
+        end
+      end
+    when :ignore
+      # nothing to do (rubocop requires code or a comment here)
+    else
+      raise Puppet::Error, "Desired repository_status not implemented: #{desired}"
     end
   end
 

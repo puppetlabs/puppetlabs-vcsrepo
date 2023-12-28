@@ -179,6 +179,28 @@ It only comes into effect if the revision parameter is different from the local 
 
 **WARNING:** This overwrites any conflicting local changes to the repository.
 
+To remove all un-committed changes in the local repository and submodules, set `repository_status` to `default_clean`.
+
+~~~ puppet
+vcsrepo { '/path/to/repo':
+  ensure            => present,
+  provider          => git,
+  source            => 'git://example.com/repo.git',
+  repository_status => 'default_clean',
+}
+~~~
+
+The `default_clean` value directs vcsrepo to run commands necessary to ensure
+that the status as reported by `git status` will not report any local changes.
+This does not affect files specified in the `.gitignore` file; future versions
+of vcsrepo may support more agressive cleaning if necessary, but this will not
+be default. Note that when this parameter is is in use, the
+`keep_local_changes` parameter has no net effect.
+
+This parameter respects the `submodules` option; when submodules are enabled,
+the `default_clean` value will cause submodules to be cleaned as well and reset
+to the commit specified by the containing repo.
+
 To keep the repository at the latest revision, set `ensure` to 'latest':
 
 ~~~ puppet
@@ -797,7 +819,7 @@ For information on the classes and types, see the [REFERENCE.md](https://github.
 
 ##### `git` - Supports the Git VCS.
 
-Features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `submodules`, `user`
+Features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `submodules`, `user`, `working_copy_status'
 
 Parameters: `depth`, `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `remote`, `revision`, `source`, `user`
 
@@ -852,6 +874,7 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 * `ssh_identity` - Lets you specify an SSH identity file. (Available with `git` and `hg`.)
 * `submodules` - Supports repository submodules which can be optionally initialized. (Available with `git`.)
 * `user` - Can run as a different user. (Available with `git`, `hg` and `cvs`.)
+* `working_copy_status` - Can enforce the status of a working copy. (Available with `git`.)
 
 <a id="limitations"></a>
 ## Limitations
