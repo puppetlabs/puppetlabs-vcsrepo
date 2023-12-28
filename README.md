@@ -837,8 +837,8 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 
 * `bare_repositories` - Differentiates between bare repositories and those with working copies. (Available with `git`.)
 * `basic_auth` - Supports HTTP Basic authentication. (Available with `hg` and `svn`.)
-* `conflict` - Lets you decide how to resolve any conflicts between the source repository and your working copy. (Available with `svn`.)
 * `configuration` - Lets you specify the location of your configuration files. (Available with `svn`.)
+* `conflict` - Lets you decide how to resolve any conflicts between the source repository and your working copy. (Available with `svn`.)
 * `cvs_rsh` - Understands the `CVS_RSH` environment variable. (Available with `cvs`.)
 * `depth` - Supports shallow clones in `git` or sets the scope limit in `svn`. (Available with `git` and `svn`.)
 * `filesystem_types` - Supports multiple types of filesystem. (Available with `svn`.)
@@ -846,11 +846,11 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 * `include_paths` - Lets you checkout only certain paths. (Available with `svn`.)
 * `modules` - Lets you choose a specific repository module. (Available with `cvs`.)
 * `multiple_remotes` - Tracks multiple remote repositories. (Available with `git`.)
+* `p4config` - Supports setting the `P4CONFIG` environment. (Available with `p4`.)
 * `reference_tracking` - Lets you track revision references that can change over time (e.g., some VCS tags and branch names). (Available with all providers)
 * `ssh_identity` - Lets you specify an SSH identity file. (Available with `git` and `hg`.)
-* `user` - Can run as a different user. (Available with `git`, `hg` and `cvs`.)
-* `p4config` - Supports setting the `P4CONFIG` environment. (Available with `p4`.)
 * `submodules` - Supports repository submodules which can be optionally initialized. (Available with `git`.)
+* `user` - Can run as a different user. (Available with `git`, `hg` and `cvs`.)
 
 <a id="limitations"></a>
 ## Limitations
