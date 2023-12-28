@@ -249,7 +249,7 @@ BRANCHES
     end
   end
 
-  context 'when with an ensure of mirror - when the path is a working copy repository' do
+  context 'when the path is a working copy repository' do
     it 'clones overtop it using force' do
       resource[:force] = true
       expect(Dir).to receive(:chdir).with('/').once.and_yield
@@ -267,7 +267,7 @@ BRANCHES
     end
   end
 
-  context 'when with an ensure of mirror - when the path is not empty and not a repository' do
+  context 'when the path is not empty and not a repository' do
     it 'raises an exception' do
       expect(provider).to receive(:path_exists?).and_return(true)
       expect(provider).to receive(:path_empty?).and_return(false)
