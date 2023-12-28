@@ -171,7 +171,9 @@ BRANCHES
         provider.create
       end
     end
+  end
 
+  context 'when with an ensure of bare' do
     context 'when with an ensure of bare - with revision' do
       it 'raises an error' do
         resource[:ensure] = :bare
@@ -202,7 +204,9 @@ BRANCHES
         provider.create
       end
     end
+  end
 
+  context 'when with an ensure of mirror' do
     context 'when with an ensure of mirror - with revision' do
       it 'raises an error' do
         resource[:ensure] = :mirror
