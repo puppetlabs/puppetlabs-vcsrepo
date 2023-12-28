@@ -174,11 +174,12 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
-To keep the repository at the latest revision, set `ensure` to 'latest'.
 **Note**: `keep_local_changes` works by stashing local changes, switching the repo to the assigned revision and, finally, unstashing the local changes.
 It only comes into effect if the revision parameter is different from the local repo. This parameter DOES NOT delete/purge local changes by default on every run.
 
-**WARNING:** This overwrites any local changes to the repository.
+**WARNING:** This overwrites any conflicting local changes to the repository.
+
+To keep the repository at the latest revision, set `ensure` to 'latest':
 
 ~~~ puppet
 vcsrepo { '/path/to/repo':
