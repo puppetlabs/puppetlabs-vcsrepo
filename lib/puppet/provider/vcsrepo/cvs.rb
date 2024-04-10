@@ -74,7 +74,12 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
       if File.exist?(tag_file)
         contents = File.read(tag_file).strip
         # NOTE: Doesn't differentiate between N and T entries
-        @rev = contents[1..]
+        # https://stackify.com/rescue-exceptions-ruby/
+        begin
+          @rev = contents[1..]
+        rescue 'syntax error'
+          p "encountered syntax error at line 79.  Known issue, resolved with upgrade puppet -> ^7 on client.  See: https://github.com/puppetlabs/puppetlabs-vcsrepo/issues/624"
+        end
       else
         @rev = 'HEAD'
       end

@@ -54,6 +54,8 @@ The vcsrepo module does not install any VCS software for you. You must install a
 
 Like Puppet in general, the vcsrepo module does not automatically create parent directories for the files it manages. Set up any needed directory structures before you start.
 
+When running puppet v6 and perhaps older installations on the client machine, with v6.1.0 of this module, a known syntax error occurs which can be resolved by an upgrade on the client to puppet 7.  See: https://github.com/puppetlabs/puppetlabs-vcsrepo/issues/624#issuecomment-1770623768 
+
 <a id="beginning-with-vcsrepo"></a>
 ### Beginning with vcsrepo
 
