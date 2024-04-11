@@ -7,10 +7,17 @@
   "source": "https://github.com/puppetlabs/puppetlabs-vcsrepo",
   "project_page": "https://github.com/puppetlabs/puppetlabs-vcsrepo",
   "issues_url": "https://github.com/puppetlabs/puppetlabs-vcsrepo/issues",
-  "dependencies": [
-
-  ],
+  "dependencies": [],
   "operatingsystem_support": [
+    {
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": [
+        "10",
+        "11",
+        "2019",
+        "2022"
+      ]
+    },
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [

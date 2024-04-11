@@ -216,6 +216,7 @@ describe 'clones a remote repo' do
     pp = <<-MANIFEST
     user { 'vagrant':
       ensure => present,
+      password => if ($facts['os']['family'] == 'windows') { 'CorrectHorseBatteryStaple0!' },
     }
     MANIFEST
 
@@ -369,6 +370,7 @@ describe 'clones a remote repo' do
       user { 'testuser':
         ensure => present,
         groups => 'testuser',
+        password => if ($facts['os']['family'] == 'windows') { 'CorrectHorseBatteryStaple0!' },
       }
       MANIFEST
 
