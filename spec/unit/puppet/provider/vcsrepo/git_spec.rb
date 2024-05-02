@@ -25,6 +25,8 @@ BRANCHES
 
   let(:provider) { resource.provider }
 
+  let(:test_includes) { ['file1', 'path1/'] }
+
   before :each do
     allow(Puppet::Util).to receive(:which).with('git').and_return('/usr/bin/git')
   end
@@ -710,6 +712,66 @@ BRANCHES
       it 'uses default' do
         expect(Tempfile).to receive(:open).with('git-helper', nil)
         expect { provider.set_mirror }.not_to raise_error
+      end
+    end
+  end
+
+  describe 'includes' do
+    context 'when with an ensure of bare and includes are defined' do
+      it 'raises an error when trying to clone a repo with an ensure of bare' do
+        resource.delete(:revision)
+        resource[:ensure] = :bare
+        resource[:includes] = test_includes
+        expect(provider).to receive(:exec_git).with('clone', '--bare', resource.value(:source), resource.value(:path))
+        expect(provider).to receive(:update_remotes)
+        expect { provider.create }.to raise_error(RuntimeError, %r{Cannot set includes on a bare repository})
+      end
+    end
+
+    context 'when with an ensure of mirror and includes are defined' do
+      it 'raises an error when trying to clone a repo with an ensure of mirror' do
+        resource.delete(:revision)
+        resource[:ensure] = :mirror
+        resource[:includes] = test_includes
+        expect(provider).to receive(:exec_git).with('clone', '--mirror', resource.value(:source), resource.value(:path))
+        expect(provider).to receive(:update_remotes)
+        expect { provider.create }.to raise_error(RuntimeError, %r{Cannot set includes on a mirror repository})
+      end
+    end
+
+    context 'when with an ensure of present and includes are defined' do
+      let(:sparse_checkout_file) { StringIO.new }
+
+      it 'performs a sparse checkout with git >= 2.25.0' do
+        resource[:includes] = test_includes
+        expect(Dir).to receive(:chdir).with('/').once.and_yield
+        expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+        expect(provider).to receive(:exec_git).with('clone', resource.value(:source), resource.value(:path))
+        expect(provider).to receive(:update_remotes)
+        expect(provider).to receive(:exec_git).with('--version').and_return('2.36.1')
+        expect(provider).to receive(:exec_git).with('sparse-checkout', 'set', '--no-cone', *resource.value(:includes))
+        expect(provider).to receive(:exec_git).with('checkout', '--force', resource.value(:revision))
+        expect(provider).to receive(:exec_git).with('branch', '--no-color', '-a').and_return(branch_a_list(resource.value(:revision)))
+        expect(provider).to receive(:update_submodules)
+        provider.create
+      end
+
+      it 'performs a sparse checkout with git < 2.25.0' do
+        resource[:includes] = test_includes
+        expect(Dir).to receive(:chdir).with('/').once.and_yield
+        expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+        expect(provider).to receive(:exec_git).with('clone', resource.value(:source), resource.value(:path))
+        expect(provider).to receive(:update_remotes)
+        expect(provider).to receive(:exec_git).with('--version').and_return('1.8.3.1')
+        expect(provider).to receive(:exec_git).with('config', '--local', '--bool', 'core.sparseCheckout', 'true')
+        expect(File).to receive(:open).with('.git/info/sparse-checkout', 'w').and_yield(sparse_checkout_file)
+        resource.value(:includes).each do |inc|
+          expect(sparse_checkout_file).to receive(:puts).with(inc)
+        end
+        expect(provider).to receive(:exec_git).with('checkout', '--force', resource.value(:revision))
+        expect(provider).to receive(:exec_git).with('branch', '--no-color', '-a').and_return(branch_a_list(resource.value(:revision)))
+        expect(provider).to receive(:update_submodules)
+        provider.create
       end
     end
   end
