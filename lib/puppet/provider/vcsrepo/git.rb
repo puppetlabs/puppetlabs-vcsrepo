@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
   has_features :bare_repositories, :reference_tracking, :ssh_identity, :multiple_remotes,
                :user, :depth, :branch, :submodules, :safe_directory, :hooks_allowed,
-               :umask, :http_proxy, :tmpdir
+               :umask, :http_proxy, :tmpdir, :include_paths
 
   def create
     check_force
@@ -19,6 +19,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       set_mirror if @resource.value(:ensure) == :mirror && @resource.value(:source).is_a?(Hash)
       self.skip_hooks = @resource.value(:skip_hooks) unless @resource.value(:skip_hooks).nil?
 
+      configure_sparse_checkout if @resource.value(:includes)
       checkout if @resource.value(:revision)
       update_submodules if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
 
@@ -89,6 +90,20 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     # TODO: Would this ever reach here if it is bare?
     update_submodules if !ensure_bare_or_mirror? && @resource.value(:submodules) == :true
     update_owner_and_excludes
+  end
+
+  def includes
+    return nil if bare_exists?
+
+    at_path do
+      return nil unless File.file?('.git/info/sparse-checkout')
+      File.readlines('.git/info/sparse-checkout').map(&:chomp)
+    end
+  end
+
+  def includes=(_desired)
+    configure_sparse_checkout
+    checkout
   end
 
   def bare_exists?
@@ -408,6 +423,33 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   end
 
   # @!visibility private
+  def configure_sparse_checkout
+    raise("Cannot set includes on a #{@resource.value(:ensure)} repository") if ensure_bare_or_mirror? || bare_exists?
+
+    git_ver = git_version
+    if Gem::Version.new(git_ver) >= Gem::Version.new('2.25.0')
+      # sparse-checkout command was introduced in version 2.25.0.
+      at_path do
+        args = ['sparse-checkout', 'set', '--no-cone'] + @resource.value(:includes)
+        exec_git(*args)
+      end
+    else
+      at_path do
+        exec_git('config', '--local', '--bool', 'core.sparseCheckout', 'true')
+
+        # Includes may be an Array or a String
+        File.open('.git/info/sparse-checkout', 'w') do |f|
+          if @resource.value(:includes).respond_to?(:each)
+            @resource.value(:includes).each { |inc| f.puts inc }
+          else
+            f.puts @resource.value(:includes)
+          end
+        end
+      end
+    end
+  end
+
+  # @!visibility private
   def commits?
     at_path do
       begin
@@ -493,7 +535,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   def set_excludes
     # Excludes may be an Array or a String.
     at_path do
-      open('.git/info/exclude', 'w') do |f|
+      File.open('.git/info/exclude', 'w') do |f|
         if @resource.value(:excludes).respond_to?(:each)
           @resource.value(:excludes).each { |ex| f.puts ex }
         else
