@@ -43,11 +43,11 @@ RSpec.configure do |c|
       PP
       LitmusHelper.instance.apply_manifest(pp)
     else
-      unless run_bolt_task('package', 'action' => 'status', 'name' => 'git')
+      unless LitmusHelper.instance.run_bolt_task('package', 'action' => 'status', 'name' => 'git')
         puts 'Git package is required for this module'
         exit
       end
-      unless run_bolt_task('package', 'action' => 'status', 'name' => 'subversion')
+      unless LitmusHelper.instance.run_bolt_task('package', 'action' => 'status', 'name' => 'subversion')
         puts 'Subversion package is required for this module'
         exit
       end
