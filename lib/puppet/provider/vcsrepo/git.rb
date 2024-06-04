@@ -423,8 +423,9 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   # handle upstream branch changes
   # @!visibility private
   def checkout(revision = @resource.value(:revision))
+    has_changes = uncommitted_changes?
     keep_local_changes = @resource.value(:keep_local_changes)
-    stash if keep_local_changes == :true
+    stash if has_changes && keep_local_changes == :true
     if !local_branch_revision?(revision) && remote_branch_revision?(revision)
       # non-locally existant branches (perhaps switching to a branch that has never been checked out)
       at_path { git_with_identity('checkout', '--force', '-b', revision, '--track', "#{@resource.value(:remote)}/#{revision}") }
@@ -432,7 +433,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       # tags, locally existant branches (perhaps outdated), and shas
       at_path { git_with_identity('checkout', '--force', revision) }
     end
-    unstash if keep_local_changes == :true
+    unstash if has_changes && keep_local_changes == :true
   end
 
   # @!visibility private
@@ -504,8 +505,15 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
   end
 
   # @!visibility private
+  def uncommitted_changes?
+    at_path do
+      git_with_identity('status', '--porcelain').empty?
+    end
+  end
+
+  # @!visibility private
   def stash
-    at_path { git_with_identity('stash', 'save') }
+    at_path { git_with_identity('stash', 'push') }
   end
 
   # @!visibility private
