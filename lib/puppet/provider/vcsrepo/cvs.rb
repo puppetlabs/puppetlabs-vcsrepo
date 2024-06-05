@@ -135,7 +135,7 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, parent: Puppet::Provider::Vcsrepo) do
   end
 
   def update_owner
-    set_ownership if @resource.value(:owner) || @resource.value(:group)
+    set_ownership_and_permissions
   end
 
   def runcvs(*args)

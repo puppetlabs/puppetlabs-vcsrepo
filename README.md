@@ -798,37 +798,37 @@ For information on the classes and types, see the [REFERENCE.md](https://github.
 
 Features: `bare_repositories`, `depth`, `multiple_remotes`, `reference_tracking`, `ssh_identity`, `submodules`, `user`
 
-Parameters: `depth`, `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `remote`, `revision`, `source`, `user`
+Parameters: `depth`, `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `remote`, `revision`, `source`, `user`, `mode`
 
 ##### `bzr` - Supports the Bazaar VCS.
 
 Features: `reference_tracking`
 
-Parameters: `ensure`, `excludes`, `force`, `group`, `owner`, `path`, `provider`, `revision`, `source`
+Parameters: `ensure`, `excludes`, `force`, `group`, `owner`, `path`, `provider`, `revision`, `source`, `mode`
 
 ##### `cvs` - Supports the CVS VCS.
 
 Features: `cvs_rsh`, `gzip_compression`, `modules`, `reference_tracking`, `user`
 
-Parameters: `compression`, `cvs_rsh`, `ensure`, `excludes`, `force`, `group`, `module`, `owner`, `path`, `provider`
+Parameters: `compression`, `cvs_rsh`, `ensure`, `excludes`, `force`, `group`, `module`, `owner`, `path`, `provider`, `mode`
 
 ##### `hg` - Supports the Mercurial VCS.
 
 Features: `reference_tracking`, `ssh_identity`, `user`
 
-Parameters: `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `revision`, `source`, `user`
+Parameters: `ensure`, `excludes`, `force`, `group`, `identity`, `owner`, `path`, `provider`, `revision`, `source`, `user`, `mode`
 
 ##### `p4` - Supports the Perforce VCS.
 
 Features: `p4config`, `reference_tracking`
 
-Parameters: `ensure`, `excludes`, `force`, `group`, `owner`, `p4config`, `path`, `provider`, `revision`, `source`
+Parameters: `ensure`, `excludes`, `force`, `group`, `owner`, `p4config`, `path`, `provider`, `revision`, `source`, `mode`
 
 ##### `svn` - Supports the Subversion VCS.
 
 Features: `basic_auth`, `configuration`, `conflict`, `depth`, `filesystem_types`, `reference_tracking`
 
-Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conflict`, `ensure`, `excludes`, `force`, `fstype`, `group`, `includes`, `owner`, `path`, `provider`, `revision`, `source`, `trust_server_cert`
+Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conflict`, `ensure`, `excludes`, `force`, `fstype`, `group`, `includes`, `owner`, `path`, `provider`, `revision`, `source`, `trust_server_cert`, `mode`
 
 <a id="features"></a> 
 #### Features

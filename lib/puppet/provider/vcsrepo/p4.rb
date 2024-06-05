@@ -101,7 +101,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
   private
 
   def update_owner
-    set_ownership if @resource.value(:owner) || @resource.value(:group)
+    set_ownership_and_permissions
   end
 
   # Sync the client workspace files to head or specified revision.
