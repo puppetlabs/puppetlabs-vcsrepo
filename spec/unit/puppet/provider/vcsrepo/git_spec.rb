@@ -172,6 +172,64 @@ BRANCHES
       end
     end
 
+    context 'when with an ensure of present - with repository_status of ignore' do
+      it 'does not check the status' do
+        resource[:repository_status] = :ignore
+        expect(provider).not_to receive(:exec_git)
+        provider.repository_status
+      end
+
+      it 'does not clean' do
+        expect(provider).not_to receive(:exec_git)
+        # this calls the setter method
+        provider.repository_status = :ignore
+      end
+    end
+
+    context 'when with an ensure of present - with repository_status of default_clean' do
+      context 'with defaults' do
+        it 'checks the status' do
+          resource[:repository_status] = :default_clean
+          expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+          expect(provider).to receive(:exec_git).with('status', '--porcelain').and_return('')
+          provider.repository_status
+        end
+
+        it 'cleans the repo' do
+          expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+          expect(provider).to receive(:exec_git).with('clean', '-fd').and_return('')
+          expect(provider).to receive(:exec_git).with('reset', '--hard', 'HEAD').and_return('')
+          expect(provider).to receive(:exec_git).with('submodule', 'foreach', '--recursive', 'git', 'clean', '-fd').and_return('')
+          expect(provider).to receive(:exec_git).with('submodule', 'foreach', '--recursive', 'git', 'reset', '--hard', 'HEAD').and_return('')
+          expect(provider).to receive(:update_submodules)
+          # this calls the setter method
+          provider.repository_status = :default_clean
+        end
+      end
+
+      context 'with submodules disabled' do
+        it 'checks the status' do
+          resource[:submodules] = :false
+          resource[:repository_status] = :default_clean
+          expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+          expect(provider).to receive(:exec_git).with('status', '--porcelain', '--ignore-submodules').and_return('')
+          provider.repository_status
+        end
+
+        it 'cleans the repo' do
+          resource[:submodules] = :false
+          expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
+          expect(provider).to receive(:exec_git).with('clean', '-fd').and_return('')
+          expect(provider).to receive(:exec_git).with('reset', '--hard', 'HEAD').and_return('')
+          expect(provider).not_to receive(:update_submodules)
+          # this calls the setter method
+          provider.repository_status = :default_clean
+        end
+      end
+    end
+  end
+
+  context 'when with an ensure of bare' do
     context 'when with an ensure of bare - with revision' do
       it 'raises an error' do
         resource[:ensure] = :bare
@@ -202,7 +260,9 @@ BRANCHES
         provider.create
       end
     end
+  end
 
+  context 'when with an ensure of mirror' do
     context 'when with an ensure of mirror - with revision' do
       it 'raises an error' do
         resource[:ensure] = :mirror
@@ -245,7 +305,7 @@ BRANCHES
     end
   end
 
-  context 'when with an ensure of mirror - when the path is a working copy repository' do
+  context 'when the path is a working copy repository' do
     it 'clones overtop it using force' do
       resource[:force] = true
       expect(Dir).to receive(:chdir).with('/').once.and_yield
@@ -263,7 +323,7 @@ BRANCHES
     end
   end
 
-  context 'when with an ensure of mirror - when the path is not empty and not a repository' do
+  context 'when the path is not empty and not a repository' do
     it 'raises an exception' do
       expect(provider).to receive(:path_exists?).and_return(true)
       expect(provider).to receive(:path_empty?).and_return(false)
