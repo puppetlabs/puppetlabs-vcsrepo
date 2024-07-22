@@ -734,11 +734,11 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     exec_args = {
       failonfail: true,
       combine: true,
-      custom_environment: { 'HOME' => Etc.getpwuid(Process.uid).dir }
+      custom_environment: { 'HOME' => Dir.home },
     }
 
     if @resource.value(:user) && @resource.value(:user) != Facter['id'].value
-      exec_args[:custom_environment] = { 'HOME' => Etc.getpwnam(@resource.value(:user)).dir }
+      exec_args[:custom_environment] = { 'HOME' => Dir.home(@resource.value(:user)) }
       exec_args[:uid] = @resource.value(:user)
     end
     withumask do
