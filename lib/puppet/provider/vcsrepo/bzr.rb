@@ -102,6 +102,6 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, parent: Puppet::Provider::Vcsrepo) do
   end
 
   def update_owner
-    set_ownership if @resource.value(:owner) || @resource.value(:group)
+    set_ownership_and_permissions
   end
 end

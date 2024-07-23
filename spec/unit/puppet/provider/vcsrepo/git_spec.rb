@@ -313,7 +313,7 @@ BRANCHES
           .with('config', '--local', '--bool', 'core.bare', 'false').and_return(true)
         expect(provider).to receive(:reset).with('HEAD').and_return(true)
         expect(provider).to receive(:git_with_identity).with('checkout', '--force').and_return(true)
-        expect(provider).to receive(:update_owner_and_excludes).and_return(true)
+        expect(provider).to receive(:update_owner_permission_and_excludes).and_return(true)
         expect(provider).to receive(:mirror?).and_return(false)
         provider.instance_eval { convert_bare_to_working_copy }
       end
@@ -330,7 +330,7 @@ BRANCHES
           .with('config', '--local', '--bool', 'core.bare', 'false').and_return(true)
         expect(provider).to receive(:reset).with('HEAD').and_return(true)
         expect(provider).to receive(:git_with_identity).with('checkout', '--force').and_return(true)
-        expect(provider).to receive(:update_owner_and_excludes).and_return(true)
+        expect(provider).to receive(:update_owner_permission_and_excludes).and_return(true)
         expect(provider).to receive(:exec_git).with('config', '--unset', 'remote.origin.mirror')
         expect(provider).to receive(:mirror?).and_return(true)
         provider.instance_eval { convert_bare_to_working_copy }

@@ -213,6 +213,10 @@ Puppet::Type.newtype(:vcsrepo) do
     desc 'The group/gid that owns the repository files'
   end
 
+  newparam :mode do
+    desc 'The permission for the repository directory itself (not recursive)'
+  end
+
   newparam :user do
     desc 'The user to run for repository operations'
   end
