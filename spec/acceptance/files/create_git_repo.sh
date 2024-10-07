@@ -35,6 +35,7 @@ git checkout main
 cd ..
 
 git --git-dir=testrepo/.git config core.bare true
+git config --system --add safe.directory $(pwd)/testrepo.git
 cp -r testrepo/.git testrepo.git
 rm -rf testrepo
 cd testrepo.git
