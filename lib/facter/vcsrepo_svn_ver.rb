@@ -2,7 +2,7 @@
 
 Facter.add(:vcsrepo_svn_ver) do
   setcode do
-    if Facter.value(:operatingsystem) == 'Darwin' && !File.directory?(Facter::Core::Execution.execute('xcode-select -p'))
+    if Facter.value(:'os.name') == 'Darwin' && !File.directory?(Facter::Core::Execution.execute('xcode-select -p'))
       ''
     else
       version = Facter::Core::Execution.execute('svn --version --quiet')

@@ -6,7 +6,7 @@ Puppet::Type.type(:vcsrepo).provide(:dummy, parent: Puppet::Provider::Vcsrepo) d
   desc 'Dummy default provider'
 
   defaultfor feature: :posix
-  defaultfor operatingsystem: :windows
+  defaultfor 'os.name': :windows
 
   def working_copy_exists?
     providers = begin
