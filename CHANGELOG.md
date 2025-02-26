@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v7.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v7.0.0) - 2025-02-26
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v6.1.0...v7.0.0)
+
+### Changed
+
+- (CAT-1429) Removal of redhat/scientific/oraclelinux for vcs repo module [#622](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/622) ([praj1001](https://github.com/praj1001))
+
+### Added
+
+- (CAT-2119) Add Ubuntu 24.04 support [#645](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/645) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- (CAT-2100) Add Debian 12 support [#643](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/643) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- Allow specifying tmpdir for git wrapper script [#612](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/612) ([nabertrand](https://github.com/nabertrand))
+
+### Fixed
+
+- (CAT-2228) Update legacy facts [#650](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/650) ([amitkarsale](https://github.com/amitkarsale))
+- (CAT-2180) Upgrade rexml to address CVE-2024-49761 [#647](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/647) ([amitkarsale](https://github.com/amitkarsale))
+- (CAT-2053) add testrepo.git to safe.directory [#642](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/642) ([imaqsood](https://github.com/imaqsood))
+
 ## [v6.1.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v6.1.0) - 2023-06-13
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v6.0.1...v6.1.0)
@@ -27,6 +47,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v5.5.0...v6.0.0)
 
 ### Changed
+
 - (CONT-803) Add Support for Puppet 8 / Drop Support for Puppet 6 [#601](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/601) ([david22swan](https://github.com/david22swan))
 
 ## [v5.5.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v5.5.0) - 2023-04-19
@@ -97,6 +118,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v4.0.0...v5.0.0)
 
 ### Changed
+
 - Always run as given user, even if identity set [#473](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/473) ([bigpresh](https://github.com/bigpresh))
 
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v4.0.0) - 2021-03-03
@@ -104,6 +126,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v3.2.1...v4.0.0)
 
 ### Changed
+
 - pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [#491](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/491) ([carabasdaniel](https://github.com/carabasdaniel))
 
 ## [v3.2.1](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v3.2.1) - 2021-02-19
@@ -156,14 +179,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.4.0...v3.0.0)
 
+### Changed
+
+- pdksync - (MODULES-8444) - Raise lower Puppet bound [#413](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/413) ([david22swan](https://github.com/david22swan))
+
 ### Added
 
 - (FM-8035) Add RedHat 8 support [#419](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/419) ([eimlav](https://github.com/eimlav))
 - (MODULES-8738) Allow Sensitive value for basic_auth_password [#416](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/416) ([eimlav](https://github.com/eimlav))
 - (MODULES-8140) - Add SLES 15 support [#399](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/399) ([eimlav](https://github.com/eimlav))
-
-### Changed
-- pdksync - (MODULES-8444) - Raise lower Puppet bound [#413](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/413) ([david22swan](https://github.com/david22swan))
 
 ### Fixed
 
@@ -304,7 +328,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Add `user` feature support to CVS provider [#213](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/213) ([jfautley](https://github.com/jfautley))
 - Handle both Array/Enumerable and String values for excludes parameter [#207](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/207) ([sodabrew](https://github.com/sodabrew))
-- Change uid by Puppet execution API [#200](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/200) ([pbrit](https://github.com/pbrit))
+- Change uid by Puppet execution API [#200](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/200) ([paaloeye](https://github.com/paaloeye))
 
 ### Fixed
 
@@ -390,7 +414,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Add support for master svn repositories [#83](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/83) ([sodabrew](https://github.com/sodabrew))
 - Allow for setting the CVS_RSH environment variable [#82](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/82) ([mpdude](https://github.com/mpdude))
 - Add user and ssh identity to the Mercurial provider. [#77](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/77) ([arnoudj](https://github.com/arnoudj))
-- Add travis build-status image [#76](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/76) ([pbrit](https://github.com/pbrit))
+- Add travis build-status image [#76](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/76) ([paaloeye](https://github.com/paaloeye))
 - Add timeout to ssh connections [#65](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/65) ([rkhatibi](https://github.com/rkhatibi))
 - "ensure => latest" support for bzr [#61](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/61) ([hholzgra](https://github.com/hholzgra))
 
@@ -422,7 +446,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- Add the ability to specify a git remote [#24](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/24) ([jesusaurus](https://github.com/jesusaurus))
+- Add the ability to specify a git remote [#24](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/24) ([ConsoleCatzirl](https://github.com/ConsoleCatzirl))
 - Improved Puppet DSL style as per the guidelines. [#19](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/19) ([adamgibbins](https://github.com/adamgibbins))
 
 ### Fixed
