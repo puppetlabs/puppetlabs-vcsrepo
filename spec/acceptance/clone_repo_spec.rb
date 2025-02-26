@@ -175,7 +175,7 @@ describe 'clones a remote repo' do
     end
   end
 
-  context 'with with shallow clone' do
+  context 'with shallow clone' do
     pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_shallow":
         ensure => present,
@@ -212,10 +212,11 @@ describe 'clones a remote repo' do
     end
   end
 
-  context 'with with an owner' do
+  context 'with an owner' do
     pp = <<-MANIFEST
-    user { 'vagrant':
+    user { 'customowner':
       ensure => present,
+      password => if ($facts['os']['family'] == 'windows') { 'CorrectHorseBatteryStaple0!' },
     }
     MANIFEST
 
@@ -225,7 +226,7 @@ describe 'clones a remote repo' do
         ensure => present,
         provider => git,
         source => "file://#{tmpdir}/testrepo.git",
-        owner => 'vagrant',
+        owner => 'customowner',
         safe_directory => true,
       }
     MANIFEST
@@ -236,7 +237,7 @@ describe 'clones a remote repo' do
 
     describe file("#{tmpdir}/testrepo_owner") do
       it { is_expected.to be_directory }
-      it { is_expected.to be_owned_by 'vagrant' }
+      it { is_expected.to be_owned_by 'customowner' }
     end
 
     describe file('/etc/gitconfig') do
@@ -246,9 +247,9 @@ describe 'clones a remote repo' do
     end
   end
 
-  context 'with with a group' do
+  context 'with a group' do
     pp = <<-MANIFEST
-    group { 'vagrant':
+    group { 'customgroup':
       ensure => present,
     }
     MANIFEST
@@ -260,7 +261,7 @@ describe 'clones a remote repo' do
         ensure => present,
         provider => git,
         source => "file://#{tmpdir}/testrepo.git",
-        group => 'vagrant',
+        group => 'customgroup',
       }
     MANIFEST
     it 'clones a repo' do
@@ -270,11 +271,11 @@ describe 'clones a remote repo' do
 
     describe file("#{tmpdir}/testrepo_group") do
       it { is_expected.to be_directory }
-      it { is_expected.to be_grouped_into 'vagrant' }
+      it { is_expected.to be_grouped_into 'customgroup' }
     end
   end
 
-  context 'with with excludes' do
+  context 'with excludes' do
     pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_excludes":
         ensure => present,
@@ -301,7 +302,7 @@ describe 'clones a remote repo' do
     end
   end
 
-  context 'with with force' do
+  context 'with force' do
     before(:all) do
       run_shell("mkdir -p #{tmpdir}/testrepo_force/folder")
       run_shell("touch #{tmpdir}/testrepo_force/temp.txt")
@@ -369,6 +370,7 @@ describe 'clones a remote repo' do
       user { 'testuser':
         ensure => present,
         groups => 'testuser',
+        password => if ($facts['os']['family'] == 'windows') { 'CorrectHorseBatteryStaple0!' },
       }
       MANIFEST
 
