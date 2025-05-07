@@ -10,12 +10,11 @@
   "dependencies": [],
   "operatingsystem_support": [
     {
-      "operatingsystem": "Windows",
+      "operatingsystem": "windows",
       "operatingsystemrelease": [
-        "10",
-        "11",
         "2019",
-        "2022"
+        "2022",
+        "2025"
       ]
     },
     {
