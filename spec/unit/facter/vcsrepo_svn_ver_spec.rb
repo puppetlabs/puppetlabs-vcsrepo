@@ -10,7 +10,7 @@ describe Facter::Util::Fact do # rubocop:disable RSpec/FilePath
   describe 'vcsrepo_svn_ver' do
     context 'with valid value' do
       before :each do
-        allow(Facter.fact(:operatingsystem)).to receive(:value).and_return('OpenBSD')
+        allow(Facter.fact(:'os.name')).to receive(:value).and_return('OpenBSD')
         allow(Facter::Core::Execution).to receive(:execute)
           .with('svn --version --quiet')
           .and_return('1.7.23')
