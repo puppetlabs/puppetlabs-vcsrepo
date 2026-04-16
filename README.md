@@ -665,25 +665,39 @@ vcsrepo { '/path/to/repo':
 
 ####Checking out only specific paths
 
-**Note:** The `includes` param is only supported when subversion client version is >= 1.6.
+**Note:** The `includes` param is supported on all git clients, and subversion clients with version >= 1.6.
 
 You can check out only specific paths in a particular repository by providing their relative paths to the `includes` parameter, like so:
 
-~~~
+~~~ puppet
 vcsrepo { '/path/to/repo':
   ensure   => present,
   provider => svn,
   source   => 'http://svnrepo/hello/trunk',
   includes => [
     'root-file.txt',
-    'checkout-folder',
     'file/this-file.txt',
+    'checkout-folder',
     'folder/this-folder/',
   ]
 }
 ~~~
 
-This will create files `/path/to/repo/file-at-root-path.txt` and `/path/to/repo/file/nested/within/repo.jmx`, with folders `/path/to/repo/some-folder` and `/path/to/repo/nested/folder/to/checkout` completely recreating their corresponding working tree path.
+~~~ puppet
+vcsrepo { '/path/to/repo':
+  ensure   => present,
+  provider => git,
+  source   => 'git@example.com:project.git',
+  includes => [
+    'root-file.txt',
+    'file/this-file.txt',
+    'checkout-folder',
+    'folder/this-folder/',
+  ]
+}
+~~~
+
+This will create files `/path/to/repo/root-file.txt` and `/path/to/repo/file/this-file.txt`, with folders `/path/to/repo/checkout-folder` and `/path/to/repo/folder/this-folder/` completely recreating their corresponding working tree path.
 
 When specified, the `depth` parameter will also be applied to the `includes` -- the root directory will be checked out using an `empty` depth, and the `includes` you specify will be checked out using the `depth` you provide.
 
@@ -843,7 +857,7 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 * `depth` - Supports shallow clones in `git` or sets the scope limit in `svn`. (Available with `git` and `svn`.)
 * `filesystem_types` - Supports multiple types of filesystem. (Available with `svn`.)
 * `gzip_compression` - Supports explicit GZip compression levels. (Available with `cvs`.)
-* `include_paths` - Lets you checkout only certain paths. (Available with `svn`.)
+* `include_paths` - Lets you checkout only certain paths. (Available with `git` and `svn`.)
 * `modules` - Lets you choose a specific repository module. (Available with `cvs`.)
 * `multiple_remotes` - Tracks multiple remote repositories. (Available with `git`.)
 * `reference_tracking` - Lets you track revision references that can change over time (e.g., some VCS tags and branch names). (Available with all providers)
