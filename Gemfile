@@ -40,7 +40,7 @@ group :development do
   gem "json", '= 2.6.3',                         require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "racc", '~> 1.4.0',                        require: false if Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "deep_merge", '~> 1.2.2',                  require: false
-  gem "voxpupuli-puppet-lint-plugins", '~> 5.0', require: false
+  gem "voxpupuli-puppet-lint-plugins", '~> 7.0', require: false
   gem "facterdb", '~> 2.1',                      require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "facterdb", '~> 3.0',                      require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "metadata-json-lint", '~> 4.0',            require: false
@@ -60,12 +60,11 @@ group :development do
 end
 group :development, :release_prep do
   gem "puppet-strings", '~> 4.0',         require: false
-  gem "puppetlabs_spec_helper", '~> 8.0', require: false
+  gem "puppetlabs_spec_helper", '~> 9.0', require: false
   gem "puppet-blacksmith", '~> 7.0',      require: false
 end
 group :system_tests do
-  gem "puppet_litmus", '~> 2.0',   require: false, platforms: [:ruby, :x64_mingw] if !ENV['PUPPET_FORGE_TOKEN'].to_s.empty?
-  gem "puppet_litmus", '~> 1.0',   require: false, platforms: [:ruby, :x64_mingw] if ENV['PUPPET_FORGE_TOKEN'].to_s.empty?
+  gem "puppet_litmus", '~> 2.8',   require: false, platforms: [:ruby, :x64_mingw]
   gem "CFPropertyList", '< 3.0.7', require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "serverspec", '~> 2.41',     require: false
 end
@@ -75,6 +74,10 @@ puppet_version = ENV.fetch('PUPPET_GEM_VERSION', nil)
 facter_version = ENV.fetch('FACTER_GEM_VERSION', nil)
 hiera_version = ENV.fetch('HIERA_GEM_VERSION', nil)
 
+# Puppet 9.0.0 is a released gem on the standard puppetcore source (confirmed:
+# puppetlabs-windows_eventlog#100's CI resolves `puppet (9.0.0)` from
+# gemsource_puppetcore with no PUPPET_GEM_SOURCE set) -- no separate internal/Twingate
+# source or prerelease-specific version matching is needed for it anymore.
 gems['puppet'] = location_for(puppet_version, nil, { source: gemsource_puppetcore })
 gems['facter'] = location_for(facter_version, nil, { source: gemsource_puppetcore })
 gems['hiera'] = location_for(hiera_version, nil, {}) if hiera_version
