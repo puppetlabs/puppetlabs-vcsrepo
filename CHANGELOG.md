@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v8.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v8.0.0) - 2026-08-26
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v7.0.0...v8.0.0)
+
+### Changed
+
+- (CAT-2397) Puppetcore upgrade [#654](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/654) ([LukasAud](https://github.com/LukasAud))
+
+### Added
+
+- Enable Git Includes (Sparse Checkout) [#637](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/637) ([jplindquist](https://github.com/jplindquist))
+
+### Other
+
+- MODULES-11711: Add Puppet 9 support [#659](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/659) ([span786](https://github.com/span786))
+- (CAT-2296) Update github runner image to ubuntu-24.04 [#652](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/652) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- Configure Mend for GitHub.com [#649](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/649) ([mend-for-github-com](https://github.com/mend-for-github-com))
+- (CAT-7110) Add CentOS 9 support [#646](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/646) ([shubhamshinde360](https://github.com/shubhamshinde360))
+
 ## [v7.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v7.0.0) - 2025-02-26
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/v6.1.0...v7.0.0)
