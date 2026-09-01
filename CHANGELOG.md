@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 
-- (CAT-2397) Puppetcore upgrade [#654](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/654) ([LukasAud](https://github.com/LukasAud))
+- (CAT-2397) Puppetcore upgrade / Drop Support for Puppet 7 [#654](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/654) ([LukasAud](https://github.com/LukasAud))
 
 ### Added
 
