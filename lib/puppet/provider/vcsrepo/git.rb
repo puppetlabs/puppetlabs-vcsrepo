@@ -636,7 +636,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     args = ['config', '--system', '--get-all', 'safe.directory']
     begin
       d = git_with_identity(*args) || ''
-      d.split('\n')
+      d.split("\n")
        .reject(&:empty?)
        .map(&:chomp)
     rescue Puppet::ExecutionFailure
