@@ -37,6 +37,14 @@ RSpec.configure do |c|
       PP
       LitmusHelper.instance.apply_manifest(pp, catch_failures: true)
     when %r{(ubuntu|[dD]ebian|sles)}
+      if os[:family] == 'sles' && os[:release].start_with?('12')
+        # The SLES 12 test VMs (GCP BYOS images) have no repos configured and SUSEConnect doesn't work,
+        # so git-core and subversion can't be found. Use the openSUSE Leap 42.3 repo, which is built from SLES 12.
+        # Temporary: remove once SLES 12 leaves metadata.json or the test images come with registered repos.
+        LitmusHelper.instance.run_shell('zypper lr opensuse-leap-42.3 >/dev/null 2>&1 || ' \
+                                        'zypper --non-interactive --gpg-auto-import-keys ar http://download.opensuse.org/distribution/leap/42.3/repo/oss/ opensuse-leap-42.3')
+        LitmusHelper.instance.run_shell('zypper --non-interactive --gpg-auto-import-keys refresh opensuse-leap-42.3')
+      end
       pp = <<-PP
       package { 'git-core': ensure => present, }
       package { 'subversion': ensure => present, }
