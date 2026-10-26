@@ -35,13 +35,13 @@ RSpec.configure do |c|
       package { 'git': ensure => present, }
       package { 'subversion': ensure => present, }
       PP
-      LitmusHelper.instance.apply_manifest(pp)
+      LitmusHelper.instance.apply_manifest(pp, catch_failures: true)
     when %r{(ubuntu|[dD]ebian|sles)}
       pp = <<-PP
       package { 'git-core': ensure => present, }
       package { 'subversion': ensure => present, }
       PP
-      LitmusHelper.instance.apply_manifest(pp)
+      LitmusHelper.instance.apply_manifest(pp, catch_failures: true)
     else
       unless run_bolt_task('package', 'action' => 'status', 'name' => 'git')
         puts 'Git package is required for this module'
