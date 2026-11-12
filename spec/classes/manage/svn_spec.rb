@@ -17,7 +17,7 @@ describe 'vcsrepo::manage::svn' do
         let(:params) do
           {
             package_name: 'testing',
-            package_ensure: 'absent'
+            package_ensure: 'absent',
           }
         end
 
@@ -29,7 +29,7 @@ describe 'vcsrepo::manage::svn' do
       context 'with multiple packages' do
         let(:params) do
           {
-            package_name: ['test', 'testing']
+            package_name: ['test', 'testing'],
           }
         end
 

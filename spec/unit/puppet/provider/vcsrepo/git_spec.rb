@@ -135,11 +135,11 @@ BRANCHES
       it 'specifies the proxy parameter' do
         resource[:source] = {
           'origin' => 'https://foo.example.com/repo.git',
-          'alternate' => 'https://bar.example.com/repo.git'
+          'alternate' => 'https://bar.example.com/repo.git',
         }
         resource[:http_proxy] = {
           'origin' => 'https://proxy1.example.com',
-          'alternate' => 'https://proxy2.example.com'
+          'alternate' => 'https://proxy2.example.com',
         }
         expect(Dir).to receive(:chdir).with('/').once.and_yield
         expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
@@ -157,10 +157,10 @@ BRANCHES
       it 'specifies the proxy parameter' do
         resource[:source] = {
           'origin' => 'https://foo.example.com/repo.git',
-          'alternate' => 'https://bar.example.com/repo.git'
+          'alternate' => 'https://bar.example.com/repo.git',
         }
         resource[:http_proxy] = {
-          'alternate' => 'https://proxy2.example.com'
+          'alternate' => 'https://proxy2.example.com',
         }
         expect(Dir).to receive(:chdir).with('/').once.and_yield
         expect(Dir).to receive(:chdir).with('/tmp/test').at_least(:once).and_yield
