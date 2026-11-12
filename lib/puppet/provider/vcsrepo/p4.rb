@@ -220,7 +220,7 @@ Puppet::Type.type(:vcsrepo).provide(:p4, parent: Puppet::Provider::Vcsrepo) do
     # Merge custom options with defaults
     opts = {
       raise: true, # Raise errors
-      marshal: true # Marshal output
+      marshal: true, # Marshal output
     }.merge(options)
 
     cmd = ['p4']
