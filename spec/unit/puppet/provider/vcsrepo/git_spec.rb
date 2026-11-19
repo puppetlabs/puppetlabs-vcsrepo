@@ -775,4 +775,40 @@ BRANCHES
       end
     end
   end
+
+  describe 'safe_directories' do
+    it 'parses newline-separated git config output into an array' do
+      allow(provider).to receive(:git_with_identity).with('config', '--system', '--get-all', 'safe.directory').and_return("/opt/myrepo\n/var/cache/library\n")
+      expect(provider.instance_eval { safe_directories }).to eq(['/opt/myrepo', '/var/cache/library'])
+    end
+
+    it 'returns an empty array when git config output is empty' do
+      allow(provider).to receive(:git_with_identity).with('config', '--system', '--get-all', 'safe.directory').and_return('')
+      expect(provider.instance_eval { safe_directories }).to eq([])
+    end
+
+    it 'returns an empty array when git config command fails' do
+      allow(provider).to receive(:git_with_identity).with('config', '--system', '--get-all', 'safe.directory').and_raise(Puppet::ExecutionFailure, 'error')
+      expect(provider.instance_eval { safe_directories }).to eq([])
+    end
+  end
+
+  describe 'update_safe_directory' do
+    before :each do
+      resource[:owner] = 'root'
+      resource[:safe_directory] = true
+    end
+
+    it 'does not add the path when it is already in the safe directory list' do
+      allow(provider).to receive(:git_with_identity).with('config', '--system', '--get-all', 'safe.directory').and_return("/opt/myrepo\n/tmp/test\n/var/cache/library\n")
+      expect(provider).not_to receive(:git_with_identity).with('config', '--system', '--add', 'safe.directory', '/tmp/test')
+      provider.instance_eval { update_safe_directory }
+    end
+
+    it 'adds the path when it is not in the safe directory list' do
+      allow(provider).to receive(:git_with_identity).with('config', '--system', '--get-all', 'safe.directory').and_return("/opt/myrepo\n/var/cache/library\n")
+      expect(provider).to receive(:git_with_identity).with('config', '--system', '--add', 'safe.directory', '/tmp/test')
+      provider.instance_eval { update_safe_directory }
+    end
+  end
 end
