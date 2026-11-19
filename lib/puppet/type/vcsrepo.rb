@@ -85,7 +85,7 @@ Puppet::Type.newtype(:vcsrepo) do
 
       case should
       when :present
-        return true unless [:absent, :purged, :held].include?(is)
+        true unless [:absent, :purged, :held].include?(is)
       when :latest
         return true if is == :latest
 
@@ -367,6 +367,6 @@ Puppet::Type.newtype(:vcsrepo) do
       parameter(:basic_auth_password).sensitive = true
     end
 
-    super(sensitive_parameters)
+    super
   end
 end

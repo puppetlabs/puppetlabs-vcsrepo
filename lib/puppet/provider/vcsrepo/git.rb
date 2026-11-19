@@ -97,6 +97,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
 
     at_path do
       return nil unless File.file?('.git/info/sparse-checkout')
+
       File.readlines('.git/info/sparse-checkout').map(&:chomp)
     end
   end
@@ -733,7 +734,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
       IdentitiesOnly: 'yes',
       IdentityAgent: 'none',
       PasswordAuthentication: 'no',
-      KbdInteractiveAuthentication: 'no'
+      KbdInteractiveAuthentication: 'no',
     }
     ssh_command = "ssh -i #{@resource.value(:identity)} "
     ssh_command += ssh_opts.map { |option, value| "-o \"#{option} #{value}\"" }.join ' '
@@ -776,7 +777,7 @@ Puppet::Type.type(:vcsrepo).provide(:git, parent: Puppet::Provider::Vcsrepo) do
     exec_args = {
       failonfail: true,
       combine: true,
-      custom_environment: { 'HOME' => Etc.getpwuid(Process.uid).dir }
+      custom_environment: { 'HOME' => Etc.getpwuid(Process.uid).dir },
     }
 
     if @resource.value(:user) && @resource.value(:user) != Facter['id'].value
